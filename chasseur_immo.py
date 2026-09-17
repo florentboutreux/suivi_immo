@@ -47,7 +47,7 @@ def get_liens_agence_locale():
     """Visite la page web d'une agence locale qui n'envoie pas d'e-mails d'alerte."""
     # À MODIFIER : Remplacez par l'URL de recherche exacte de l'agence cible
     url_recherche = "https://www.century21.fr/annonces/f/achat-maison-appartement-immeuble-divers-neuf-ancien/v-millau/" 
-    prefixe_site = "https://www.century21.fr/"
+    prefixe_site = "https://www.century21.fr"
     
     urls_trouvees = []
     print("Scraping direct de l'agence locale...")
@@ -65,7 +65,7 @@ def get_liens_agence_locale():
             for lien in liens:
                 href = lien.get_attribute("href")
                 # Filtre pour ne garder que les vrais liens d'annonces
-                if href and "/annonce/" in href: 
+                if href and "/trouver_logement/detail/" in href: 
                     lien_complet = href if href.startswith("http") else prefixe_site + href
                     urls_trouvees.append(lien_complet)
                     
