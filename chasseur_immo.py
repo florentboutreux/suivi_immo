@@ -18,7 +18,7 @@ def get_unread_alerts():
     mail.select("inbox")
     
     # CORRECTION : Syntaxe séparée pour la recherche Gmail
-    status, messages = mail.search(None, 'UNREAD', 'SUBJECT', '"alerte"')
+    status, messages = mail.search(None, 'X-GM-RAW', 'is:unread subject:alerte')
     urls_trouvees = []
     
     # On vérifie si la recherche a trouvé des emails
