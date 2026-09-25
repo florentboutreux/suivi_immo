@@ -123,7 +123,7 @@ def analyze_deal(texte):
     """
     try:
         response = client.models.generate_content(
-            model='gemini-1.5-pro',
+            model='gemini-3.1-pro',
             contents=prompt
         )
         return json.loads(response.text.strip('```json\n').strip('```'))
