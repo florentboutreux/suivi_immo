@@ -1,4 +1,5 @@
 import os, imaplib, email, re, json, smtplib
+from urllib.parse import urlparse, urljoin
 from email.message import EmailMessage
 from google import genai
 from playwright.sync_api import sync_playwright
@@ -43,38 +44,57 @@ def get_unread_alerts():
         print(f"Erreur lors de la lecture des e-mails : {e}")
         return []
 
-def get_liens_agence_locale():
-    """Visite la page web d'une agence locale qui n'envoie pas d'e-mails d'alerte."""
-    # À MODIFIER : Remplacez par l'URL de recherche exacte de l'agence cible
-    url_recherche = "https://www.century21.fr/annonces/f/achat-maison-appartement-immeuble-divers-neuf-ancien/v-millau/" 
-    prefixe_site = "https://www.century21.fr"
+def get_liens_agences_locales():
+    """Visite les pages web des agences locales pour extraire les liens d'annonces."""
+    
+    agences_cibles = [
+        "https://www.roques-immobilier.com/",
+        "https://www.sga-immobilier.com/immobilier/immobilier-vente-millau.htm",
+        "https://www.jmb-immobilier.com/",
+        "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12",
+        "https://mesnard-immobilier.com/",
+        "https://www.apimmobilier.fr/"
+    ]
+    
+    # Mots-clés génériques pour identifier un lien d'annonce immobilière
+    mots_cles_annonces = ["/vente/", "/annonce/", "/bien/", "/detail/", "/maison/", "/appartement/"]
+    mots_cles_exclus = ["contact", "mentions", "honoraires", "estimation", "agence", "actualites"]
     
     urls_trouvees = []
-    print("Scraping direct de l'agence locale...")
+    print("Scraping direct des agences locales...")
     
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        try:
-            page.goto(url_recherche, timeout=20000)
-            page.wait_for_load_state("networkidle")
-            
-            # Cherche tous les liens de la page
-            liens = page.locator("a").all()
-            
-            for lien in liens:
-                href = lien.get_attribute("href")
-                # Filtre pour ne garder que les vrais liens d'annonces
-                if href and "/trouver_logement/detail/" in href: 
-                    lien_complet = href if href.startswith("http") else prefixe_site + href
-                    urls_trouvees.append(lien_complet)
-                    
-            browser.close()
-            return list(set(urls_trouvees))
-        except Exception as e:
-            print(f"Erreur lors du scraping de l'agence locale : {e}")
-            browser.close()
-            return []
+        
+        for url_recherche in agences_cibles:
+            print(f"Analyse du site : {url_recherche}")
+            try:
+                # Permet de reconstruire les liens relatifs (ex: /bien/1234 devient https://site.com/bien/1234)
+                parsed_url = urlparse(url_recherche)
+                racine_site = f"{parsed_url.scheme}://{parsed_url.netloc}"
+                
+                page.goto(url_recherche, timeout=20000)
+                page.wait_for_load_state("networkidle")
+                
+                # Cherche tous les liens de la page
+                liens = page.locator("a").all()
+                
+                for lien in liens:
+                    href = lien.get_attribute("href")
+                    if href:
+                        href_lower = href.lower()
+                        
+                        # Filtre heuristique : garde les liens qui ressemblent à des annonces et exclut les pages parasites
+                        if any(mot in href_lower for mot in mots_cles_annonces) and not any(exclu in href_lower for exclu in mots_cles_exclus):
+                            lien_complet = urljoin(racine_site, href)
+                            urls_trouvees.append(lien_complet)
+                            
+            except Exception as e:
+                print(f"Erreur lors du scraping de {url_recherche} : {e}")
+                
+        browser.close()
+        return list(set(urls_trouvees))
 
 def scrape_with_playwright(url):
     """Ouvre l'annonce dans un navigateur invisible et extrait le texte."""
@@ -142,7 +162,7 @@ if __name__ == '__main__':
     
     # 1. Sources des annonces
     urls_emails = get_unread_alerts()
-    urls_agences = get_liens_agence_locale()
+    urls_agences = get_liens_agences_locales()
     
     # 2. Fusion de toutes les URLs à traiter
     toutes_les_urls = urls_emails + urls_agences
@@ -155,7 +175,7 @@ if __name__ == '__main__':
             analyse = analyze_deal(texte_annonce)
             
             if analyse.get('potentiel'):
-                print(">>> Opportunité validée ! Envoi de l'alerte...")
+                print(f">>> Opportunité validée sur {url} ! Envoi de l'alerte...")
                 send_report(analyse, url)
             else:
                 print("Rejeté : Pas de potentiel identifié.")
