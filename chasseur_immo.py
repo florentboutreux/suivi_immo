@@ -136,9 +136,9 @@ def generate_html_report(analyses_validees):
     </html>
     """
     
-    with open("rapport_immo.html", "w", encoding="utf-8") as f:
+   with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("\n>>> Rapport HTML généré avec succès : rapport_immo.html")
+    print("\n>>> Rapport HTML généré avec succès : index.html")
 
 if __name__ == '__main__':
     print("--- Démarrage du Chasseur Immo (Génération de Dashboard) ---")
