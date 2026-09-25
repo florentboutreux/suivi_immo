@@ -1,62 +1,19 @@
-import os, imaplib, email, re, json, smtplib
+import os, re, json
 from urllib.parse import urlparse, urljoin
-from email.message import EmailMessage
 from google import genai
 from playwright.sync_api import sync_playwright
 
-# Récupération des secrets depuis GitHub Actions
-GMAIL_USER = os.getenv("GMAIL_USER")
-GMAIL_PASSWORD = os.getenv("GMAIL_PASSWORD")
-
-# Configuration de la nouvelle API Gemini
+# Configuration de l'API Gemini
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
-def get_unread_alerts():
-    """Se connecte silencieusement en IMAP pour lire les alertes e-mails."""
-    print("Connexion à Gmail pour chercher les alertes...")
-    try:
-        mail = imaplib.IMAP4_SSL("imap.gmail.com")
-        mail.login(GMAIL_USER, GMAIL_PASSWORD)
-        mail.select("inbox")
-        
-        # CORRECTION : Commande X-GM-RAW encapsulée en bytes pour éviter les erreurs IMAP
-        status, messages = mail.search(None, b'X-GM-RAW', b'"is:unread subject:alerte"')
-        urls_trouvees = []
-        
-        if status == 'OK' and messages[0] != b'':
-            for num in messages[0].split():
-                status, data = mail.fetch(num, "(RFC822)")
-                raw_email = data[0][1]
-                
-                # NOUVEAU : Liste étendue des domaines (Portails + Agences locales de Millau)
-                domaines = r'(leboncoin\.fr|seloger\.com|century21.*\.com|orpi\.com|millau-immobilier\.com|daurelle-immobilier\.com)'
-                urls = re.findall(rf'(https?://(?:www\.)?{domaines}[^\s\'"<>]+)', str(raw_email))
-                
-                if urls:
-                    urls_trouvees.append(urls[0])
-                
-                # Pour marquer le mail comme lu et ne pas le retraiter (décommentez en production)
-                # mail.store(num, '+FLAGS', '\\Seen')
-                
-        mail.logout()
-        return list(set(urls_trouvees)) # Retourne une liste sans doublons
-    except Exception as e:
-        print(f"Erreur lors de la lecture des e-mails : {e}")
-        return []
 
 def get_liens_agences_locales():
     """Visite les pages web des agences locales pour extraire les liens d'annonces."""
-    
     agences_cibles = [
-        "https://www.roques-immobilier.com/",
-        "https://www.sga-immobilier.com/immobilier/immobilier-vente-millau.htm",
-        "https://www.jmb-immobilier.com/",
-        "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12",
-        "https://mesnard-immobilier.com/",
+  
         "https://www.apimmobilier.fr/"
     ]
     
-    # Mots-clés génériques pour identifier un lien d'annonce immobilière
+    # Mots-clés pour filtrer les URLs pertinentes
     mots_cles_annonces = ["/vente/", "/annonce/", "/bien/", "/detail/", "/maison/", "/appartement/"]
     mots_cles_exclus = ["contact", "mentions", "honoraires", "estimation", "agence", "actualites"]
     
@@ -70,22 +27,18 @@ def get_liens_agences_locales():
         for url_recherche in agences_cibles:
             print(f"Analyse du site : {url_recherche}")
             try:
-                # Permet de reconstruire les liens relatifs (ex: /bien/1234 devient https://site.com/bien/1234)
                 parsed_url = urlparse(url_recherche)
                 racine_site = f"{parsed_url.scheme}://{parsed_url.netloc}"
                 
                 page.goto(url_recherche, timeout=20000)
                 page.wait_for_load_state("networkidle")
                 
-                # Cherche tous les liens de la page
                 liens = page.locator("a").all()
                 
                 for lien in liens:
                     href = lien.get_attribute("href")
                     if href:
                         href_lower = href.lower()
-                        
-                        # Filtre heuristique : garde les liens qui ressemblent à des annonces et exclut les pages parasites
                         if any(mot in href_lower for mot in mots_cles_annonces) and not any(exclu in href_lower for exclu in mots_cles_exclus):
                             lien_complet = urljoin(racine_site, href)
                             urls_trouvees.append(lien_complet)
@@ -122,8 +75,9 @@ def analyze_deal(texte):
     Annonce : {texte}
     """
     try:
+        # Utilisation de l'alias pointant vers la dernière version Pro disponible
         response = client.models.generate_content(
-            model='gemini-3.1-pro',
+            model='gemini-1.5-pro-latest', 
             contents=prompt
         )
         return json.loads(response.text.strip('```json\n').strip('```'))
@@ -131,53 +85,82 @@ def analyze_deal(texte):
         print(f"Erreur IA : {e}")
         return {"potentiel": False}
 
-def send_report(analyse, url):
-    """Génère et envoie le rapport par e-mail."""
-    msg = EmailMessage()
-    msg['Subject'] = f"🚨 Opportunité MdB - {analyse.get('lots', 0)} lots estimés"
-    msg['From'] = GMAIL_USER
-    msg['To'] = GMAIL_USER
-    
-    html = f"""
-    <div style="font-family: Arial, sans-serif; color: #333;">
-        <h2 style="color: #2c3e50;">🚨 Nouvelle Opportunité Marchand de Biens</h2>
-        <div style="background-color: #f8f9fa; padding: 15px; margin-bottom: 20px;">
-            <p><b>🧩 Potentiel de découpe :</b> {analyse.get('lots')} lots</p>
-            <p><b>📈 Marge estimée :</b> <span style="color: #27ae60; font-weight: bold;">{analyse.get('marge_estimee')} €</span></p>
-        </div>
-        <h3>Analyse :</h3>
-        <p style="padding: 12px; border-left: 4px solid #3498db;">{analyse.get('analyse').replace(chr(10), '<br>')}</p>
-        <a href='{url}' style="display:inline-block; padding:10px 15px; background-color:#3498db; color:white; text-decoration:none;">Voir l'annonce complète</a>
-    </div>
+def generate_html_report(analyses_validees):
+    """Génère un fichier HTML listant toutes les opportunités validées."""
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tableau de Bord - Chasseur Immo</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-slate-50 p-8 font-sans">
+        <div class="max-w-7xl mx-auto">
+            <header class="mb-10 border-b border-slate-200 pb-6">
+                <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">🚨 Opportunités de Division</h1>
+                <p class="text-slate-500 mt-2 text-lg">Analyse automatisée des annonces locales</p>
+            </header>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
     """
-    msg.set_content(html, subtype='html')
     
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(GMAIL_USER, GMAIL_PASSWORD)
-        server.send_message(msg)
-        print("Rapport envoyé avec succès !")
+    if not analyses_validees:
+        html_content += """
+                <div class="col-span-full bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center">
+                    <p class="text-slate-500 text-lg font-medium">Aucune opportunité à fort potentiel détectée lors de ce scan.</p>
+                </div>
+        """
+    
+    for deal in analyses_validees:
+        html_content += f"""
+                <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="bg-indigo-100 text-indigo-800 text-sm font-semibold px-3 py-1 rounded-full">{deal['analyse'].get('lots', 0)} lots estimés</span>
+                            <span class="text-emerald-600 font-bold text-lg">{deal['analyse'].get('marge_estimee', 'N/A')} € marge</span>
+                        </div>
+                        <p class="text-slate-700 text-sm mb-6 leading-relaxed">{deal['analyse'].get('analyse', '')}</p>
+                    </div>
+                    <a href="{deal['url']}" target="_blank" class="w-full text-center bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 px-4 rounded-lg transition-colors">
+                        Voir l'annonce complète
+                    </a>
+                </div>
+        """
+        
+    html_content += """
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    with open("rapport_immo.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+    print("\n>>> Rapport HTML généré avec succès : rapport_immo.html")
 
 if __name__ == '__main__':
-    print("--- Démarrage du Chasseur Immo ---")
+    print("--- Démarrage du Chasseur Immo (Génération de Dashboard) ---")
     
-    # 1. Sources des annonces
-    urls_emails = get_unread_alerts()
     urls_agences = get_liens_agences_locales()
+    print(f"{len(urls_agences)} lien(s) à analyser au total.\n")
     
-    # 2. Fusion de toutes les URLs à traiter
-    toutes_les_urls = urls_emails + urls_agences
-    print(f"{len(toutes_les_urls)} lien(s) à analyser au total.")
+    opportunites_trouvees = []
     
-    # 3. Traitement
-    for url in toutes_les_urls:
+    for url in urls_agences:
         texte_annonce = scrape_with_playwright(url)
         if texte_annonce:
             analyse = analyze_deal(texte_annonce)
             
             if analyse.get('potentiel'):
-                print(f">>> Opportunité validée sur {url} ! Envoi de l'alerte...")
-                send_report(analyse, url)
+                print(f"[!] Opportunité validée : {url}")
+                opportunites_trouvees.append({
+                    "url": url,
+                    "analyse": analyse
+                })
             else:
-                print("Rejeté : Pas de potentiel identifié.")
+                print(f"Rejeté (Pas de potentiel) : {url}")
                 
-    print("--- Fin du cycle ---")
+    generate_html_report(opportunites_trouvees)
+    print("\n--- Fin du cycle ---")
