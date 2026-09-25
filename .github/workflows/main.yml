@@ -3,29 +3,33 @@ name: Bot Marchand de Biens
 on:
   schedule:
     - cron: '0 */2 * * *'
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          
       - name: Installation
         run: |
           pip install -r requirements.txt
           playwright install chromium
           playwright install-deps
+          
       - name: Execution
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
         run: python chasseur_immo.py
-
-        - name: Déployer le rapport sur GitHubPages
+        
+      - name: Déployer le rapport sur GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
