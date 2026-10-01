@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 
 # Configuration de l'API Google Gemini (Bibliothèque stable)
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-3.7-flash')
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 def get_liens_agences_locales():
     """Visite les pages web des agences locales pour extraire les liens d'annonces."""
@@ -189,6 +189,8 @@ if __name__ == '__main__':
                 })
             else:
                 print(f"Rejeté (Pas de potentiel) : {url}")
+                
+            time.sleep(2)
                 
     generate_html_report(opportunites_trouvees)
     print("\n--- Fin du cycle ---")
