@@ -9,10 +9,6 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 def get_liens_agences_locales():
     """Visite les agences locales, explore plusieurs pages de résultats (pagination) et extrait les vraies fiches."""
     agences_cibles = [
-        "https://www.roques-immobilier.com/",
-        "https://www.sga-immobilier.com/immobilier/immobilier-vente-millau.htm",
-        "https://www.jmb-immobilier.com/",
-        "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12",
         "https://mesnard-immobilier.com/vente/",
         "https://www.apimmobilier.fr/recherche/"
     ]
