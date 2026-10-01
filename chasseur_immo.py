@@ -190,7 +190,7 @@ if __name__ == '__main__':
             else:
                 print(f"Rejeté (Pas de potentiel) : {url}")
                 
-            time.sleep(2)
+            time.sleep(15)
                 
     generate_html_report(opportunites_trouvees)
     print("\n--- Fin du cycle ---")
