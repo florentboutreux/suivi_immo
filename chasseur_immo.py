@@ -1,18 +1,15 @@
 import os, json
 from urllib.parse import urlparse, urljoin
-from google import genai
+import google.generativeai as genai
 from playwright.sync_api import sync_playwright
 
-# Configuration de l'API Google Gemini
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+# Configuration de l'API Google Gemini (Bibliothèque stable)
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 def get_liens_agences_locales():
     """Visite les pages web des agences locales pour extraire les liens d'annonces."""
     agences_cibles = [
-        "https://www.roques-immobilier.com/",
-        "https://www.sga-immobilier.com/immobilier/immobilier-vente-millau.htm",
-        "https://www.jmb-immobilier.com/",
-        "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12",
         "https://mesnard-immobilier.com/",
         "https://www.apimmobilier.fr/"
     ]
@@ -96,11 +93,7 @@ def analyze_deal(texte_annonce, url):
     print(f"Analyse Gemini en cours pour {url}...")
     
     try:
-        response = client.models.generate_content(
-            model='gemini-1.5-flash', 
-            contents=prompt
-        )
-        
+        response = model.generate_content(prompt)
         reponse_complete = response.text
         
         # Extraction stricte du JSON après le brouillon
@@ -171,7 +164,6 @@ def generate_html_report(analyses_validees):
     </html>
     """
     
-    # Parfaitement aligné pour éviter l'erreur "IndentationError"
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
     print("\n>>> Rapport HTML généré avec succès : index.html")
