@@ -1,15 +1,15 @@
-import os, json
+import os, json, time
 from urllib.parse import urlparse, urljoin
-import google.generativeai as genai
+from google import genai
 from playwright.sync_api import sync_playwright
 
-# Configuration de l'API Google Gemini (Bibliothèque stable)
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-3.7-flash')
+# Initialisation de la bibliothèque officielle et moderne
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def get_liens_agences_locales():
     """Visite les pages web des agences locales pour extraire les liens d'annonces."""
     agences_cibles = [
+
         "https://mesnard-immobilier.com/",
         "https://www.apimmobilier.fr/"
     ]
@@ -67,7 +67,7 @@ def scrape_with_playwright(url):
             return None
 
 def analyze_deal(texte_annonce, url):
-    """Demande à Gemini d'évaluer le potentiel Marchand de Biens avec réflexion."""
+    """Analyse l'annonce avec Gemini en mode gratuit (avec le modèle 3.8 requis)."""
     prompt = f"""
     Tu es l'agent d'acquisition IA pour la SAS FBIMMO. 
     Ta spécialité : identifier des immeubles ou grandes maisons avec un potentiel de division spatiale pour revente à la découpe.
@@ -93,10 +93,14 @@ def analyze_deal(texte_annonce, url):
     print(f"Analyse Gemini en cours pour {url}...")
     
     try:
-        response = model.generate_content(prompt)
+        # Utilisation du modèle actuel exigé par l'API
+        response = client.models.generate_content(
+            model='gemini-3.8-flash', 
+            contents=prompt
+        )
+        
         reponse_complete = response.text
         
-        # Extraction stricte du JSON après le brouillon
         if "</brouillon>" in reponse_complete:
             json_brut = reponse_complete.split("</brouillon>")[-1].strip()
         else:
@@ -169,7 +173,7 @@ def generate_html_report(analyses_validees):
     print("\n>>> Rapport HTML généré avec succès : index.html")
 
 if __name__ == '__main__':
-    print("--- Réveil de l'Agent Autonome FBIMMO ---")
+    print("--- Réveil de l'Agent Autonome FBIMMO (Mode Gratuit) ---")
     
     urls_agences = get_liens_agences_locales()
     print(f"{len(urls_agences)} lien(s) à analyser au total.\n")
@@ -189,6 +193,10 @@ if __name__ == '__main__':
                 })
             else:
                 print(f"Rejeté (Pas de potentiel) : {url}")
+            
+            # Pause de 15 secondes pour respecter le quota gratuit
+            print("⏳ Pause de 15s (respect du quota gratuit)...")
+            time.sleep(15)
                 
     generate_html_report(opportunites_trouvees)
     print("\n--- Fin du cycle ---")
