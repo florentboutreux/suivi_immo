@@ -1,37 +1,44 @@
-name: Bot Marchand de Biens
+name: Agent Immobilier Autonome FBIMMO
 
 on:
   schedule:
-    - cron: '0 */2 * * *'
-  workflow_dispatch:
+    # S'exécute tous les jours à 07:00 UTC
+    - cron: '0 7 * * *'
+  workflow_dispatch: # Permet aussi de le lancer manuellement depuis l'onglet Actions
 
 jobs:
-  run-bot:
+  run-agent:
     runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v4
+    permissions:
+      contents: write # Indispensable pour pousser le rapport HTML sur la branche gh-pages
       
-      - uses: actions/setup-python@v5
+    steps:
+      - name: Récupération du code du dépôt
+        uses: actions/checkout@v4
+      
+      - name: Configuration de Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           
-      - name: Installation
+      - name: Installation et nettoyage des dépendances
         run: |
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          # On nettoie d'éventuels anciens paquets pour éviter les conflits d'import
+          pip uninstall -y google-generativeai google-genai || true
+          # Installation propre de la dernière bibliothèque moderne et de Playwright
+          pip install google-genai playwright
           playwright install chromium
           playwright install-deps
           
-      - name: Execution
+      - name: Lancement du script de l'Agent Autonome
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GMAIL_USER: ${{ secrets.GMAIL_USER }}
-          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
         run: python chasseur_immo.py
         
-      - name: Déployer le rapport sur GitHub Pages
+      - name: Déploiement automatique du Dashboard sur GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./  # Pousse le dossier courant contenant le HTML
+          publish_dir: ./
           publish_branch: gh-pages
