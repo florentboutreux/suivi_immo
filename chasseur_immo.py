@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 
 # Configuration de l'API Google Gemini (Bibliothèque stable)
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-3.7-flash')
 
 def get_liens_agences_locales():
     """Visite les pages web des agences locales pour extraire les liens d'annonces."""
