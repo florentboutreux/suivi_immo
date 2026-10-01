@@ -1,13 +1,10 @@
 import os, json
 from urllib.parse import urlparse, urljoin
-from openai import OpenAI
+from google import genai
 from playwright.sync_api import sync_playwright
 
-# Initialisation d'Hermes via OpenRouter
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY")
-)
+# Configuration de l'API Google Gemini
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def get_liens_agences_locales():
     """Visite les pages web des agences locales pour extraire les liens d'annonces."""
@@ -72,9 +69,10 @@ def scrape_with_playwright(url):
             browser.close()
             return None
 
-def agent_harness(texte_annonce, url):
-    """Boucle de réflexion de l'agent Hermes."""
-    system_prompt = """Tu es l'agent d'acquisition IA autonome pour la SAS FBIMMO. 
+def analyze_deal(texte_annonce, url):
+    """Demande à Gemini d'évaluer le potentiel Marchand de Biens avec réflexion."""
+    prompt = f"""
+    Tu es l'agent d'acquisition IA pour la SAS FBIMMO. 
     Ta spécialité : identifier des immeubles ou grandes maisons avec un potentiel de division spatiale pour revente à la découpe.
     
     REGLE ABSOLUE : Tu dois mener une réflexion critique dans des balises <brouillon> avant de donner ton verdict final en JSON.
@@ -85,30 +83,25 @@ def agent_harness(texte_annonce, url):
     2. AUTO-CRITIQUE : Freins techniques (accès, compteurs, lumière, faisabilité).
     3. AJUSTEMENT : Meilleure configuration de découpe.
     </brouillon>
-    {
+    {{
       "potentiel": true,
       "lots": 3,
       "marge_estimee": 50000,
       "analyse_finale": "texte synthétique"
-    }
+    }}
+    
+    Annonce à analyser : {texte_annonce}
     """
 
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": f"Analyse cette annonce : {texte_annonce}"}
-    ]
-    
-    print(f"Lancement de la réflexion Hermes pour {url}...")
+    print(f"Analyse Gemini en cours pour {url}...")
     
     try:
-        response = client.chat.completions.create(
-            model="nousresearch/hermes-3-llama-3.1-8b", 
-            messages=messages,
-            temperature=0.1, 
-            max_tokens=1500  
+        response = client.models.generate_content(
+            model='gemini-1.5-flash', 
+            contents=prompt
         )
         
-        reponse_complete = response.choices[0].message.content
+        reponse_complete = response.text
         
         # Extraction stricte du JSON après le brouillon
         if "</brouillon>" in reponse_complete:
@@ -120,7 +113,7 @@ def agent_harness(texte_annonce, url):
         return json.loads(json_propre)
         
     except Exception as e:
-        print(f"Erreur dans le harnais ou formatage JSON : {e}")
+        print(f"Erreur IA ou formatage JSON : {e}")
         return {"potentiel": False}
 
 def generate_html_report(analyses_validees):
@@ -138,7 +131,7 @@ def generate_html_report(analyses_validees):
         <div class="max-w-7xl mx-auto">
             <header class="mb-10 border-b border-slate-200 pb-6">
                 <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">🚨 Opportunités de Division</h1>
-                <p class="text-slate-500 mt-2 text-lg">Agent Autonome FBIMMO - Analyse avec Hermes 3</p>
+                <p class="text-slate-500 mt-2 text-lg">Agent Autonome FBIMMO - Analyse avec Google Gemini</p>
             </header>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -178,7 +171,7 @@ def generate_html_report(analyses_validees):
     </html>
     """
     
-    # L'indentation est désormais strictement alignée (4 espaces) pour corriger l'IndentationError
+    # Parfaitement aligné pour éviter l'erreur "IndentationError"
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
     print("\n>>> Rapport HTML généré avec succès : index.html")
@@ -194,7 +187,7 @@ if __name__ == '__main__':
     for url in urls_agences:
         texte_annonce = scrape_with_playwright(url)
         if texte_annonce:
-            analyse = agent_harness(texte_annonce, url)
+            analyse = analyze_deal(texte_annonce, url)
             
             if analyse.get('potentiel'):
                 print(f"[!] Opportunité validée : {url}")
