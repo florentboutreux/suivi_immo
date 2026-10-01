@@ -7,47 +7,83 @@ from playwright.sync_api import sync_playwright
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def get_liens_agences_locales():
-    """Visite les pages web des agences locales pour extraire les liens d'annonces."""
+    """Visite les agences locales, explore plusieurs pages de résultats (pagination) et extrait les vraies fiches."""
     agences_cibles = [
-
-        "https://mesnard-immobilier.com/",
-        "https://www.apimmobilier.fr/"
+        "https://mesnard-immobilier.com/vente/",
+        "https://www.apimmobilier.fr/recherche/"
     ]
     
-    mots_cles_annonces = ["/vente/", "/annonce/", "/bien/", "/detail/", "/maison/", "/appartement/"]
-    mots_cles_exclus = ["contact", "mentions", "honoraires", "estimation", "agence", "actualites"]
+    mots_cles_annonces = ["/annonce/", "/bien/", "/detail/", "/vente-", "/p-r7-", "mandat"]
+    mots_cles_exclus = [
+        "contact", "mentions", "honoraires", "estimation", "agence", "actualites", 
+        "property-type", "recherche", "filter", "connexion", "espace-client"
+    ]
     
     urls_trouvees = []
-    print("Scraping direct des agences locales...")
+    print("Scraping intelligent et multipage des agences locales...")
     
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         
-        for url_recherche in agences_cibles:
-            print(f"Analyse du site : {url_recherche}")
-            try:
-                parsed_url = urlparse(url_recherche)
-                racine_site = f"{parsed_url.scheme}://{parsed_url.netloc}"
+        for url_base in agences_cibles:
+            print(f"\nAnalyse de l'agence : {url_base}")
+            
+            # On simule une navigation sur plusieurs pages (ex: jusqu'à 3 pages de résultats par site)
+            for page_num in range(1, 4):
+                # Construction de l'URL selon la pagination (gère les cas courants)
+                if page_num == 1:
+                    url_courante = url_base
+                else:
+                    # Ajustement standard pour les pages suivantes
+                    if "?" in url_base:
+                        url_courante = f"{url_base}&page={page_num}"
+                    else:
+                        url_courante = f"{url_base.rstrip('/')}/page/{page_num}/"
                 
-                page.goto(url_recherche, timeout=20000)
-                page.wait_for_load_state("networkidle")
-                
-                liens = page.locator("a").all()
-                
-                for lien in liens:
-                    href = lien.get_attribute("href")
-                    if href:
-                        href_lower = href.lower()
-                        if any(mot in href_lower for mot in mots_cles_annonces) and not any(exclu in href_lower for exclu in mots_cles_exclus):
-                            lien_complet = urljoin(racine_site, href)
-                            urls_trouvees.append(lien_complet)
+                try:
+                    print(f" -> Chargement page {page_num} : {url_courante}")
+                    page.goto(url_courante, timeout=25000)
+                    page.wait_for_load_state("networkidle")
+                    
+                    # Scroll pour forcer le chargement dynamique (lazy loading)
+                    for _ in range(2):
+                        page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                        page.wait_for_timeout(1000)
+                    
+                    # Extraction des liens
+                    liens = page.locator("a").all()
+                    avant_count = len(urls_trouvees)
+                    
+                    parsed_url = urlparse(url_courante)
+                    racine_site = f"{parsed_url.scheme}://{parsed_url.netloc}"
+                    
+                    for lien in liens:
+                        href = lien.get_attribute("href")
+                        if href:
+                            href_lower = href.lower()
+                            est_une_annonce = any(mot in href_lower for mot in mots_cles_annonces)
+                            est_exclu = any(exclu in href_lower for exclu in mots_cles_exclus)
                             
-            except Exception as e:
-                print(f"Erreur lors du scraping de {url_recherche} : {e}")
+                            if est_une_annonce and not est_exclu:
+                                lien_complet = urljoin(racine_site, href)
+                                urls_trouvees.append(lien_complet)
+                    
+                    # Si la page ne donne plus aucun nouveau lien, ça veut dire qu'on a dépassé la dernière page, on stoppe la pagination pour ce site
+                    if len(urls_trouvees) == avant_count and page_num > 1:
+                        print(" -> Fin de pagination atteinte pour ce site.")
+                        break
+                        
+                except Exception as e:
+                    # Si la page 2 ou 3 n'existe pas (erreur 404 ou timeout), on passe simplement au site suivant
+                    print(f" -> Fin ou pas de page {page_num} ({e})")
+                    break
                 
         browser.close()
-        return list(set(urls_trouvees))
+        
+    liens_uniques = list(set(urls_trouvees))
+    print(f"\n✨ Total cumulé : {len(liens_uniques)} fiches d'annonces uniques détectées sur l'ensemble des agences.")
+    return liens_uniques
 
 def scrape_with_playwright(url):
     """Ouvre l'annonce dans un navigateur invisible et extrait le texte."""
