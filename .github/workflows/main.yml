@@ -19,7 +19,7 @@ jobs:
       - run: |
           pip install -r requirements.txt
           playwright install --with-deps chromium
-      - run: python scraper_agences.py
+      - run: python chasseur_immo.py
       - name: Commit des résultats
         run: |
           git config user.name "veille-bot"
@@ -27,4 +27,5 @@ jobs:
           git add data/ docs/
           git diff --staged --quiet || git commit -m "Veille du $(date +%F)"
           git push
+ 
  
