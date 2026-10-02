@@ -1,4 +1,4 @@
-
+ · PY
 #!/usr/bin/env python3
 """
 Veille immobilière pour marchand de biens (secteur Millau).
@@ -15,6 +15,7 @@ import json
 import logging
 import random
 import re
+from collections import deque
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from pathlib import Path
@@ -41,7 +42,7 @@ PRIX_MAX = 250_000          # budget maximum (None pour désactiver)
 SCORE_MINIMUM = 2           # seuil pour être jugée "intéressante"
 MAX_PAGES_PAR_AGENCE = 5    # pagination
 MAX_FICHES_PAR_RUN = 200    # garde-fou
-VERSION_PARSEUR = 3         # incrémenter quand l'extraction change : les fiches déjà vues sont ré-analysées
+VERSION_PARSEUR = 6         # incrémenter quand l'extraction change : les fiches déjà vues sont ré-analysées
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
@@ -54,13 +55,28 @@ PATTERN_FICHE_DEFAUT = (
 )
  
 AGENCES = [
-    {"nom": "Roques", "url": "https://www.roques-immobilier.com/a-vendre"},
+    {
+        # Roques propose une page par commune : « Voir tous les biens à Millau » (435 = identifiant de Millau).
+        # On ne collecte que les fiches de la forme /vente/435-millau/<type>/<id>-<titre> :
+        # les communes voisines (Montjaux, Le Caylar, Lanuéjols…) du « secteur Millau » sont exclues d'emblée.
+        "nom": "Roques",
+        "url": "https://www.roques-immobilier.com/vente/435-millau/1",
+        "pattern_fiche": r"/vente/435-millau/[^/]+/\d+-",
+        "mode": "pattern",
+    },
     {"nom": "SGA", "url": "https://www.sga-immobilier.com/immobilier/immobilier-vente-millau.htm"},
     # /a-vendre renvoyait une 404 : la vraie page de vente est /resultats?transac=vente
     {"nom": "JMB", "url": "https://www.jmb-immobilier.com/resultats?transac=vente", "mode": "prix"},
     {
+        # Le site est une appli JavaScript : l'ancienne URL /vente/maison/millau-12 affichait toute la France.
+        # Le script saisit « Millau » dans le champ de localisation, choisit la suggestion puis lance la
+        # recherche. L'URL filtrée obtenue est écrite dans le log (« URL filtrée ») : vous pouvez la coller
+        # ici à la place de "url" et supprimer "preparation" pour figer le filtre.
         "nom": "Notaires",
-        "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12",
+        "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres-liste?typeTransaction=VENTE,VNI,VAE",
+        "mode": "prix",
+        "preparation": "filtre_ville",
+        "ville": "Millau",
     },
     {"nom": "Mesnard maisons", "url": "https://mesnard-immobilier.com/property-type/maison/",
      "pattern_fiche": r"/property/"},
@@ -87,7 +103,12 @@ MOTS_CLES = {
     r"\binvestisseur\b|\brendement\b|\blou[ée]\b|\blocataire\b": 1,
     r"\bnégociable\b|\bbaisse de prix\b|\bprix revu\b": 2,
 }
-MOTS_REDHIBITOIRES = re.compile(r"\b(viager|vendu|sous compromis|sous offre|loué)\b", re.I)
+# Motifs d'exclusion. « loué » n'en fait PAS partie : un immeuble loué est au contraire intéressant
+# pour un marchand de biens (il rapporte un point dans le scoring). Testés sur le titre + le début du
+# contenu de la fiche SANS menu/pied de page (le menu d'une agence contient « Viager » partout).
+MOTS_REDHIBITOIRES = re.compile(
+    r"\b(viager|vendu|vendue|sous compromis|compromis sign[ée]|sous offre|offre accept[ée]e)\b", re.I
+)
  
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("scraper")
@@ -288,6 +309,86 @@ def aller_page_suivante(page) -> bool:
 # --------------------------------------------------------------------------- #
 # 1) COLLECTE DES LIENS
 # --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- #
+# FILTRE « VILLE » PILOTÉ PAR L'INTERFACE (sites de recherche en JavaScript, ex. notaires)
+# --------------------------------------------------------------------------- #
+SELECTEURS_CHAMP_VILLE = [
+    'input[placeholder*="ville" i]', 'input[placeholder*="localisation" i]', 'input[placeholder*="où" i]',
+    'input[placeholder*="code postal" i]', 'input[aria-label*="ville" i]', 'input[aria-label*="localisation" i]',
+    'input[aria-label*="lieu" i]', 'input[name*="locali" i]', 'input[id*="locali" i]',
+    'input[name*="ville" i]', 'input[id*="ville" i]', 'input[type="search"]', 'input[role="combobox"]',
+]
+SELECTEURS_SUGGESTIONS = [
+    '[role="option"]', '[role="listbox"] li', 'li[class*="suggest" i]', '[class*="autocomplete" i] li',
+    '[class*="suggestion" i]', 'li',
+]
+SELECTEURS_VALIDER = [
+    'button:has-text("Rechercher")', 'button:has-text("Lancer la recherche")',
+    '[role="button"]:has-text("Rechercher")', 'button[type="submit"]',
+]
+ 
+ 
+def filtrer_par_ville(page, ville: str = "Millau") -> bool:
+    """
+    Saisit la ville dans le champ de recherche, choisit la suggestion « Millau (12…) » et valide.
+    Retourne True si la recherche a pu être lancée. Écrit l'URL filtrée dans le log.
+    """
+    try:
+        champ = None
+        for sel in SELECTEURS_CHAMP_VILLE:
+            loc = page.locator(sel).first
+            if loc.count() and loc.is_visible(timeout=1200):
+                champ = loc
+                break
+        if champ is None:
+            log.warning("   champ « ville » introuvable")
+            return False
+ 
+        champ.click(timeout=3000)
+        champ.fill("")
+        champ.press_sequentially(ville, delay=120)      # frappe lente : déclenche l'auto-complétion
+        page.wait_for_timeout(1800)
+ 
+        motif = re.compile(re.escape(ville), re.I)
+        prefere = re.compile(r"\b12\b|12100|aveyron", re.I)
+        choisi = False
+        for sel in SELECTEURS_SUGGESTIONS:
+            sugg = page.locator(sel).filter(has_text=motif)
+            if not sugg.count():
+                continue
+            cible = sugg.filter(has_text=prefere)
+            cible = (cible if cible.count() else sugg).first
+            if cible.is_visible(timeout=800):
+                cible.click(timeout=3000)
+                choisi = True
+                break
+        if not choisi:
+            log.warning("   aucune suggestion « %s » trouvée (on valide avec la saisie brute)", ville)
+ 
+        page.wait_for_timeout(600)
+        for sel in SELECTEURS_VALIDER:
+            btn = page.locator(sel).first
+            if btn.count() and btn.is_visible(timeout=800):
+                btn.click(timeout=3000)
+                break
+        else:
+            champ.press("Enter")
+ 
+        try:
+            page.wait_for_load_state("networkidle", timeout=15_000)
+        except PWTimeout:
+            pass
+        page.wait_for_timeout(2000)
+        log.info("   🔎 URL filtrée (à copier dans AGENCES pour figer le filtre) : %s", page.url)
+        return True
+    except Exception as e:
+        log.warning("   filtre « %s » en échec : %s", ville, e)
+        return False
+ 
+ 
+PREPARATIONS = {"filtre_ville": filtrer_par_ville}
+ 
+ 
 def get_liens_agences_locales(context) -> dict[str, str]:
     """Retourne {url_fiche: nom_agence} pour toutes les agences configurées."""
     resultats: dict[str, str] = {}
@@ -303,6 +404,12 @@ def get_liens_agences_locales(context) -> dict[str, str]:
             continue
         mode = agence.get("mode", "auto")
         accepter_cookies(page)
+ 
+        prep = agence.get("preparation")
+        if prep and not PREPARATIONS[prep](page, agence.get("ville", "Millau")):
+            log.error("   ✗ filtre « ville » impossible : %s ignoré pour ce run (évite de scanner toute la France)", nom)
+            sauver_debug(page, f"{nom}_filtre")
+            continue
  
         total_agence = 0
         for num_page in range(1, MAX_PAGES_PAR_AGENCE + 1):
@@ -380,6 +487,35 @@ RE_SURFACE = re.compile(r"(\d{2,4}(?:[.,]\d{1,2})?)\s*m(?:²|2)\b", re.I)
 RE_TERRAIN = re.compile(r"(?:terrain|parcelle|jardin)[^\d]{0,40}(\d{2,6}(?:[.,]\d{1,2})?)\s*m(?:²|2)", re.I)
  
  
+class PageListe(Exception):
+    """La page est une liste de résultats (pas une fiche). `liens` = fiches à explorer ensuite."""
+    def __init__(self, liens=()):
+        super().__init__("page de liste")
+        self.liens = set(liens)
+ 
+ 
+# « 36 458 annonces… », « 13 BIENS TROUVÉS », « 9 APPARTEMENTS TROUVÉS », « TOUS TYPES DE BIENS »…
+RE_PAGE_LISTE = re.compile(
+    r"^\s*\d[\d\s\u00a0\u202f]*\s+(?:annonces?|biens?|appartements?|maisons?|terrains?|programmes?|r[ée]sultats?|offres?)\b"
+    r"|\btrouv[ée]e?s?\b|\btous types\b|\bnos (?:biens|annonces|offres)\b|\ben location\b",
+    re.I,
+)
+# Référence de fin d'URL type ICS/JMB : « …-veyreau-TAPP100088 » -> commune = « veyreau »
+RE_SLUG_COMMUNE = re.compile(r"-([a-zà-ÿ_]{3,})-[a-z]{3,5}\d{4,}/?$", re.I)
+# Coupe le texte avant les carrousels « biens similaires » (qui polluent prix et mots-clés)
+RE_SIMILAIRES = re.compile(
+    r"biens? similaires|annonces? similaires|vous aimerez (?:aussi|également)|autres (?:biens|annonces)|"
+    r"d.autres (?:biens|annonces)",
+    re.I,
+)
+ 
+ 
+def titre_depuis_url(url: str) -> str:
+    """JMB n'a ni <h1> ni <title> exploitable : on fabrique un titre lisible depuis l'URL."""
+    slug = urlparse(url).path.rstrip("/").split("/")[-1]
+    return re.sub(r"[-_]+", " ", slug).strip().capitalize() or url
+ 
+ 
 class FicheInjoignable(Exception):
     """Page impossible à charger : on ne mémorise pas la fiche, elle sera retentée au prochain run."""
  
@@ -388,15 +524,11 @@ class FicheInjoignable(Exception):
 # (le (?!euros?) évite de confondre « 95000 euros » avec un code postal)
 RE_CP_VILLE = re.compile(r"\b(\d{5})[\s,\-]+(?!euros?\b|eur\b)([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'’\-]+)", re.I)
  
-JS_META = """() => {
-  const m = n => (document.querySelector(`meta[name="${n}"], meta[property="${n}"]`) || {}).content || '';
-  return [document.title, m('description'), m('og:title'), m('og:description')].join(' ');
-}"""
- 
 # Texte de la fiche SANS en-tête / pied de page / menus (le pied de page des agences de Millau
 # contient « 12100 Millau » sur toutes leurs pages : il fausserait le filtre).
 JS_CONTENU = """() => {
-  const root = document.querySelector('main, article, #content, .content') || document.body;
+  const cands = [...document.querySelectorAll('main, article, #content, .content')];
+  const root = cands.sort((a, b) => b.textContent.length - a.textContent.length)[0] || document.body;
   const c = root.cloneNode(true);
   c.querySelectorAll('header, footer, nav, aside, script, style, [class*=footer], [class*=header], [id*=footer], [id*=header], [class*=cookie], [class*=menu]')
     .forEach(e => e.remove());
@@ -408,35 +540,69 @@ def _est_cible(texte: str) -> bool:
     return any(v in texte.lower() for v in VILLES_AUTORISEES)
  
  
+# Mots qui suivent parfois un nombre à 5 chiffres sans être une commune (« réf 10484 Appartement T4 »)
+MOTS_NON_COMMUNE = {
+    "appartement", "appartements", "maison", "maisons", "villa", "immeuble", "terrain", "studio",
+    "local", "duplex", "loft", "garage", "parking", "bien", "annonce", "vente", "location", "ref",
+    "reference", "mandat", "type", "piece", "pieces", "chambre", "chambres", "euros", "eur",
+    "annonce", "immeuble", "local", "fonds",
+}
+RE_REF_AVANT = re.compile(r"(r[ée]f|r[ée]f[ée]rence|mandat|n°|n°\s|id|code|dpe|annonce)\W{0,3}$", re.I)
 # Code postal aveyronnais (12xxx), sauf s'il s'agit d'un prix (« 12500 € »)
 RE_CP_AVEYRON = re.compile(r"\b(12\d{3})\b(?!\s*(?:€|euros?\b|eur\b))", re.I)
  
  
-def evaluer_localisation(url: str, titre: str, meta: str, contenu: str) -> str:
+def _adresses(texte: str) -> list[tuple[str, str]]:
+    """Couples (code postal, commune) réellement plausibles : « 12100 Millau », « 12230 Nant »."""
+    trouves = []
+    for m in RE_CP_VILLE.finditer(texte):
+        cp, ville = m.group(1), m.group(2)
+        if not ("01" <= cp[:2] <= "95"):
+            continue
+        if ville.lower().strip("-’'") in MOTS_NON_COMMUNE or ville.lower().startswith(("appartement", "maison")):
+            continue
+        if RE_REF_AVANT.search(texte[max(0, m.start() - 12): m.start()]):
+            continue
+        trouves.append((cp, ville))
+    return trouves
+ 
+ 
+def evaluer_localisation(url: str, h1: str, contenu: str) -> str:
     """
     Retourne « oui » (Millau confirmé), « non » (autre commune détectée) ou « incertain ».
-    Ordre de fiabilité : URL + titre + meta  >  début du contenu de la fiche  >  rien trouvé.
+ 
+    On n'utilise PAS le <title> ni la meta description : pour une agence basée à Millau (JMB, Roques…),
+    ils contiennent « Millau » sur toutes les pages, même pour un bien situé ailleurs.
+    Ordre de fiabilité : chemin de l'URL > titre H1 > début du contenu (sans en-tête/pied de page).
     """
-    identite = f"{url} {titre} {meta}"
-    couples = RE_CP_VILLE.findall(identite)                      # [(« 12230 », « Nant »), …]
-    millau_en_adresse = any(_est_cible(v) for _, v in couples)   # « 12100 Millau »
-    autre_commune = any(not _est_cible(v) for _, v in couples)   # « 12100 Creissels », « 12230 Nant »
-    autre_cp = {c for c in RE_CP_AVEYRON.findall(identite)} - {"12100"}
- 
-    if millau_en_adresse:
+    # 1) Le chemin de l'URL est propre à l'annonce (ex. /vente/435-millau/appartement/…)
+    if _est_cible(urlparse(url).path):
         return "oui"
-    if _est_cible(identite):
-        # « Maison à Nant (12230), à 30 min de Millau » : Millau cité mais commune différente
-        return "non" if (autre_commune or autre_cp) else "oui"
-    if autre_commune or autre_cp:
-        return "non"
  
-    couples = RE_CP_VILLE.findall(contenu[:3000])
-    if any(_est_cible(v) for _, v in couples):
+    # 1 bis) Slug de type « …-<commune>-<REF> » : commune différente de Millau => hors zone
+    m_slug = RE_SLUG_COMMUNE.search(urlparse(url).path)
+    if m_slug:
+        commune = m_slug.group(1).replace("_", " ").lower()
+        if commune not in MOTS_NON_COMMUNE:
+            return "oui" if _est_cible(commune) else "non"
+ 
+    # 2) Titre de l'annonce
+    adr_h1 = _adresses(h1)
+    if any(_est_cible(v) for _, v in adr_h1):
         return "oui"
-    if couples:                       # une adresse existe mais ce n'est pas Millau
+    cp_autres_h1 = set(RE_CP_AVEYRON.findall(h1)) - {"12100"}
+    if adr_h1 or cp_autres_h1:
+        return "non"                       # autre commune annoncée dans le titre
+    if _est_cible(h1):
+        return "oui"
+ 
+    # 3) Début du contenu de la fiche
+    adr = _adresses(contenu[:3000])
+    if any(_est_cible(v) for _, v in adr):
+        return "oui"
+    if adr:
         return "non"
-    return "incertain"                # aucune commune détectable -> gardée, signalée « à vérifier »
+    return "incertain"                     # rien de décisif -> gardée, signalée « à vérifier »
  
  
 _NB_DEBUG_FICHES = 0
@@ -455,23 +621,42 @@ def analyser_fiche(page, url: str, agence: str) -> Annonce | None:
         pass
  
     try:
-        titre = page.locator("h1").first.inner_text(timeout=3000).strip()
+        titre = h1 = page.locator("h1").first.inner_text(timeout=3000).strip()
     except Exception:
-        titre = page.title()
+        titre, h1 = page.title(), ""
  
     texte = page.inner_text("body")
-    if MOTS_REDHIBITOIRES.search(texte[:3000]):
-        log.info("   ✗ écartée (vendu/viager/etc.) : %s", url)
+    contenu = page.evaluate(JS_CONTENU)
+    coupe = RE_SIMILAIRES.search(contenu)
+    if coupe and coupe.start() > 300:
+        contenu = contenu[:coupe.start()]
+    if not titre or "://" in titre:
+        titre = titre_depuis_url(url)
+ 
+    # Page de liste (résultats de recherche) et non fiche : on ne l'enregistre pas comme annonce.
+    # Si elle concerne Millau, on en récupère les fiches pour les analyser ensuite.
+    if RE_PAGE_LISTE.search(f"{h1} {page.title()}"):
+        liens = set()
+        if _est_cible(f"{h1} {urlparse(url).path}"):
+            liens = _filtrer_liens(page.evaluate(JS_CARTES_PRIX), url)
+        log.info("   ↪ page de liste (%d fiches à explorer) : %s", len(liens), url)
+        raise PageListe(liens)
+ 
+    m_exclu = MOTS_REDHIBITOIRES.search(f"{h1} {contenu[:2000]}")
+    if m_exclu:
+        log.info("   ✗ écartée (« %s ») : %s", m_exclu.group(0), url)
         return None
  
     # Filtre géographique : Millau uniquement
-    statut = evaluer_localisation(url, titre, page.evaluate(JS_META), page.evaluate(JS_CONTENU))
+    statut = evaluer_localisation(url, h1, contenu)
     if statut == "non":
         log.info("   ✗ hors Millau : %s", url)
         return None
     localisation = "Millau" if statut == "oui" else "à vérifier"
  
-    prix = extraire_prix(texte, page.content())
+    # Le contenu « nettoyé » (sans menu/pied de page) évite les faux mots-clés et faux prix
+    base = contenu if len(contenu) >= 300 else texte
+    prix = extraire_prix(base) or extraire_prix(texte, page.content())
     if prix is None:
         global _NB_DEBUG_FICHES
         log.warning("   ⚠ prix introuvable : %s", url)
@@ -479,14 +664,14 @@ def analyser_fiche(page, url: str, agence: str) -> Annonce | None:
             _NB_DEBUG_FICHES += 1
             sauver_debug(page, f"fiche_sans_prix_{_NB_DEBUG_FICHES}_{agence}")
  
-    surfaces = [float(s.replace(",", ".")) for s in RE_SURFACE.findall(texte)]
+    surfaces = [float(s.replace(",", ".")) for s in RE_SURFACE.findall(base)]
     surface = next((s for s in surfaces if 15 <= s <= 1500), None)
-    m_terrain = RE_TERRAIN.search(texte)
+    m_terrain = RE_TERRAIN.search(base)
     terrain = float(m_terrain.group(1).replace(",", ".")) if m_terrain else None
  
     # Scoring
     score, detectes = 0, []
-    texte_bas = texte.lower()
+    texte_bas = f"{titre} {base}".lower()
     for regex, points in MOTS_CLES.items():
         m = re.search(regex, texte_bas, re.I)
         if m:
@@ -680,6 +865,7 @@ def generer_rapport_html(annonces: list[Annonce]) -> None:
 def main() -> None:
     etat = charger_etat()  # {url: annonce_dict}
  
+    traitees: set[str] = set()
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         try:
@@ -703,13 +889,30 @@ def main() -> None:
             log.info("🆕 %d nouvelles fiches + %d à ré-analyser", len(inconnues), len(obsoletes))
  
             page = context.new_page()
-            for i, (url, agence) in enumerate(a_traiter, 1):
-                log.info("[%d/%d] %s", i, len(a_traiter), url)
+            file = deque(a_traiter)
+            en_file = {u for u, _ in a_traiter}
+            depuis_liste: set[str] = set()      # fiches découvertes via une page de liste (profondeur 1)
+            nb = 0
+            while file and nb < MAX_FICHES_PAR_RUN:
+                url, agence = file.popleft()
+                nb += 1
+                traitees.add(url)
+                log.info("[%d] %s", nb, url)
                 deja_connue = url in etat
                 try:
                     annonce = analyser_fiche(page, url, agence)
                 except FicheInjoignable:
                     log.warning("   ⚠ fiche injoignable, retentée au prochain run")
+                    continue
+                except PageListe as pl:
+                    etat[url] = {"url": url, "ignoree": True, "v": VERSION_PARSEUR}
+                    if url not in depuis_liste:             # pas de récursion au-delà d'un niveau
+                        for lien in pl.liens:
+                            if lien not in en_file and etat.get(lien, {}).get("v") != VERSION_PARSEUR:
+                                file.append((lien, agence))
+                                en_file.add(lien)
+                                depuis_liste.add(lien)
+                    pause()
                     continue
                 if annonce:
                     annonce.nouvelle = not deja_connue   # une ré-analyse ne la re-marque pas « nouvelle »
@@ -721,7 +924,7 @@ def main() -> None:
             browser.close()
  
     # Marque comme "plus nouvelles" celles déjà connues
-    sauver_etat({u: {**d, "nouvelle": d.get("nouvelle", False) and u in dict(a_traiter)}
+    sauver_etat({u: {**d, "nouvelle": d.get("nouvelle", False) and u in traitees}
                  for u, d in etat.items()})
  
     # seules les fiches analysées avec le parseur/filtre courant sont publiées
