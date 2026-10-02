@@ -1,44 +1,30 @@
-name: Agent Immobilier Autonome FBIMMO
-
+name: Veille immobilière
+ 
 on:
   schedule:
-    # S'exécute tous les jours à 07:00 UTC
-    - cron: '0 7 * * *'
-  workflow_dispatch: # Permet aussi de le lancer manuellement depuis l'onglet Actions
-
+    - cron: "0 6 * * *"   # tous les jours à 6h UTC
+  workflow_dispatch:
+ 
+permissions:
+  contents: write
+ 
 jobs:
-  run-agent:
+  scrape:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # Indispensable pour pousser le rapport HTML sur la branche gh-pages
-      
     steps:
-      - name: Récupération du code du dépôt
-        uses: actions/checkout@v4
-      
-      - name: Configuration de Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          
-      - name: Installation et nettoyage des dépendances
+          python-version: "3.12"
+      - run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+      - run: python scraper_agences.py
+      - name: Commit des résultats
         run: |
-          python -m pip install --upgrade pip
-          # On nettoie d'éventuels anciens paquets pour éviter les conflits d'import
-          pip uninstall -y google-generativeai google-genai || true
-          # Installation propre de la dernière bibliothèque moderne et de Playwright
-          pip install google-genai playwright
-          playwright install chromium
-          playwright install-deps
-          
-      - name: Lancement du script de l'Agent Autonome
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python chasseur_immo.py
-        
-      - name: Déploiement automatique du Dashboard sur GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
-          publish_branch: gh-pages
+          git config user.name "veille-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/ docs/
+          git diff --staged --quiet || git commit -m "Veille du $(date +%F)"
+          git push
+ 
