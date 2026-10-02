@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 Veille immobilière pour marchand de biens (secteur Millau).
@@ -29,11 +30,18 @@ FICHIER_ETAT = DATA_DIR / "annonces_vues.json"
 FICHIER_CSV = DATA_DIR / "annonces.csv"
 DOSSIER_DOCS = Path("docs")                 # servi par GitHub Pages
 FICHIER_HTML = DOSSIER_DOCS / "index.html"
+DEBUG_DIR = Path("debug")                    # captures si 0 annonce trouvée
+ 
+# Zone géographique : uniquement Millau (Aveyron). Pour élargir, ajoutez des communes (en minuscules).
+# NB : le code postal 12100 est aussi celui de Creissels et Saint-Georges-de-Luzençon ;
+# le filtre se base donc sur le NOM de la commune, pas sur le code postal seul.
+VILLES_AUTORISEES = ("millau",)
  
 PRIX_MAX = 250_000          # budget maximum (None pour désactiver)
 SCORE_MINIMUM = 2           # seuil pour être jugée "intéressante"
 MAX_PAGES_PAR_AGENCE = 5    # pagination
-MAX_FICHES_PAR_RUN = 150    # garde-fou
+MAX_FICHES_PAR_RUN = 200    # garde-fou
+VERSION_PARSEUR = 3         # incrémenter quand l'extraction change : les fiches déjà vues sont ré-analysées
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
@@ -48,7 +56,8 @@ PATTERN_FICHE_DEFAUT = (
 AGENCES = [
     {"nom": "Roques", "url": "https://www.roques-immobilier.com/a-vendre"},
     {"nom": "SGA", "url": "https://www.sga-immobilier.com/immobilier/immobilier-vente-millau.htm"},
-    {"nom": "JMB", "url": "https://www.jmb-immobilier.com/a-vendre"},
+    # /a-vendre renvoyait une 404 : la vraie page de vente est /resultats?transac=vente
+    {"nom": "JMB", "url": "https://www.jmb-immobilier.com/resultats?transac=vente", "mode": "prix"},
     {
         "nom": "Notaires",
         "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12",
@@ -100,6 +109,8 @@ class Annonce:
     mots_detectes: str = ""
     nouvelle: bool = False
     date_collecte: str = ""
+    localisation: str = ""
+    v: int = VERSION_PARSEUR
  
  
 # --------------------------------------------------------------------------- #
@@ -116,14 +127,61 @@ def pause(a: float = 0.8, b: float = 2.0) -> None:
  
  
 def accepter_cookies(page) -> None:
-    for texte in ("Tout accepter", "Accepter", "J'accepte", "OK", "Continuer sans accepter"):
+    """Clique sur le bandeau cookies (bouton OU lien, ex. JMB utilise un lien « Accepter »)."""
+    motif = re.compile(r"^\s*(tout accepter|accepter|j.accepte|ok|continuer sans accepter)\s*$", re.I)
+    try:
+        btn = page.locator("button, a, input[type=button]").filter(has_text=motif).first
+        if btn.count() and btn.is_visible(timeout=1000):
+            btn.click(timeout=2000)
+            page.wait_for_timeout(500)
+    except Exception:
+        pass
+ 
+ 
+JS_NB_PAR_PAGE = """() => {
+  // Liste « nb par page » (options numériques + « Tous ») -> on choisit « Tous »
+  document.querySelectorAll('select').forEach(sel => {
+    const opts = [...sel.options];
+    const tous = opts.find(o => /^\\s*(tous|tout|all)\\s*$/i.test(o.text));
+    const autres = opts.filter(o => o !== tous);
+    if (tous && autres.length && autres.every(o => /^\\s*\\d+\\s*$/.test(o.text)) && sel.value !== tous.value) {
+      sel.value = tous.value;
+      sel.dispatchEvent(new Event('change', {bubbles: true}));
+    }
+  });
+}"""
+ 
+ 
+def afficher_tout(page) -> None:
+    """Force l'affichage de tous les biens : « nb par page = Tous » + boutons « Voir plus »."""
+    try:
+        page.evaluate(JS_NB_PAR_PAGE)
+        page.wait_for_timeout(1500)
+    except Exception:
+        pass
+    motif = re.compile(r"(voir|charger|afficher) (plus|davantage|la suite)|plus (de biens|de résultats|d.annonces)", re.I)
+    for _ in range(10):
         try:
-            btn = page.get_by_role("button", name=re.compile(texte, re.I)).first
-            if btn.is_visible(timeout=800):
-                btn.click(timeout=1500)
-                return
+            btn = page.locator("button, a").filter(has_text=motif).first
+            if btn.count() and btn.is_visible(timeout=500):
+                btn.click(timeout=2000)
+                page.wait_for_timeout(1200)
+            else:
+                break
         except Exception:
-            continue
+            break
+ 
+ 
+def sauver_debug(page, nom: str) -> None:
+    """Sauvegarde HTML + capture d'écran quand aucune fiche n'est trouvée (pour diagnostic)."""
+    try:
+        DEBUG_DIR.mkdir(exist_ok=True)
+        slug = re.sub(r"\W+", "_", nom.lower()).strip("_")
+        (DEBUG_DIR / f"{slug}.html").write_text(page.content(), encoding="utf-8")
+        page.screenshot(path=str(DEBUG_DIR / f"{slug}.png"), full_page=True)
+        log.warning("   📸 debug sauvegardé dans %s/%s.*", DEBUG_DIR, slug)
+    except Exception as e:
+        log.warning("   debug impossible : %s", e)
  
  
 def charger_page(page, url: str, tentatives: int = 3) -> bool:
@@ -154,25 +212,58 @@ def scroller_jusqu_au_bout(page, max_tours: int = 8) -> None:
         page.wait_for_timeout(900)
  
  
-def extraire_liens_fiches(page, base_url: str, pattern: re.Pattern) -> set[str]:
-    # .href renvoie déjà l'URL ABSOLUE (corrige les liens relatifs mal résolus)
-    hrefs = page.eval_on_selector_all("a[href]", "els => els.map(e => e.href)")
-    domaine = urlparse(base_url).netloc
+# Détection « carte d'annonce » : un lien dont le bloc parent (≤ 5 niveaux) affiche un prix en €.
+# Indépendant de la structure d'URL -> fonctionne même quand le motif d'URL est inconnu.
+JS_CARTES_PRIX = """() => {
+  const out = new Set();
+  document.querySelectorAll('a[href]').forEach(a => {
+    let el = a;
+    for (let i = 0; i < 5 && el; i++, el = el.parentElement) {
+      const t = el.innerText || '';
+      if (t.length > 1500) break;                         // conteneur trop large (toute la grille)
+      if (/\\d[\\d\\s.\\u00a0\\u202f]*(€|euros?)/i.test(t)) { out.add(a.href); break; }
+    }
+  });
+  return [...out];
+}"""
+ 
+ 
+def _domaine(url: str) -> str:
+    """Domaine sans 'www.' (évite de rejeter mesnard-immobilier.com vs www.mesnard-immobilier.com)."""
+    return urlparse(url).netloc.lower().removeprefix("www.")
+ 
+ 
+def _filtrer_liens(hrefs: list[str], base_url: str) -> set[str]:
+    domaine, base = _domaine(base_url), normaliser_url(base_url)
     liens = set()
     for href in hrefs:
         href = normaliser_url(href)
-        p = urlparse(href)
-        if p.scheme not in ("http", "https") or p.netloc != domaine:
+        if urlparse(href).scheme not in ("http", "https"):
             continue
-        if EXCLUS.search(href):
-            continue
-        # le motif ne s'applique qu'au chemin + query, pas au domaine
-        if not pattern.search(p.path + ("?" + p.query if p.query else "")):
-            continue
-        if href == normaliser_url(base_url):
+        if _domaine(href) != domaine or href == base or EXCLUS.search(href):
             continue
         liens.add(href)
     return liens
+ 
+ 
+def extraire_liens_fiches(page, base_url: str, pattern: re.Pattern, mode: str = "auto") -> set[str]:
+    """
+    mode "pattern" : liens dont l'URL correspond au motif
+    mode "prix"    : liens situés dans une carte qui affiche un prix (indépendant des URLs)
+    mode "auto"    : motif d'abord, repli sur « prix » si le motif ne trouve rien
+    """
+    # .href renvoie déjà l'URL ABSOLUE (corrige les liens relatifs mal résolus)
+    hrefs = page.eval_on_selector_all("a[href]", "els => els.map(e => e.href)")
+    par_pattern = {
+        h for h in _filtrer_liens(hrefs, base_url)
+        if pattern.search(urlparse(h).path + (f"?{urlparse(h).query}" if urlparse(h).query else ""))
+    }
+    if mode == "pattern":
+        return par_pattern
+    par_prix = _filtrer_liens(page.evaluate(JS_CARTES_PRIX), base_url)
+    if mode == "prix":
+        return par_prix
+    return par_pattern or par_prix
  
  
 def aller_page_suivante(page) -> bool:
@@ -210,16 +301,22 @@ def get_liens_agences_locales(context) -> dict[str, str]:
         if not charger_page(page, url):
             log.error("Abandon de %s", nom)
             continue
+        mode = agence.get("mode", "auto")
         accepter_cookies(page)
  
         total_agence = 0
         for num_page in range(1, MAX_PAGES_PAR_AGENCE + 1):
+            afficher_tout(page)
             scroller_jusqu_au_bout(page)
-            nouveaux = extraire_liens_fiches(page, url, pattern) - set(resultats)
+            nouveaux = extraire_liens_fiches(page, url, pattern, mode) - set(resultats)
             for lien in nouveaux:
                 resultats[lien] = nom
             total_agence += len(nouveaux)
             log.info("   page %d : +%d liens", num_page, len(nouveaux))
+            if nouveaux:
+                log.info("   exemples : %s", sorted(nouveaux)[:2])
+            elif num_page == 1:
+                sauver_debug(page, nom)
  
             if not nouveaux and num_page > 1:
                 break  # la pagination ne ramène plus rien
@@ -237,19 +334,125 @@ def get_liens_agences_locales(context) -> dict[str, str]:
 # --------------------------------------------------------------------------- #
 # 2) EXTRACTION D'UNE FICHE
 # --------------------------------------------------------------------------- #
-RE_PRIX = re.compile(r"(\d{1,3}(?:[\s\u00a0\u202f.]\d{3})+|\d{4,7})\s*(?:€|euros?|eur)\b", re.I)
+# NB : l'ancienne regex finissait par « \b » après « € ». Or il n'y a PAS de frontière de mot entre
+# « € » et un espace -> « 95 000 € » n'était jamais reconnu. Corrigé ci-dessous.
+_NUM = r"\d{1,3}(?:[ \u00a0\u202f.,]\d{3})+|\d{4,8}"
+RE_PRIX = re.compile(
+    rf"(?:€\s*({_NUM})(?![\d])"                                  # « € 95 000 » / « €95,000 »
+    rf"|({_NUM})(?:[.,]\d{{1,2}})?\s*(?:€|euros?\b|eur\b))",     # « 95 000 € » / « 95000€ » / « 95 000 euros »
+    re.I,
+)
+CTX_POSITIF = re.compile(r"prix|vente|f\.?a\.?i\b|h\.?a\.?i\b|net vendeur|à vendre", re.I)
+CTX_NEGATIF = re.compile(
+    r"honoraires?|frais|charges?|taxe|fonci[èe]re|d[ée]p[ôo]t|loyer|par mois|/\s*mois|commission|copropri",
+    re.I,
+)
+RE_PRIX_META = re.compile(
+    r'(?:"price"\s*:\s*"?|price:amount"\s+content="|itemprop="price"\s+content=")(\d{4,8})(?:\.\d+)?', re.I
+)
+ 
+ 
+def extraire_prix(texte: str, html: str = "") -> int | None:
+    """
+    1) Parcourt tous les montants en € du texte (> 10 k€), favorise ceux proches de « prix / vente / FAI »
+       et pénalise « honoraires / charges / loyer / taxe foncière ».
+    2) À défaut, lit les métadonnées de la page (JSON-LD, og:price, itemprop=price).
+    """
+    candidats = []
+    for m in RE_PRIX.finditer(texte):
+        val = int(re.sub(r"\D", "", m.group(1) or m.group(2)))
+        if not 10_000 <= val <= 5_000_000:
+            continue
+        ctx = texte[max(0, m.start() - 50): m.end() + 30]
+        pts = (2 if CTX_POSITIF.search(ctx) else 0) - (3 if CTX_NEGATIF.search(ctx) else 0)
+        candidats.append((pts, -m.start(), val))   # meilleur score, puis le plus haut dans la page
+    if candidats:
+        return max(candidats)[2]
+ 
+    for m in RE_PRIX_META.finditer(html):
+        val = int(m.group(1))
+        if 10_000 <= val <= 5_000_000:
+            return val
+    return None
+ 
+ 
 RE_SURFACE = re.compile(r"(\d{2,4}(?:[.,]\d{1,2})?)\s*m(?:²|2)\b", re.I)
 RE_TERRAIN = re.compile(r"(?:terrain|parcelle|jardin)[^\d]{0,40}(\d{2,6}(?:[.,]\d{1,2})?)\s*m(?:²|2)", re.I)
  
  
-def _nombre(txt: str) -> float:
-    return float(re.sub(r"[\s\u00a0\u202f]", "", txt).replace(".", "").replace(",", ".")) \
-        if re.search(r"\d[\s\u00a0\u202f.]\d{3}", txt) else float(txt.replace(",", "."))
+class FicheInjoignable(Exception):
+    """Page impossible à charger : on ne mémorise pas la fiche, elle sera retentée au prochain run."""
+ 
+ 
+# Un code postal suivi d'un nom de commune : « 12100 Millau », « 12230 Nant »…
+# (le (?!euros?) évite de confondre « 95000 euros » avec un code postal)
+RE_CP_VILLE = re.compile(r"\b(\d{5})[\s,\-]+(?!euros?\b|eur\b)([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'’\-]+)", re.I)
+ 
+JS_META = """() => {
+  const m = n => (document.querySelector(`meta[name="${n}"], meta[property="${n}"]`) || {}).content || '';
+  return [document.title, m('description'), m('og:title'), m('og:description')].join(' ');
+}"""
+ 
+# Texte de la fiche SANS en-tête / pied de page / menus (le pied de page des agences de Millau
+# contient « 12100 Millau » sur toutes leurs pages : il fausserait le filtre).
+JS_CONTENU = """() => {
+  const root = document.querySelector('main, article, #content, .content') || document.body;
+  const c = root.cloneNode(true);
+  c.querySelectorAll('header, footer, nav, aside, script, style, [class*=footer], [class*=header], [id*=footer], [id*=header], [class*=cookie], [class*=menu]')
+    .forEach(e => e.remove());
+  return (c.textContent || '').replace(/\\s+/g, ' ').trim();
+}"""
+ 
+ 
+def _est_cible(texte: str) -> bool:
+    return any(v in texte.lower() for v in VILLES_AUTORISEES)
+ 
+ 
+# Code postal aveyronnais (12xxx), sauf s'il s'agit d'un prix (« 12500 € »)
+RE_CP_AVEYRON = re.compile(r"\b(12\d{3})\b(?!\s*(?:€|euros?\b|eur\b))", re.I)
+ 
+ 
+def evaluer_localisation(url: str, titre: str, meta: str, contenu: str) -> str:
+    """
+    Retourne « oui » (Millau confirmé), « non » (autre commune détectée) ou « incertain ».
+    Ordre de fiabilité : URL + titre + meta  >  début du contenu de la fiche  >  rien trouvé.
+    """
+    identite = f"{url} {titre} {meta}"
+    couples = RE_CP_VILLE.findall(identite)                      # [(« 12230 », « Nant »), …]
+    millau_en_adresse = any(_est_cible(v) for _, v in couples)   # « 12100 Millau »
+    autre_commune = any(not _est_cible(v) for _, v in couples)   # « 12100 Creissels », « 12230 Nant »
+    autre_cp = {c for c in RE_CP_AVEYRON.findall(identite)} - {"12100"}
+ 
+    if millau_en_adresse:
+        return "oui"
+    if _est_cible(identite):
+        # « Maison à Nant (12230), à 30 min de Millau » : Millau cité mais commune différente
+        return "non" if (autre_commune or autre_cp) else "oui"
+    if autre_commune or autre_cp:
+        return "non"
+ 
+    couples = RE_CP_VILLE.findall(contenu[:3000])
+    if any(_est_cible(v) for _, v in couples):
+        return "oui"
+    if couples:                       # une adresse existe mais ce n'est pas Millau
+        return "non"
+    return "incertain"                # aucune commune détectable -> gardée, signalée « à vérifier »
+ 
+ 
+_NB_DEBUG_FICHES = 0
  
  
 def analyser_fiche(page, url: str, agence: str) -> Annonce | None:
     if not charger_page(page, url, tentatives=2):
-        return None
+        raise FicheInjoignable(url)
+ 
+    # Beaucoup de sites affichent le prix en JavaScript après le chargement : on l'attend
+    try:
+        page.wait_for_function(
+            "document.body && /€|euro/i.test(document.body.innerText)", timeout=6000
+        )
+    except PWTimeout:
+        pass
  
     try:
         titre = page.locator("h1").first.inner_text(timeout=3000).strip()
@@ -261,13 +464,20 @@ def analyser_fiche(page, url: str, agence: str) -> Annonce | None:
         log.info("   ✗ écartée (vendu/viager/etc.) : %s", url)
         return None
  
-    # Prix : on prend la première valeur plausible (> 10 k€)
-    prix = None
-    for m in RE_PRIX.finditer(texte):
-        val = int(_nombre(m.group(1)))
-        if 10_000 <= val <= 5_000_000:
-            prix = val
-            break
+    # Filtre géographique : Millau uniquement
+    statut = evaluer_localisation(url, titre, page.evaluate(JS_META), page.evaluate(JS_CONTENU))
+    if statut == "non":
+        log.info("   ✗ hors Millau : %s", url)
+        return None
+    localisation = "Millau" if statut == "oui" else "à vérifier"
+ 
+    prix = extraire_prix(texte, page.content())
+    if prix is None:
+        global _NB_DEBUG_FICHES
+        log.warning("   ⚠ prix introuvable : %s", url)
+        if _NB_DEBUG_FICHES < 3:           # on garde 3 fiches pour diagnostic
+            _NB_DEBUG_FICHES += 1
+            sauver_debug(page, f"fiche_sans_prix_{_NB_DEBUG_FICHES}_{agence}")
  
     surfaces = [float(s.replace(",", ".")) for s in RE_SURFACE.findall(texte)]
     surface = next((s for s in surfaces if 15 <= s <= 1500), None)
@@ -293,6 +503,7 @@ def analyser_fiche(page, url: str, agence: str) -> Annonce | None:
         terrain=terrain, prix_m2=prix_m2, score=score,
         mots_detectes=", ".join(dict.fromkeys(detectes)),
         date_collecte=datetime.now().strftime("%Y-%m-%d %H:%M"),
+        localisation=localisation,
     )
  
  
@@ -328,7 +539,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Veille immobilière – Millau</title>
+<title>Veille immobilière – Millau (Aveyron)</title>
 <style>
   :root { --bg:#f6f7f9; --card:#fff; --txt:#1c2330; --mut:#6b7585; --bd:#e3e6ec; --acc:#1f6feb; --new:#d9480f; --ok:#2b8a3e; }
   @media (prefers-color-scheme: dark) {
@@ -374,6 +585,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
   <label>Score min <input id="smin" type="number" min="0" value="0" style="width:64px"></label>
   <label>Prix max <input id="pmax" type="number" step="10000" placeholder="€" style="width:100px"></label>
   <label><input id="nouv" type="checkbox"> Nouvelles uniquement</label>
+  <label><input id="millau" type="checkbox"> Millau confirmé</label>
 </div>
 <div class="wrap">
   <table>
@@ -408,7 +620,7 @@ function render() {
   const smin = +$("smin").value || 0, pmax = +$("pmax").value || Infinity, nouv = $("nouv").checked;
   const rows = DATA.filter(a =>
     (!ag || a.agence === ag) && a.score >= smin && (a.prix == null || a.prix <= pmax) &&
-    (!nouv || a.nouvelle) && (!q || (a.titre + " " + a.mots_detectes).toLowerCase().includes(q))
+    (!nouv || a.nouvelle) && (!$("millau").checked || a.localisation === "Millau") && (!q || (a.titre + " " + a.mots_detectes).toLowerCase().includes(q))
   ).sort((a, b) => {
     const x = a[sortKey], y = b[sortKey];
     if (x == null) return 1; if (y == null) return -1;
@@ -432,13 +644,14 @@ function render() {
     const link = document.createElement("a"); link.href = a.url; link.target = "_blank"; link.rel = "noopener";
     link.textContent = a.titre || a.url; td.appendChild(link);
     if (a.nouvelle) { const b = document.createElement("span"); b.className = "badge b-new"; b.textContent = "NOUVEAU"; b.style.marginLeft = "8px"; td.appendChild(b); }
+    if (a.localisation !== "Millau") { const v = document.createElement("span"); v.className = "badge"; v.textContent = "lieu à vérifier"; v.style.marginLeft = "8px"; v.style.background = "var(--bd)"; td.appendChild(v); }
     cell(tr, a.agence);
     cell(tr, fmt(a.prix, " €")); cell(tr, fmt(a.surface, " m²")); cell(tr, fmt(a.terrain, " m²")); cell(tr, fmt(a.prix_m2, " €"));
     cell(tr, a.mots_detectes, "kw wrap-txt");
     body.appendChild(tr);
   });
 }
-["q","agence","smin","pmax","nouv"].forEach(id => $(id).addEventListener("input", render));
+["q","agence","smin","pmax","nouv","millau"].forEach(id => $(id).addEventListener("input", render));
 render();
 </script>
 </body>
@@ -482,19 +695,27 @@ def main() -> None:
             liens = get_liens_agences_locales(context)
             log.info("✨ %d liens de fiches collectés", len(liens))
  
-            # On n'analyse que les fiches inconnues (gain de temps énorme au fil des jours)
-            a_traiter = [(u, a) for u, a in liens.items() if u not in etat][:MAX_FICHES_PAR_RUN]
-            log.info("🆕 %d nouvelles fiches à analyser", len(a_traiter))
+            # On analyse les fiches inconnues, puis celles vues avec un ancien parseur (VERSION_PARSEUR)
+            inconnues = [(u, a) for u, a in liens.items() if u not in etat]
+            obsoletes = [(u, a) for u, a in liens.items()
+                         if u in etat and etat[u].get("v") != VERSION_PARSEUR]
+            a_traiter = (inconnues + obsoletes)[:MAX_FICHES_PAR_RUN]
+            log.info("🆕 %d nouvelles fiches + %d à ré-analyser", len(inconnues), len(obsoletes))
  
             page = context.new_page()
             for i, (url, agence) in enumerate(a_traiter, 1):
                 log.info("[%d/%d] %s", i, len(a_traiter), url)
-                annonce = analyser_fiche(page, url, agence)
+                deja_connue = url in etat
+                try:
+                    annonce = analyser_fiche(page, url, agence)
+                except FicheInjoignable:
+                    log.warning("   ⚠ fiche injoignable, retentée au prochain run")
+                    continue
                 if annonce:
-                    annonce.nouvelle = True
+                    annonce.nouvelle = not deja_connue   # une ré-analyse ne la re-marque pas « nouvelle »
                     etat[url] = asdict(annonce)
                 else:
-                    etat[url] = {"url": url, "ignoree": True}
+                    etat[url] = {"url": url, "ignoree": True, "v": VERSION_PARSEUR}
                 pause()
         finally:
             browser.close()
@@ -503,7 +724,9 @@ def main() -> None:
     sauver_etat({u: {**d, "nouvelle": d.get("nouvelle", False) and u in dict(a_traiter)}
                  for u, d in etat.items()})
  
-    annonces = [Annonce(**d) for d in etat.values() if not d.get("ignoree")]
+    # seules les fiches analysées avec le parseur/filtre courant sont publiées
+    annonces = [Annonce(**d) for d in etat.values()
+                if not d.get("ignoree") and d.get("v") == VERSION_PARSEUR]
     annonces = [a for a in annonces if PRIX_MAX is None or a.prix is None or a.prix <= PRIX_MAX]
     annonces.sort(key=lambda a: (a.nouvelle, a.score), reverse=True)
     exporter_csv(annonces)
