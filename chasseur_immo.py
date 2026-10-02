@@ -1,3 +1,4 @@
+agences · PY
 #!/usr/bin/env python3
 """
 Veille immobilière pour marchand de biens (secteur Millau).
@@ -7,7 +8,7 @@ Pipeline :
   2. Extraction des infos de chaque fiche (prix, surface, titre, description)
   3. Scoring "marchand de biens" (mots-clés travaux / division / succession, prix au m²)
   4. Détection des NOUVELLES annonces depuis le dernier passage
-  5. Export CSV + JSON d'état (idéal pour un commit automatique via GitHub Actions)
+  5. Export CSV + JSON d'état + rapport HTML (docs/index.html, publié via GitHub Pages)
 """
 import csv
 import json
@@ -27,6 +28,8 @@ from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
 DATA_DIR = Path("data")
 FICHIER_ETAT = DATA_DIR / "annonces_vues.json"
 FICHIER_CSV = DATA_DIR / "annonces.csv"
+DOSSIER_DOCS = Path("docs")                 # servi par GitHub Pages
+FICHIER_HTML = DOSSIER_DOCS / "index.html"
  
 PRIX_MAX = 250_000          # budget maximum (None pour désactiver)
 SCORE_MINIMUM = 2           # seuil pour être jugée "intéressante"
@@ -44,6 +47,13 @@ PATTERN_FICHE_DEFAUT = (
 )
  
 AGENCES = [
+    {"nom": "Roques", "url": "https://www.roques-immobilier.com/a-vendre"},
+    {"nom": "SGA", "url": "https://www.sga-immobilier.com/immobilier/immobilier-vente-millau.htm"},
+    {"nom": "JMB", "url": "https://www.jmb-immobilier.com/a-vendre"},
+    {
+        "nom": "Notaires",
+        "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12",
+    },
     {"nom": "Mesnard maisons", "url": "https://mesnard-immobilier.com/property-type/maison/",
      "pattern_fiche": r"/property/"},
     {"nom": "Mesnard apparts", "url": "https://mesnard-immobilier.com/property-type/appartement/",
@@ -312,6 +322,147 @@ def exporter_csv(annonces: list[Annonce]) -> None:
  
  
 # --------------------------------------------------------------------------- #
+# 4) RAPPORT HTML (GitHub Pages)
+# --------------------------------------------------------------------------- #
+TEMPLATE_HTML = """<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Veille immobilière – Millau</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --txt:#1c2330; --mut:#6b7585; --bd:#e3e6ec; --acc:#1f6feb; --new:#d9480f; --ok:#2b8a3e; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0f1218; --card:#171b24; --txt:#e6e9ef; --mut:#8b95a7; --bd:#262c3a; --acc:#58a6ff; --new:#ff8c5a; --ok:#51cf66; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--txt); }
+  header { padding:24px 20px 8px; max-width:1200px; margin:auto; }
+  h1 { margin:0 0 4px; font-size:22px; }
+  .sub { color:var(--mut); font-size:13px; }
+  .kpis { display:flex; gap:12px; flex-wrap:wrap; max-width:1200px; margin:12px auto; padding:0 20px; }
+  .kpi { background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:10px 16px; }
+  .kpi b { display:block; font-size:20px; }
+  .kpi span { color:var(--mut); font-size:12px; }
+  .filters { max-width:1200px; margin:8px auto; padding:0 20px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .filters input, .filters select { padding:7px 10px; border:1px solid var(--bd); border-radius:8px; background:var(--card); color:var(--txt); font:inherit; }
+  .filters label { color:var(--mut); font-size:13px; display:flex; gap:6px; align-items:center; }
+  .wrap { max-width:1200px; margin:8px auto 40px; padding:0 20px; overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--bd); border-radius:10px; overflow:hidden; }
+  th, td { padding:9px 12px; text-align:left; border-bottom:1px solid var(--bd); white-space:nowrap; }
+  td.wrap-txt { white-space:normal; min-width:260px; }
+  th { cursor:pointer; user-select:none; font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--mut); }
+  th:hover { color:var(--txt); }
+  tr:last-child td { border-bottom:0; }
+  a { color:var(--acc); text-decoration:none; } a:hover { text-decoration:underline; }
+  .badge { display:inline-block; padding:1px 8px; border-radius:99px; font-size:11px; font-weight:600; }
+  .b-new { background:color-mix(in srgb, var(--new) 18%, transparent); color:var(--new); }
+  .score { font-weight:700; }
+  .s-hi { color:var(--ok); } .s-mid { color:var(--acc); } .s-lo { color:var(--mut); }
+  .kw { color:var(--mut); font-size:12px; }
+  .empty { text-align:center; color:var(--mut); padding:30px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Veille immobilière – secteur Millau</h1>
+  <div class="sub">Mise à jour : __DATE__</div>
+</header>
+<div class="kpis" id="kpis"></div>
+<div class="filters">
+  <input id="q" type="search" placeholder="Rechercher (titre, mots-clés)…">
+  <select id="agence"><option value="">Toutes les agences</option></select>
+  <label>Score min <input id="smin" type="number" min="0" value="0" style="width:64px"></label>
+  <label>Prix max <input id="pmax" type="number" step="10000" placeholder="€" style="width:100px"></label>
+  <label><input id="nouv" type="checkbox"> Nouvelles uniquement</label>
+</div>
+<div class="wrap">
+  <table>
+    <thead><tr id="head"></tr></thead>
+    <tbody id="body"></tbody>
+  </table>
+</div>
+<script>
+const DATA = __DATA__;
+const COLS = [
+  {k:"score", t:"Score"}, {k:"titre", t:"Annonce"}, {k:"agence", t:"Agence"},
+  {k:"prix", t:"Prix"}, {k:"surface", t:"Surface"}, {k:"terrain", t:"Terrain"},
+  {k:"prix_m2", t:"€/m²"}, {k:"mots_detectes", t:"Signaux"}
+];
+let sortKey = "score", sortDir = -1;
+const $ = id => document.getElementById(id);
+const fmt = (v, suf="") => v == null || v === "" ? "–" : Number(v).toLocaleString("fr-FR") + suf;
+ 
+[...new Set(DATA.map(a => a.agence))].sort().forEach(n => {
+  const o = document.createElement("option"); o.value = o.textContent = n; $("agence").appendChild(o);
+});
+COLS.forEach(c => {
+  const th = document.createElement("th"); th.textContent = c.t;
+  th.onclick = () => { sortDir = sortKey === c.k ? -sortDir : -1; sortKey = c.k; render(); };
+  $("head").appendChild(th);
+});
+ 
+function cell(tr, text, cls) { const td = document.createElement("td"); td.textContent = text; if (cls) td.className = cls; tr.appendChild(td); return td; }
+ 
+function render() {
+  const q = $("q").value.toLowerCase(), ag = $("agence").value;
+  const smin = +$("smin").value || 0, pmax = +$("pmax").value || Infinity, nouv = $("nouv").checked;
+  const rows = DATA.filter(a =>
+    (!ag || a.agence === ag) && a.score >= smin && (a.prix == null || a.prix <= pmax) &&
+    (!nouv || a.nouvelle) && (!q || (a.titre + " " + a.mots_detectes).toLowerCase().includes(q))
+  ).sort((a, b) => {
+    const x = a[sortKey], y = b[sortKey];
+    if (x == null) return 1; if (y == null) return -1;
+    return (x > y ? 1 : x < y ? -1 : 0) * sortDir;
+  });
+ 
+  $("kpis").innerHTML = "";
+  [[DATA.length, "annonces suivies"], [DATA.filter(a => a.nouvelle).length, "nouvelles"],
+   [DATA.filter(a => a.score >= 4).length, "score ≥ 4"], [rows.length, "affichées"]].forEach(([n, l]) => {
+    const d = document.createElement("div"); d.className = "kpi";
+    d.innerHTML = "<b></b><span></span>"; d.children[0].textContent = n; d.children[1].textContent = l;
+    $("kpis").appendChild(d);
+  });
+ 
+  const body = $("body"); body.innerHTML = "";
+  if (!rows.length) { body.innerHTML = '<tr><td class="empty" colspan="8">Aucune annonce ne correspond.</td></tr>'; return; }
+  rows.forEach(a => {
+    const tr = document.createElement("tr");
+    cell(tr, a.score, "score " + (a.score >= 5 ? "s-hi" : a.score >= 3 ? "s-mid" : "s-lo"));
+    const td = cell(tr, "", "wrap-txt");
+    const link = document.createElement("a"); link.href = a.url; link.target = "_blank"; link.rel = "noopener";
+    link.textContent = a.titre || a.url; td.appendChild(link);
+    if (a.nouvelle) { const b = document.createElement("span"); b.className = "badge b-new"; b.textContent = "NOUVEAU"; b.style.marginLeft = "8px"; td.appendChild(b); }
+    cell(tr, a.agence);
+    cell(tr, fmt(a.prix, " €")); cell(tr, fmt(a.surface, " m²")); cell(tr, fmt(a.terrain, " m²")); cell(tr, fmt(a.prix_m2, " €"));
+    cell(tr, a.mots_detectes, "kw wrap-txt");
+    body.appendChild(tr);
+  });
+}
+["q","agence","smin","pmax","nouv"].forEach(id => $(id).addEventListener("input", render));
+render();
+</script>
+</body>
+</html>
+"""
+ 
+ 
+def generer_rapport_html(annonces: list[Annonce]) -> None:
+    """Génère docs/index.html : page autonome (tri, filtres) pour GitHub Pages."""
+    DOSSIER_DOCS.mkdir(exist_ok=True)
+    donnees = json.dumps([asdict(a) for a in annonces], ensure_ascii=False)
+    donnees = donnees.replace("</", "<\\/")  # évite de fermer la balise <script>
+    contenu = (
+        TEMPLATE_HTML
+        .replace("__DATA__", donnees)
+        .replace("__DATE__", datetime.now().strftime("%d/%m/%Y à %H:%M"))
+    )
+    FICHIER_HTML.write_text(contenu, encoding="utf-8")
+    (DOSSIER_DOCS / ".nojekyll").touch()  # désactive Jekyll sur GitHub Pages
+    log.info("📄 Rapport HTML généré : %s", FICHIER_HTML)
+ 
+ 
+# --------------------------------------------------------------------------- #
 # MAIN
 # --------------------------------------------------------------------------- #
 def main() -> None:
@@ -357,6 +508,7 @@ def main() -> None:
     annonces = [a for a in annonces if PRIX_MAX is None or a.prix is None or a.prix <= PRIX_MAX]
     annonces.sort(key=lambda a: (a.nouvelle, a.score), reverse=True)
     exporter_csv(annonces)
+    generer_rapport_html(annonces)
  
     interessantes = [a for a in annonces if a.nouvelle and a.score >= SCORE_MINIMUM]
     print(f"\n🔥 {len(interessantes)} nouvelle(s) annonce(s) intéressante(s) :\n")
@@ -368,4 +520,3 @@ def main() -> None:
  
 if __name__ == "__main__":
     main()
- 
