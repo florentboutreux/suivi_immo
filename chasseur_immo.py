@@ -1,4 +1,4 @@
-agences · PY
+ PY
 #!/usr/bin/env python3
 """
 Veille immobilière pour marchand de biens (secteur Millau).
@@ -47,6 +47,13 @@ PATTERN_FICHE_DEFAUT = (
 )
  
 AGENCES = [
+    {"nom": "Roques", "url": "https://www.roques-immobilier.com/a-vendre"},
+    {"nom": "SGA", "url": "https://www.sga-immobilier.com/immobilier/immobilier-vente-millau.htm"},
+    {"nom": "JMB", "url": "https://www.jmb-immobilier.com/a-vendre"},
+    {
+        "nom": "Notaires",
+        "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12",
+    },
     {"nom": "Mesnard maisons", "url": "https://mesnard-immobilier.com/property-type/maison/",
      "pattern_fiche": r"/property/"},
     {"nom": "Mesnard apparts", "url": "https://mesnard-immobilier.com/property-type/appartement/",
