@@ -1,4 +1,3 @@
- · PY
 #!/usr/bin/env python3
 """
 Veille immobilière pour marchand de biens (secteur Millau).
