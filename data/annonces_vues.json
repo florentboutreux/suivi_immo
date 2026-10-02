@@ -9,7 +9,7 @@
   "prix_m2": null,
   "score": 1,
   "mots_detectes": "locataire",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:36"
  },
  "https://www.roques-immobilier.com/location/1-lodeve/appartement/1715-lodeve-centre-appartement-t2-42-m-4eme-etage-dans-petite-copropriete": {
@@ -22,21 +22,14 @@
   "prix_m2": null,
   "score": 1,
   "mots_detectes": "locataire",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:36"
  },
  "https://www.roques-immobilier.com/vente/14-herepian/villa/3721-a-vendre-herepian-superbe-villa-de-135m-habitables-sur-un-terrain-de-623m": {
   "url": "https://www.roques-immobilier.com/vente/14-herepian/villa/3721-a-vendre-herepian-superbe-villa-de-135m-habitables-sur-un-terrain-de-623m",
-  "agence": "Roques",
-  "titre": "Villa 5 pièce(s) 3 chambre(s) 135 m²",
-  "prix": null,
-  "surface": 135.0,
-  "terrain": 623.0,
-  "prix_m2": null,
-  "score": 2,
-  "mots_detectes": "garage",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:36"
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
  },
  "https://www.roques-immobilier.com/vente/26-les-aires/maison-de-village/3920-magnifique-maison-de-village-avec-piscine": {
   "url": "https://www.roques-immobilier.com/vente/26-les-aires/maison-de-village/3920-magnifique-maison-de-village-avec-piscine",
@@ -48,17 +41,19 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:36"
  },
  "https://www.roques-immobilier.com/vente/secteur-herepian/1": {
   "url": "https://www.roques-immobilier.com/vente/secteur-herepian/1",
   "ignoree": true,
+  "v": 3,
   "nouvelle": false
  },
  "https://www.roques-immobilier.com/vente/secteur-millau/1": {
   "url": "https://www.roques-immobilier.com/vente/secteur-millau/1",
   "ignoree": true,
+  "v": 3,
   "nouvelle": false
  },
  "https://www.roques-immobilier.com/vente/-/maison/332-lunas-maison-3-chambres-avec-grenier-amenageable-a-renover": {
@@ -71,7 +66,7 @@
   "prix_m2": null,
   "score": 5,
   "mots_detectes": "à rénover, grenier",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:36"
  },
  "https://www.roques-immobilier.com/location/435-millau/appartement/7296-appartement-t2-en-centre-ville": {
@@ -84,7 +79,7 @@
   "prix_m2": null,
   "score": 1,
   "mots_detectes": "locataire",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:36"
  },
  "https://www.roques-immobilier.com/location/435-millau/appartement/7167-millau-centre-ville-place-du-mandarous-grand-appartement-t4-avec-ascenseur": {
@@ -97,17 +92,19 @@
   "prix_m2": null,
   "score": 1,
   "mots_detectes": "locataire",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:36"
  },
  "https://www.roques-immobilier.com/vente/1": {
   "url": "https://www.roques-immobilier.com/vente/1",
   "ignoree": true,
+  "v": 3,
   "nouvelle": false
  },
  "https://www.roques-immobilier.com/vente/secteur-lodeve/1": {
   "url": "https://www.roques-immobilier.com/vente/secteur-lodeve/1",
   "ignoree": true,
+  "v": 3,
   "nouvelle": false
  },
  "https://www.roques-immobilier.com/location/1-lodeve/appartement/4544-lodeve-appartement-t3-au-1er-etage": {
@@ -120,7 +117,7 @@
   "prix_m2": null,
   "score": 3,
   "mots_detectes": "immeuble",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:36"
  },
  "https://www.roques-immobilier.com/location/1-lodeve/appartement/2912-lodeve-studio-au-3eme-etage": {
@@ -133,7 +130,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:36"
  },
  "https://www.roques-immobilier.com/vente/1-lodeve/appartement/4695-situe-a-deux-pas-de-centre-ville-dans-une-copropriete-venez-decouvrir-cet-appartement-de-type-t2-de-54-m": {
@@ -146,44 +143,50 @@
   "prix_m2": null,
   "score": 3,
   "mots_detectes": "immeuble",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:36"
  },
  "https://www.sga-immobilier.com/fr/annonces/appartement-p-r70-2-1.html": {
   "url": "https://www.sga-immobilier.com/fr/annonces/appartement-p-r70-2-1.html",
   "agence": "SGA",
   "titre": "9 APPARTEMENTS TROUVÉS",
-  "prix": null,
+  "prix": 90000,
   "surface": 51.0,
   "terrain": null,
-  "prix_m2": null,
+  "prix_m2": 1764,
   "score": 5,
   "mots_detectes": "potentiel, garage",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:37"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:22",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.sga-immobilier.com/fr/annonces/maison-p-r70-1-1.html": {
   "url": "https://www.sga-immobilier.com/fr/annonces/maison-p-r70-1-1.html",
   "ignoree": true,
+  "v": 3,
   "nouvelle": false
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033749.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033749.html",
   "ignoree": true,
+  "v": 3,
   "nouvelle": false
  },
  "https://www.sga-immobilier.com/fr/annonces/millau-p-r301-0-22137-1.html": {
   "url": "https://www.sga-immobilier.com/fr/annonces/millau-p-r301-0-22137-1.html",
   "agence": "SGA",
   "titre": "13 BIEN(S) TROUVÉ(S) BIENS TROUVÉS À MILLAU",
-  "prix": null,
+  "prix": 90000,
   "surface": 51.0,
   "terrain": null,
-  "prix_m2": null,
+  "prix_m2": 1764,
   "score": 8,
   "mots_detectes": "immeuble, potentiel, garage",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:37"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:22",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.sga-immobilier.com/fr/annonces/louer-p-r70-5-1.html": {
   "url": "https://www.sga-immobilier.com/fr/annonces/louer-p-r70-5-1.html",
@@ -195,119 +198,139 @@
   "prix_m2": null,
   "score": 5,
   "mots_detectes": "immeuble, garage",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:37"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:22",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033753.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033753.html",
   "agence": "SGA",
   "titre": "Appartement 3 pièces, 51m²\nen vente à Millau\n90 000 € *",
-  "prix": null,
+  "prix": 90000,
   "surface": 51.0,
   "terrain": null,
-  "prix_m2": null,
+  "prix_m2": 1764,
   "score": 6,
   "mots_detectes": "travaux, potentiel",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:37"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:21",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033754.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033754.html",
   "agence": "SGA",
   "titre": "Maison 4 pièces, 156m²\nen vente à Millau\n280 000 € *",
-  "prix": null,
+  "prix": 280000,
   "surface": 156.0,
   "terrain": null,
-  "prix_m2": null,
+  "prix_m2": 1794,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:37"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:23",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033760.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033760.html",
   "ignoree": true,
+  "v": 3,
   "nouvelle": false
  },
  "https://www.sga-immobilier.com/fr/annonces-immobilieres-p-r12-1.html": {
   "url": "https://www.sga-immobilier.com/fr/annonces-immobilieres-p-r12-1.html",
   "agence": "SGA",
   "titre": "13 BIENS IMMOBILIERS TROUVÉS",
-  "prix": null,
+  "prix": 90000,
   "surface": 51.0,
   "terrain": null,
-  "prix_m2": null,
+  "prix_m2": 1764,
   "score": 8,
   "mots_detectes": "immeuble, potentiel, garage",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:37"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:22",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033787.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033787.html",
   "ignoree": true,
+  "v": 3,
   "nouvelle": false
  },
  "https://www.sga-immobilier.com/fr/annonces/acheter-p-r70-4-1.html": {
   "url": "https://www.sga-immobilier.com/fr/annonces/acheter-p-r70-4-1.html",
   "agence": "SGA",
   "titre": "13 BIENS IMMOBILIERS EN VENTE TROUVÉS",
-  "prix": null,
+  "prix": 90000,
   "surface": 51.0,
   "terrain": null,
-  "prix_m2": null,
+  "prix_m2": 1764,
   "score": 8,
   "mots_detectes": "immeuble, potentiel, garage",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:37"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:22",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033788.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033788.html",
   "agence": "SGA",
   "titre": "Maison 3 pièces, 82m²\nen vente à Millau\n390 000 € *",
-  "prix": null,
+  "prix": 390000,
   "surface": 82.0,
   "terrain": 590.0,
-  "prix_m2": null,
+  "prix_m2": 4756,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:38"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:23",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033761.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033761.html",
   "agence": "SGA",
   "titre": "Appartement 4 pièces, 67m²\nen vente à Millau\n118 000 € *",
-  "prix": null,
+  "prix": 118000,
   "surface": 67.0,
   "terrain": null,
-  "prix_m2": null,
+  "prix_m2": 1761,
   "score": 1,
   "mots_detectes": "locataire",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:38"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:22",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-immeuble-millau-p-r7-1200351.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-immeuble-millau-p-r7-1200351.html",
   "ignoree": true,
+  "v": 3,
   "nouvelle": false
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033781.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033781.html",
   "ignoree": true,
+  "v": 3,
   "nouvelle": false
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033762.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033762.html",
   "agence": "SGA",
   "titre": "Appartement 3 pièces, 114m²\nen vente à Millau\n149 000 € *",
-  "prix": null,
+  "prix": 149000,
   "surface": 114.0,
   "terrain": null,
-  "prix_m2": null,
+  "prix_m2": 1307,
   "score": 3,
   "mots_detectes": "potentiel",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:38"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:22",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033784.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033784.html",
@@ -319,7 +342,7 @@
   "prix_m2": null,
   "score": 5,
   "mots_detectes": "travaux, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:38"
  },
  "https://www.sga-immobilier.com/fr/programmes-neufs-millau-cedex-p-r43-liste_neuf-1.html": {
@@ -332,21 +355,25 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:38"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:22",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033744.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033744.html",
   "agence": "SGA",
   "titre": "Appartement 3 pièces, 53m²\nen vente à Millau\n153 000 € *",
-  "prix": null,
+  "prix": 153000,
   "surface": 53.0,
   "terrain": null,
-  "prix_m2": null,
+  "prix_m2": 2886,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:38"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:22",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/nant-12/1938403": {
   "url": "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/nant-12/1938403",
@@ -358,7 +385,7 @@
   "prix_m2": null,
   "score": 5,
   "mots_detectes": "immeuble, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:38"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres-liste?typeTransaction=VENTE,VNI,VAE&viager=OUI": {
@@ -376,7 +403,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:39"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/st-affrique-12/1872449": {
@@ -389,34 +416,38 @@
   "prix_m2": null,
   "score": 11,
   "mots_detectes": "travaux, immeuble, potentiel, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:39"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/millau-12/1863896": {
   "url": "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/millau-12/1863896",
   "agence": "Notaires",
   "titre": "ACHAT : MAISON / VILLA - Millau - Aveyron (12)",
-  "prix": null,
+  "prix": 319000,
   "surface": 141.0,
   "terrain": 90.0,
-  "prix_m2": null,
+  "prix_m2": 2262,
   "score": 8,
   "mots_detectes": "travaux, immeuble, garage",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:39"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:23",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/millau-12/2070743": {
   "url": "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/millau-12/2070743",
   "agence": "Notaires",
   "titre": "ACHAT : MAISON / VILLA - Millau - Aveyron (12)",
-  "prix": null,
+  "prix": 336000,
   "surface": 165.0,
   "terrain": 1065.0,
-  "prix_m2": null,
+  "prix_m2": 2036,
   "score": 5,
   "mots_detectes": "immeuble, grenier",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:39"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:23",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/nant-12/1873642": {
   "url": "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/nant-12/1873642",
@@ -428,7 +459,7 @@
   "prix_m2": null,
   "score": 5,
   "mots_detectes": "immeuble, grange",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:39"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/sauveterre-de-rouergue-12": {
@@ -441,7 +472,7 @@
   "prix_m2": null,
   "score": 10,
   "mots_detectes": "travaux, immeuble, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:39"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/appartement/marolles-en-hurepoix-91": {
@@ -454,7 +485,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:39"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres-departements": {
@@ -467,7 +498,7 @@
   "prix_m2": null,
   "score": 5,
   "mots_detectes": "immeuble, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:39"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/st-georges-de-luzencon-12": {
@@ -480,7 +511,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:39"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12/5-pieces": {
@@ -493,7 +524,7 @@
   "prix_m2": null,
   "score": 13,
   "mots_detectes": "à rénover, immeuble, potentiel, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:39"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/garage/denain-59": {
@@ -506,7 +537,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:40"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/vezins-de-levezou-12/2090225": {
@@ -519,7 +550,7 @@
   "prix_m2": null,
   "score": 5,
   "mots_detectes": "immeuble, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:40"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/st-genou-36": {
@@ -532,21 +563,14 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:40"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/ste-eulalie-de-cernon-12/1989523": {
   "url": "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/ste-eulalie-de-cernon-12/1989523",
-  "agence": "Notaires",
-  "titre": "ACHAT : MAISON / VILLA - Ste Eulalie De Cernon - Aveyron (12)",
-  "prix": null,
-  "surface": 181.8,
-  "terrain": 81.0,
-  "prix_m2": null,
-  "score": 8,
-  "mots_detectes": "travaux, immeuble, combles",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:40"
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres?page=1&parPage=12&typeTransaction=LOCATION": {
   "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres?page=1&parPage=12&typeTransaction=LOCATION",
@@ -558,7 +582,7 @@
   "prix_m2": null,
   "score": 8,
   "mots_detectes": "immeuble, vente rapide, garage, loue",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:40"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/appartement/millau-12": {
@@ -571,7 +595,7 @@
   "prix_m2": null,
   "score": 7,
   "mots_detectes": "immeuble, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:40"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/cabris-06": {
@@ -584,7 +608,7 @@
   "prix_m2": null,
   "score": 7,
   "mots_detectes": "immeuble, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:40"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/espalion-12": {
@@ -597,7 +621,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:40"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/appartement/evian-les-bains-74": {
@@ -610,7 +634,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:40"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/vezins-de-levezou-12": {
@@ -623,7 +647,7 @@
   "prix_m2": null,
   "score": 7,
   "mots_detectes": "immeuble, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:40"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/st-juery-12": {
@@ -636,7 +660,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:40"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/appartement/laguiole-12": {
@@ -649,7 +673,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:41"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/st-barthelemy-56": {
@@ -662,7 +686,7 @@
   "prix_m2": null,
   "score": 13,
   "mots_detectes": "à rénover, immeuble, potentiel, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:41"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/st-affrique-12/2081897": {
@@ -675,7 +699,7 @@
   "prix_m2": null,
   "score": 9,
   "mots_detectes": "immeuble, potentiel, garage, investisseur",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:41"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/st-affrique-12/2086567": {
@@ -688,7 +712,7 @@
   "prix_m2": null,
   "score": 5,
   "mots_detectes": "immeuble, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:41"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/sete-34": {
@@ -701,7 +725,7 @@
   "prix_m2": null,
   "score": 7,
   "mots_detectes": "immeuble, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:41"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/appartement/grande-synthe-59": {
@@ -712,15 +736,17 @@
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres-liste?typeTransaction=VENTE,VNI,VAE": {
   "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres-liste?typeTransaction=VENTE,VNI,VAE",
   "agence": "Notaires",
-  "titre": "36 453 annonces immobilières\nTOUS TYPES DE VENTES - TOUS TYPES DE BIENS",
-  "prix": null,
-  "surface": 80.0,
-  "terrain": 675.0,
-  "prix_m2": null,
-  "score": 7,
-  "mots_detectes": "immeuble, vente rapide, garage",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:41"
+  "titre": "36 458 annonces immobilières\nTOUS TYPES DE VENTES - TOUS TYPES DE BIENS",
+  "prix": 160000,
+  "surface": 145.0,
+  "terrain": 570.0,
+  "prix_m2": 1103,
+  "score": 9,
+  "mots_detectes": "immeuble, vente rapide, garage, 1103 €/m²",
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:23",
+  "localisation": "à vérifier",
+  "v": 3
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/garage/capdenac-gare-12": {
   "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/garage/capdenac-gare-12",
@@ -732,7 +758,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:41"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/la-fouillade-12": {
@@ -745,7 +771,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:41"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres-notaires": {
@@ -758,7 +784,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:41"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/argent-sur-sauldre-18": {
@@ -771,7 +797,7 @@
   "prix_m2": null,
   "score": 7,
   "mots_detectes": "immeuble, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:42"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12/5-chambres": {
@@ -784,7 +810,7 @@
   "prix_m2": null,
   "score": 13,
   "mots_detectes": "à rénover, immeuble, potentiel, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:42"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/appartement/blagnac-31": {
@@ -797,21 +823,14 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:42"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/mostuejouls-12/1923722": {
   "url": "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/mostuejouls-12/1923722",
-  "agence": "Notaires",
-  "titre": "ACHAT : MAISON / VILLA - Mostuejouls - Aveyron (12)",
-  "prix": null,
-  "surface": 67.2,
-  "terrain": 1055.0,
-  "prix_m2": null,
-  "score": 8,
-  "mots_detectes": "travaux, immeuble, combles",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:42"
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/poissons-52": {
   "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/poissons-52",
@@ -823,7 +842,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:42"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12/3-chambres": {
@@ -836,7 +855,7 @@
   "prix_m2": null,
   "score": 7,
   "mots_detectes": "immeuble, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:42"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/la-cavalerie-12/2036456": {
@@ -849,7 +868,7 @@
   "prix_m2": null,
   "score": 5,
   "mots_detectes": "immeuble, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:42"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/millau-12/1905437": {
@@ -862,21 +881,23 @@
   "prix_m2": null,
   "score": 11,
   "mots_detectes": "à rafraîchir, immeuble, potentiel, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:42"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12/4-pieces": {
   "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/millau-12/4-pieces",
   "agence": "Notaires",
   "titre": "1 annonce immobilière\nÀ VENDRE - MAISON / VILLA - MILLAU (12100)",
-  "prix": 240000,
+  "prix": 242000,
   "surface": 112.67,
   "terrain": 514.0,
-  "prix_m2": 2130,
+  "prix_m2": 2147,
   "score": 10,
   "mots_detectes": "à rénover, immeuble, vente rapide, garage",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:42"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:23",
+  "localisation": "Millau",
+  "v": 3
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/lillers-62": {
   "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/lillers-62",
@@ -888,7 +909,7 @@
   "prix_m2": null,
   "score": 13,
   "mots_detectes": "travaux, immeuble, potentiel, opportunité, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:42"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/st-affrique-12/2009457": {
@@ -901,7 +922,7 @@
   "prix_m2": null,
   "score": 5,
   "mots_detectes": "immeuble, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:43"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/lanuejols-30/1923685": {
@@ -914,7 +935,7 @@
   "prix_m2": null,
   "score": 8,
   "mots_detectes": "à rénover, immeuble, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:43"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/aguessac-12": {
@@ -927,7 +948,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:43"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/la-cavalerie-12": {
@@ -940,7 +961,7 @@
   "prix_m2": 1860,
   "score": 13,
   "mots_detectes": "à rénover, immeuble, potentiel, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:43"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/lanuejouls-12": {
@@ -953,8 +974,10 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:43"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:24",
+  "localisation": "à vérifier",
+  "v": 3
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/la-cavalerie-12/2049968": {
   "url": "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/la-cavalerie-12/2049968",
@@ -971,7 +994,7 @@
   "prix_m2": null,
   "score": 5,
   "mots_detectes": "immeuble, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:43"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/appartement/divonne-les-bains-01": {
@@ -984,7 +1007,7 @@
   "prix_m2": null,
   "score": 8,
   "mots_detectes": "immeuble, opportunité, garage, investisseur",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:43"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/severac-d-aveyron-12": {
@@ -997,8 +1020,10 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:43"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:23",
+  "localisation": "à vérifier",
+  "v": 3
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/requista-12": {
   "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/requista-12",
@@ -1010,7 +1035,7 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:43"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/terrain/templeuve-en-pevele-59": {
@@ -1023,7 +1048,7 @@
   "prix_m2": null,
   "score": 7,
   "mots_detectes": "immeuble, vente rapide, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:44"
  },
  "https://www.immobilier.notaires.fr/fr/annonces-immobilieres/vente/maison/bergeres-10": {
@@ -1036,8 +1061,10 @@
   "prix_m2": null,
   "score": 0,
   "mots_detectes": "",
-  "nouvelle": true,
-  "date_collecte": "2026-10-02 10:44"
+  "nouvelle": false,
+  "date_collecte": "2026-10-02 11:24",
+  "localisation": "à vérifier",
+  "v": 3
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/millau-12/2036425": {
   "url": "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/millau-12/2036425",
@@ -1049,7 +1076,7 @@
   "prix_m2": null,
   "score": 8,
   "mots_detectes": "travaux, immeuble, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:44"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/la-cavalerie-12/1772598": {
@@ -1062,7 +1089,7 @@
   "prix_m2": 2580,
   "score": 13,
   "mots_detectes": "à rénover, immeuble, potentiel, opportunité, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:44"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/nant-12/1659351": {
@@ -1075,7 +1102,7 @@
   "prix_m2": null,
   "score": 8,
   "mots_detectes": "immeuble, potentiel, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:44"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/st-felix-de-sorgues-12/1403337": {
@@ -1088,7 +1115,7 @@
   "prix_m2": null,
   "score": 11,
   "mots_detectes": "à rénover, immeuble, potentiel, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:44"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/st-affrique-12/1428519": {
@@ -1101,7 +1128,7 @@
   "prix_m2": null,
   "score": 8,
   "mots_detectes": "à rénover, immeuble, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:44"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/st-affrique-12/1818461": {
@@ -1114,7 +1141,7 @@
   "prix_m2": null,
   "score": 8,
   "mots_detectes": "immeuble, potentiel, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:44"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/st-affrique-12/1820656": {
@@ -1127,7 +1154,7 @@
   "prix_m2": null,
   "score": 8,
   "mots_detectes": "immeuble, potentiel, garage",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:44"
  },
  "https://www.immobilier.notaires.fr/fr/annonce-immo/vente/maison/fondamente-12/2073272": {
@@ -1140,7 +1167,7 @@
   "prix_m2": null,
   "score": 11,
   "mots_detectes": "travaux, immeuble, potentiel, combles",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:44"
  },
  "https://mesnard-immobilier.com/property/superbe-maison-caussenarde-sur-le-causse-de-sauveterre-saint-georges-de-levejac-48-occitanie": {
@@ -1158,7 +1185,7 @@
   "prix_m2": 267,
   "score": 10,
   "mots_detectes": "a rénover, immeuble, garage, 267 €/m²",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:44"
  },
  "https://mesnard-immobilier.com/property/ancien-corps-de-ferme-comprenant-un-type-2-loue-et-un-type-4-libre-grand-terrain-constructible-la-cavalerie-12-occitanie": {
@@ -1176,7 +1203,7 @@
   "prix_m2": 858,
   "score": 12,
   "mots_detectes": "a rénover, immeuble, succession, combles, 858 €/m²",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:45"
  },
  "https://mesnard-immobilier.com/property/vallee-de-la-sorgue-tres-beau-village-de-saint-beaulize-superbe-maison-t3-occitanie-12": {
@@ -1199,7 +1226,7 @@
   "prix_m2": 325,
   "score": 12,
   "mots_detectes": "a rénover, immeuble, succession, garage, 325 €/m²",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:45"
  },
  "https://mesnard-immobilier.com/property/grande-jasse-de-600-m2-a-deux-pas-de-millau": {
@@ -1222,7 +1249,7 @@
   "prix_m2": 1625,
   "score": 7,
   "mots_detectes": "immeuble, garage, négociable",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:45"
  },
  "https://mesnard-immobilier.com/property/exceptionnel-viager-80-libres-sans-rente-corps-de-ferme-vezins-de-levezou-occitanie-12": {
@@ -1255,7 +1282,1177 @@
   "prix_m2": 1533,
   "score": 9,
   "mots_detectes": "a rénover, immeuble, garage, loue",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-02 10:46"
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/studio/1": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/studio/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/50-avene/maison-de-village/10612-proche-avene-dans-hameau-superbe-maison-en-pierre-plus-jardin-attenant": {
+  "url": "https://www.roques-immobilier.com/vente/50-avene/maison-de-village/10612-proche-avene-dans-hameau-superbe-maison-en-pierre-plus-jardin-attenant",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/78-cabrerolles/terrain-a-batir/10620-a-vendre-cabrerolles-terrain-a-batir": {
+  "url": "https://www.roques-immobilier.com/vente/78-cabrerolles/terrain-a-batir/10620-a-vendre-cabrerolles-terrain-a-batir",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10593-appartement-t4-millau-avec-t2-independant": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10593-appartement-t4-millau-avec-t2-independant",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/maison/10653-a-vendre-maison-composee-de-trois-appartements-avec-terrain-lamalou-les-bains": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/maison/10653-a-vendre-maison-composee-de-trois-appartements-avec-terrain-lamalou-les-bains",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/3?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby": {
+  "url": "https://www.roques-immobilier.com/vente/3?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/18-st-etienne-estrechoux/maison-de-village/10605-saint-etienne-d-estrechoux-a-vendre-maison-de-village-a-renover-entierement": {
+  "url": "https://www.roques-immobilier.com/vente/18-st-etienne-estrechoux/maison-de-village/10605-saint-etienne-d-estrechoux-a-vendre-maison-de-village-a-renover-entierement",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/villa/10666-a-vendre-herepian-villa-de-89-m-sur-une-parcelle-de-228m": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/villa/10666-a-vendre-herepian-villa-de-89-m-sur-une-parcelle-de-228m",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/maison-de-village/1": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/maison-de-village/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/15-rosis/maison-de-village/10624-a-vendre-maison-avec-cour-et-garage-rosis": {
+  "url": "https://www.roques-immobilier.com/vente/15-rosis/maison-de-village/10624-a-vendre-maison-avec-cour-et-garage-rosis",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/maison/1": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/maison/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-de-loisir/10625-a-bedarieux-terrain-a-batir-de-9220m-en-vente": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-de-loisir/10625-a-bedarieux-terrain-a-batir-de-9220m-en-vente",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/local-commercial/1": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/local-commercial/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/1": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/terrain-a-batir/1": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/terrain-a-batir/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/maison-de-village/10658-a-vendre-st-gervais-sur-mare-maison-de-81-m-avec-garage-et-terrain": {
+  "url": "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/maison-de-village/10658-a-vendre-st-gervais-sur-mare-maison-de-81-m-avec-garage-et-terrain",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/maison-de-village/1": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/maison-de-village/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/appartement/9384-a-vendre-bedarieux-appartement-t3-avec-terrasse": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/appartement/9384-a-vendre-bedarieux-appartement-t3-avec-terrasse",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/immeuble/1": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/immeuble/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/villa/1": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/villa/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/maison/10644-a-vendre-maison-composee-de-deux-appartements-lamalou-les-bains": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/maison/10644-a-vendre-maison-composee-de-deux-appartements-lamalou-les-bains",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/mas/1": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/mas/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/villa/10626-a-vendre-herepian-villa-a-de-150-m-dans-quartier-residenciel": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/villa/10626-a-vendre-herepian-villa-a-de-150-m-dans-quartier-residenciel",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/maison-de-village/10622-a-vendre-saint-gervais-sur-mare-34610-maison-de-village-avec-cour-et-garage": {
+  "url": "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/maison-de-village/10622-a-vendre-saint-gervais-sur-mare-34610-maison-de-village-avec-cour-et-garage",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10649-a-vendre-a-millau-appartement-t8-de-plain-pied": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10649-a-vendre-a-millau-appartement-t8-de-plain-pied",
+  "agence": "Roques",
+  "titre": "Appartement 8 pièce(s) 4 chambre(s) 239 m²",
+  "prix": 249000,
+  "surface": 239.0,
+  "terrain": null,
+  "prix_m2": 1041,
+  "score": 5,
+  "mots_detectes": "immeuble, 1041 €/m²",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:11",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/terrain-agricole/1": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/terrain-agricole/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/1": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/villa/1": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/villa/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/1": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/propriete/1": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/propriete/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/immeuble/1": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/villa/1": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/villa/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/duplex/1": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/duplex/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/1": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/terrain-a-batir/1": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/terrain-a-batir/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/terrain/1": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/terrain/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/1": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/1": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/appartement/1": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/appartement/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/appartement/10650-lamalou-les-bains-a-vendre-appartement-type-f3-en-rez-de-chaussee-avec-garage": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/appartement/10650-lamalou-les-bains-a-vendre-appartement-type-f3-en-rez-de-chaussee-avec-garage",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/terrain-agricole/1": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/terrain-agricole/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/terrain/1": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/terrain/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/villa/1": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/villa/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-de-loisir/1": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-de-loisir/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/maison/1": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/maison/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/appartement/10652-a-saint-gervais-sur-mare-a-vendre-grand-appartement": {
+  "url": "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/appartement/10652-a-saint-gervais-sur-mare-a-vendre-grand-appartement",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/maison/1": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/maison/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/29-le-caylar/maison/10643-maison-de-ville-de-99m-avec-petite-terrasse": {
+  "url": "https://www.roques-immobilier.com/vente/29-le-caylar/maison/10643-maison-de-ville-de-99m-avec-petite-terrasse",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/appartement/1": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/appartement/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/immeuble/1": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/immeuble/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-a-batir/1": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-a-batir/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/1": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/terrain-a-batir/10663-a-vendre-herepian-grand-terrain-a-batir-plat-divisible-et-non-viabilise": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/terrain-a-batir/10663-a-vendre-herepian-grand-terrain-a-batir-plat-divisible-et-non-viabilise",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/terrain-a-batir/1": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/terrain-a-batir/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/immeuble/1": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/immeuble/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-agricole/1": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-agricole/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4090-montjaux/autre/10594-grange-a-renover-avec-5600-m-de-terrain-a-candas": {
+  "url": "https://www.roques-immobilier.com/vente/4090-montjaux/autre/10594-grange-a-renover-avec-5600-m-de-terrain-a-candas",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/9-la-tour-sur-orb/villa/10630-la-tour-sur-orb-a-vendre-villa-3-pieces-d-environ-141-m-sur-une-parcelle-de-1150-m": {
+  "url": "https://www.roques-immobilier.com/vente/9-la-tour-sur-orb/villa/10630-la-tour-sur-orb-a-vendre-villa-3-pieces-d-environ-141-m-sur-une-parcelle-de-1150-m",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby": {
+  "url": "https://www.roques-immobilier.com/vente/2?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/12?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby": {
+  "url": "https://www.roques-immobilier.com/vente/12?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/terrain/1": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/terrain/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/appartement/1": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/appartement/1",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/studio/10591-a-vendre-studio-lamalou-les-bains": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/studio/10591-a-vendre-studio-lamalou-les-bains",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/villa/10537-superbe-villa-de-165-m-habitables-sur-3000-m-de-terrain-avec-piscine-a-debordement-vue-imprenable-prestige": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/villa/10537-superbe-villa-de-165-m-habitables-sur-3000-m-de-terrain-avec-piscine-a-debordement-vue-imprenable-prestige",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/10-soubes/villa/10538-soubes-villa-de-plain-pied-146-m2-habitables-sur-un-terrain-de-2670-m2-piscine-belles-prestations": {
+  "url": "https://www.roques-immobilier.com/vente/10-soubes/villa/10538-soubes-villa-de-plain-pied-146-m2-habitables-sur-un-terrain-de-2670-m2-piscine-belles-prestations",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/maison/10550-a-vendre-st-gervais-sur-mare-maison-de-village": {
+  "url": "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/maison/10550-a-vendre-st-gervais-sur-mare-maison-de-village",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby": {
+  "url": "https://www.roques-immobilier.com/vente/1?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/29-le-caylar/maison/10560-a-vendre-le-caylar-belle-maison-en-pierres-cinq-pieces-146-m-habitables-sur-1303-m-de-terrain": {
+  "url": "https://www.roques-immobilier.com/vente/29-le-caylar/maison/10560-a-vendre-le-caylar-belle-maison-en-pierres-cinq-pieces-146-m-habitables-sur-1303-m-de-terrain",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/maison/10584-lodeve-centre-ville-maison-de-ville-a-renover-de-80-m-habitables-avec-dependances-sur-570-m-de-terrain": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/maison/10584-lodeve-centre-ville-maison-de-ville-a-renover-de-80-m-habitables-avec-dependances-sur-570-m-de-terrain",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/10-soubes/villa/10583-soubes-villa-independante-f4-d-une-surface-habitables-de-108-m-habitables-sur-4500-m-de-terrain-bon-etat-g": {
+  "url": "https://www.roques-immobilier.com/vente/10-soubes/villa/10583-soubes-villa-independante-f4-d-une-surface-habitables-de-108-m-habitables-sur-4500-m-de-terrain-bon-etat-g",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby": {
+  "url": "https://www.roques-immobilier.com/vente/4?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/21-le-bousquet-d-orb/terrain-a-batir/10557-a-vendre-terrain-a-batir-le-bousquet-d-orb": {
+  "url": "https://www.roques-immobilier.com/vente/21-le-bousquet-d-orb/terrain-a-batir/10557-a-vendre-terrain-a-batir-le-bousquet-d-orb",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/maison/10556-a-vendre-st-gervais-sur-mare-maison-de-village-en-pierre": {
+  "url": "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/maison/10556-a-vendre-st-gervais-sur-mare-maison-de-village-en-pierre",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/29-le-caylar/propriete/10546-batisse-de-195-m": {
+  "url": "https://www.roques-immobilier.com/vente/29-le-caylar/propriete/10546-batisse-de-195-m",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/35-le-poujol-sur-orb/maison-de-village/10575-au-poujol-sur-orb-maison-de-village-environ-150-m-habitable-divise-en-2-appartements-grand-garage-et-une": {
+  "url": "https://www.roques-immobilier.com/vente/35-le-poujol-sur-orb/maison-de-village/10575-au-poujol-sur-orb-maison-de-village-environ-150-m-habitable-divise-en-2-appartements-grand-garage-et-une",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/appartement/10570-lamalou-les-bains-a-vendre-bel-appartement-t2-de-46-26-m-meuble": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/appartement/10570-lamalou-les-bains-a-vendre-bel-appartement-t2-de-46-26-m-meuble",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-a-batir/10566-a-ventre-terrain-constructible-situe-abedarieux-34600": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-a-batir/10566-a-ventre-terrain-constructible-situe-abedarieux-34600",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/villa/10561-lodeve-sur-les-hauteurs-villa-d-une-surface-total-de-108-m-sur-2160-m-de-terrain-belle-vue": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/villa/10561-lodeve-sur-les-hauteurs-villa-d-une-surface-total-de-108-m-sur-2160-m-de-terrain-belle-vue",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/31-ceilhes-et-rocozels/maison/10540-maison-avec-terrain-centre-village-de-ceilhes": {
+  "url": "https://www.roques-immobilier.com/vente/31-ceilhes-et-rocozels/maison/10540-maison-avec-terrain-centre-village-de-ceilhes",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/111-premian/garage/10576-a-vendre-premian-2-garages-plus-jardin": {
+  "url": "https://www.roques-immobilier.com/vente/111-premian/garage/10576-a-vendre-premian-2-garages-plus-jardin",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/villa/10565-herepian-a-vendre-villa-3-pieces-plus-terrain": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/villa/10565-herepian-a-vendre-villa-3-pieces-plus-terrain",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1987-murat-sur-vebre/maison-de-village/10573-a-vendre-maison-de-village-110-m-murat-sur-vebre": {
+  "url": "https://www.roques-immobilier.com/vente/1987-murat-sur-vebre/maison-de-village/10573-a-vendre-maison-de-village-110-m-murat-sur-vebre",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/maison-de-village/10568-a-vendre-maison-de-village-de-240m-avec-jardin-et-dependance-herepian": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/maison-de-village/10568-a-vendre-maison-de-village-de-240m-avec-jardin-et-dependance-herepian",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/23-st-etienne-de-gourgas/villa/10482-a-vendre-proche-lodeve-superbe-villa-independante-5-pieces-avec-piscine-sur-terrain-2030-m": {
+  "url": "https://www.roques-immobilier.com/vente/23-st-etienne-de-gourgas/villa/10482-a-vendre-proche-lodeve-superbe-villa-independante-5-pieces-avec-piscine-sur-terrain-2030-m",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/immeuble/10515-a-vendre-a-lodeve-immeuble-de-rapport-429-m-habitables": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/immeuble/10515-a-vendre-a-lodeve-immeuble-de-rapport-429-m-habitables",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10484-appartement-t4-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10484-appartement-t4-millau",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/villa/10535-lodeve-proche-centre-ville-villa-t5-avec-piscine-belles-prestations": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/villa/10535-lodeve-proche-centre-ville-villa-t5-avec-piscine-belles-prestations",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/3796-lanuejols/maison/10502-maison-renovee-t3-de-village-a-lanuejols-30750": {
+  "url": "https://www.roques-immobilier.com/vente/3796-lanuejols/maison/10502-maison-renovee-t3-de-village-a-lanuejols-30750",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/3-les-plans/maison-de-village/10490-les-plans-maison-de-village-avec-terrasse": {
+  "url": "https://www.roques-immobilier.com/vente/3-les-plans/maison-de-village/10490-les-plans-maison-de-village-avec-terrasse",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/maison-de-village/10471-a-vendre-maison-de-ville-bedarieux": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/maison-de-village/10471-a-vendre-maison-de-ville-bedarieux",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/mas/10507-a-vendre-deux-mazet-plus-terrain-situes-a-bedarieux-34600": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/mas/10507-a-vendre-deux-mazet-plus-terrain-situes-a-bedarieux-34600",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/21-le-bousquet-d-orb/villa/10534-maison-plain-pied-le-bousquet-d-orb": {
+  "url": "https://www.roques-immobilier.com/vente/21-le-bousquet-d-orb/villa/10534-maison-plain-pied-le-bousquet-d-orb",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/35-le-poujol-sur-orb/appartement/10472-le-poujol-sur-orb-vends-appartement-78-m-a-renover": {
+  "url": "https://www.roques-immobilier.com/vente/35-le-poujol-sur-orb/appartement/10472-le-poujol-sur-orb-vends-appartement-78-m-a-renover",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/20-graissessac/maison/10495-vends-a-graissessac-maison-de-village-80-m-2-chambres-cave": {
+  "url": "https://www.roques-immobilier.com/vente/20-graissessac/maison/10495-vends-a-graissessac-maison-de-village-80-m-2-chambres-cave",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/villa/10486-lodeve-centre-villa-villa-de-plain-pied-d-environ-75-m-habitables-sur-une-parcelle-tota-de-350-m-a-voir": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/villa/10486-lodeve-centre-villa-villa-de-plain-pied-d-environ-75-m-habitables-sur-une-parcelle-tota-de-350-m-a-voir",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4382-aguessac/terrain/10531-terrain-a-batir-aguessac": {
+  "url": "https://www.roques-immobilier.com/vente/4382-aguessac/terrain/10531-terrain-a-batir-aguessac",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/3684-la-vacquerie-et-st-martin-de-castries/maison-de-village/10512-larzac-meridional-dans-village-maison-de-village-5-pieces-renove": {
+  "url": "https://www.roques-immobilier.com/vente/3684-la-vacquerie-et-st-martin-de-castries/maison-de-village/10512-larzac-meridional-dans-village-maison-de-village-5-pieces-renove",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/5?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby": {
+  "url": "https://www.roques-immobilier.com/vente/5?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/53-poujols/villa/10522-poujols-villa-avec-piscine-138-m-habitables-sur-4-182-m-de-terrain": {
+  "url": "https://www.roques-immobilier.com/vente/53-poujols/villa/10522-poujols-villa-avec-piscine-138-m-habitables-sur-4-182-m-de-terrain",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/maison/10491-a-vendre-a-lamalou-les-bains-maison-familiale-avec-vue-degagee-et-terrain-arbore": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/maison/10491-a-vendre-a-lamalou-les-bains-maison-familiale-avec-vue-degagee-et-terrain-arbore",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/106-la-couvertoirade/maison-de-village/10489-la-couvertoirade-maison-de-village-avec-local-a-vendre": {
+  "url": "https://www.roques-immobilier.com/vente/106-la-couvertoirade/maison-de-village/10489-la-couvertoirade-maison-de-village-avec-local-a-vendre",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/98-st-genies-de-varensal/villa/10501-sur-la-commune-de-saint-genies-de-varensal-a-vendre-belle-villa-avec-jardin-et-piscine": {
+  "url": "https://www.roques-immobilier.com/vente/98-st-genies-de-varensal/villa/10501-sur-la-commune-de-saint-genies-de-varensal-a-vendre-belle-villa-avec-jardin-et-piscine",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/66-le-pradal/terrain-a-batir/10528-le-pradal-a-vendre-terrain-constructible-2295-m2": {
+  "url": "https://www.roques-immobilier.com/vente/66-le-pradal/terrain-a-batir/10528-le-pradal-a-vendre-terrain-constructible-2295-m2",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/maison-de-village/10498-vends-a-st-gervais-sur-mare-petite-maison-de-village-de-3-chambres": {
+  "url": "https://www.roques-immobilier.com/vente/22-st-gervais-sur-mare/maison-de-village/10498-vends-a-st-gervais-sur-mare-petite-maison-de-village-de-3-chambres",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/appartement/10421-a-vendre-lamalou-les-bains-appartement-f4-avec-studio": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/appartement/10421-a-vendre-lamalou-les-bains-appartement-f4-avec-studio",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/64-melagues/maison/10412-a-vendre-melagues-maison-de-village-a-renover-sur-un-terrain-de-950-m": {
+  "url": "https://www.roques-immobilier.com/vente/64-melagues/maison/10412-a-vendre-melagues-maison-de-village-a-renover-sur-un-terrain-de-950-m",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/96-st-martin-de-l-arcon/maison/10430-a-vendre-maison-individuelle-avec-terrain-saint-martin-de-l-arcon": {
+  "url": "https://www.roques-immobilier.com/vente/96-st-martin-de-l-arcon/maison/10430-a-vendre-maison-individuelle-avec-terrain-saint-martin-de-l-arcon",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/immeuble/10444-immeuble-6-logements": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/10444-immeuble-6-logements",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/31-ceilhes-et-rocozels/maison/10453-maison-de-caractere-hauteur-de-ceilhes-et-rocozels": {
+  "url": "https://www.roques-immobilier.com/vente/31-ceilhes-et-rocozels/maison/10453-maison-de-caractere-hauteur-de-ceilhes-et-rocozels",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/3668-viala-du-pas-de-jaux/propriete/10418-a-vendre-causse-du-larzac-ancien-corps-de-ferme-a-renover-sur-terrain": {
+  "url": "https://www.roques-immobilier.com/vente/3668-viala-du-pas-de-jaux/propriete/10418-a-vendre-causse-du-larzac-ancien-corps-de-ferme-a-renover-sur-terrain",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/terrain-a-batir/10395-a-herepian-terrain-constructible-de-1777-m": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/terrain-a-batir/10395-a-herepian-terrain-constructible-de-1777-m",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/21-le-bousquet-d-orb/villa/10454-le-bousquet-d-orb-a-vendre-belle-villa-neuve-d-environ-103-m-habitables-avec-garage-et-jardin": {
+  "url": "https://www.roques-immobilier.com/vente/21-le-bousquet-d-orb/villa/10454-le-bousquet-d-orb-a-vendre-belle-villa-neuve-d-environ-103-m-habitables-avec-garage-et-jardin",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/5-lunas/maison-de-village/10455-maison-de-village-lunas-les-chateaux": {
+  "url": "https://www.roques-immobilier.com/vente/5-lunas/maison-de-village/10455-maison-de-village-lunas-les-chateaux",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/terrain-a-batir/10396-herepian-a-vendre-terrain-constructible-de-1777-m": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/terrain-a-batir/10396-herepian-a-vendre-terrain-constructible-de-1777-m",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/villa/10427-superbe-villa-de-161-m2-habitables-avec-appartement-de-40-m-sur-2000-m2-de-terrain-belles-prestations": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/villa/10427-superbe-villa-de-161-m2-habitables-avec-appartement-de-40-m-sur-2000-m2-de-terrain-belles-prestations",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1987-murat-sur-vebre/maison-de-village/10392-murat-sur-vebre-a-vendre-belle-maison-de-village-4-pieces-85-m-avec-cave": {
+  "url": "https://www.roques-immobilier.com/vente/1987-murat-sur-vebre/maison-de-village/10392-murat-sur-vebre-a-vendre-belle-maison-de-village-4-pieces-85-m-avec-cave",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/14-herepian/terrain-a-batir/10398-herepian-terrain-constructible-non-viabilise-de-1478-m": {
+  "url": "https://www.roques-immobilier.com/vente/14-herepian/terrain-a-batir/10398-herepian-terrain-constructible-non-viabilise-de-1478-m",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10452-appartement-t4-avec-terrasse-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10452-appartement-t4-avec-terrasse-a-millau",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/immeuble/10429-immeuble-mixte-avec-appartement-et-local-commercial-belle-opportunite-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/10429-immeuble-mixte-avec-appartement-et-local-commercial-belle-opportunite-a-millau",
+  "agence": "Roques",
+  "titre": "Immeuble 120 m²",
+  "prix": 243000,
+  "surface": 120.0,
+  "terrain": null,
+  "prix_m2": 2025,
+  "score": 8,
+  "mots_detectes": "immeuble, potentiel, grenier",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:18",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.roques-immobilier.com/vente/29-le-caylar/maison-de-village/10423-a-vendre-15-minutes-le-caylar-sur-le-plateau-du-larzac-maison-de-caractere-a-renover-avec-dependance-et-jar": {
+  "url": "https://www.roques-immobilier.com/vente/29-le-caylar/maison-de-village/10423-a-vendre-15-minutes-le-caylar-sur-le-plateau-du-larzac-maison-de-caractere-a-renover-avec-dependance-et-jar",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/6?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby": {
+  "url": "https://www.roques-immobilier.com/vente/6?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10401-appartement-t2-vendu-loue-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10401-appartement-t2-vendu-loue-a-millau",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-agricole/10433-mazet-et-terres-agricoles": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/terrain-agricole/10433-mazet-et-terres-agricoles",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/10-soubes/maison-de-village/10441-maison-de-village-avec-jardin-garage-et-cave": {
+  "url": "https://www.roques-immobilier.com/vente/10-soubes/maison-de-village/10441-maison-de-village-avec-jardin-garage-et-cave",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/49-beziers/appartement/10465-a-vendre-appartement-de-type-3-avec-terrasse-beziers": {
+  "url": "https://www.roques-immobilier.com/vente/49-beziers/appartement/10465-a-vendre-appartement-de-type-3-avec-terrasse-beziers",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/maison/10346-lodeve-centre-ensemble-d-habitation-a-renover-entierement": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/maison/10346-lodeve-centre-ensemble-d-habitation-a-renover-entierement",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/maison/10315-lamalou-les-bains-a-vendre-center-ville-immeuble-de-2-appartements-t2-et-t4": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/maison/10315-lamalou-les-bains-a-vendre-center-ville-immeuble-de-2-appartements-t2-et-t4",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10336-maison-familiale-a-renover-proche-centre-ville": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10336-maison-familiale-a-renover-proche-centre-ville",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10296-maison-t7-situee-dans-un-quartier-calme-de-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10296-maison-t7-situee-dans-un-quartier-calme-de-millau",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/terrain-a-batir/10348-terrain-constructible-de-823-m-non-viabilise": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/terrain-a-batir/10348-terrain-constructible-de-823-m-non-viabilise",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/maison/10321-bedarieux-a-vendre-maison-de-90m-4-chambres-garage": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/maison/10321-bedarieux-a-vendre-maison-de-90m-4-chambres-garage",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/21-le-bousquet-d-orb/maison/10369-maison-plain-pied-le-bousquet-d-orb": {
+  "url": "https://www.roques-immobilier.com/vente/21-le-bousquet-d-orb/maison/10369-maison-plain-pied-le-bousquet-d-orb",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/105-sorbs/maison/10354-maison-en-pierre-de-104-65-m-sur-terrain-attenant-de-9420m": {
+  "url": "https://www.roques-immobilier.com/vente/105-sorbs/maison/10354-maison-en-pierre-de-104-65-m-sur-terrain-attenant-de-9420m",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4385-compregnac/maison/10329-maison-t7-avec-jardin-piscine-et-dependances": {
+  "url": "https://www.roques-immobilier.com/vente/4385-compregnac/maison/10329-maison-t7-avec-jardin-piscine-et-dependances",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/2-bedarieux/villa/10353-a-vendre-villa-plus-terrain-situee-sur-la-commune-de-bedarieux-34600": {
+  "url": "https://www.roques-immobilier.com/vente/2-bedarieux/villa/10353-a-vendre-villa-plus-terrain-situee-sur-la-commune-de-bedarieux-34600",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/36-gignac/maison/10298-gignac-maison-de-village-de-114-m2-habitables-avec-garage-et-exterieur-belles-prestations": {
+  "url": "https://www.roques-immobilier.com/vente/36-gignac/maison/10298-gignac-maison-de-village-de-114-m2-habitables-avec-garage-et-exterieur-belles-prestations",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/5-lunas/propriete/10318-popriete-hauteur-de-lunas": {
+  "url": "https://www.roques-immobilier.com/vente/5-lunas/propriete/10318-popriete-hauteur-de-lunas",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/65-campestre-et-luc/propriete/10380-a-vendre-causse-de-campestre-superbe-maison-caussenarde-236-m-habitables-plus-terrain": {
+  "url": "https://www.roques-immobilier.com/vente/65-campestre-et-luc/propriete/10380-a-vendre-causse-de-campestre-superbe-maison-caussenarde-236-m-habitables-plus-terrain",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/102-colombieres-sur-orb/maison/10333-a-vendre-maison-individuelle-de-90m-avec-terrain-colombieres-sur-orb": {
+  "url": "https://www.roques-immobilier.com/vente/102-colombieres-sur-orb/maison/10333-a-vendre-maison-individuelle-de-90m-avec-terrain-colombieres-sur-orb",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/4394-compeyre/maison/10376-a-vendre-a-compeyre-maison-lumineuse-de-115-m-avec-vue-panoramique": {
+  "url": "https://www.roques-immobilier.com/vente/4394-compeyre/maison/10376-a-vendre-a-compeyre-maison-lumineuse-de-115-m-avec-vue-panoramique",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/1-lodeve/appartement/10308-centre-ville-de-lodeve-appartement-au-dernier-etage-avec-balcons-et-cave": {
+  "url": "https://www.roques-immobilier.com/vente/1-lodeve/appartement/10308-centre-ville-de-lodeve-appartement-au-dernier-etage-avec-balcons-et-cave",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/7?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby": {
+  "url": "https://www.roques-immobilier.com/vente/7?sortby[type]=dateenr&sortby[dir]=DESC&allow_fields=sortby",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/terrain-a-batir/10302-terrain-a-batir-sur-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/terrain-a-batir/10302-terrain-a-batir-sur-millau",
+  "agence": "Roques",
+  "titre": "Terrain à batir",
+  "prix": 160500,
+  "surface": 325.0,
+  "terrain": null,
+  "prix_m2": 493,
+  "score": 5,
+  "mots_detectes": "potentiel, 493 €/m²",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:19",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/immeuble/10344-lamalou-les-bains-a-vendre-maison-composee-de-2-appartements-meubles-avec-entrees-independantes-ideal-invest": {
+  "url": "https://www.roques-immobilier.com/vente/4-lamalou-les-bains/immeuble/10344-lamalou-les-bains-a-vendre-maison-composee-de-2-appartements-meubles-avec-entrees-independantes-ideal-invest",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/10-soubes/maison-de-village/10340-maison-de-village-avec-jardin": {
+  "url": "https://www.roques-immobilier.com/vente/10-soubes/maison-de-village/10340-maison-de-village-avec-jardin",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10305-appartement-t2-millau-vendu-loue": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10305-appartement-t2-millau-vendu-loue",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033765.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033765.html",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.jmb-immobilier.com/vente-immeuble-4pieces-millau-TIMM85678": {
+  "url": "https://www.jmb-immobilier.com/vente-immeuble-4pieces-millau-TIMM85678",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 335000,
+  "surface": 640.0,
+  "terrain": 640.0,
+  "prix_m2": 523,
+  "score": 10,
+  "mots_detectes": "immeuble, potentiel, combles, 523 €/m²",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:20",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-maison-4pieces-salles_curan-TMAI99385": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-4pieces-salles_curan-TMAI99385",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 149000,
+  "surface": 64.0,
+  "terrain": 430.0,
+  "prix_m2": 2328,
+  "score": 6,
+  "mots_detectes": "travaux, potentiel",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:20",
+  "localisation": "à vérifier",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-27m-millau-TAPP100095": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-27m-millau-TAPP100095",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-1piece-millau-TAPP100087": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-1piece-millau-TAPP100087",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 59000,
+  "surface": 27.0,
+  "terrain": null,
+  "prix_m2": 2185,
+  "score": 4,
+  "mots_detectes": "immeuble, locataire",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:20",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-2pieces-millau-TAPP100092": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-2pieces-millau-TAPP100092",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 64000,
+  "surface": 30.0,
+  "terrain": null,
+  "prix_m2": 2133,
+  "score": 0,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:20",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-4pieces-millau-TAPP100078": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-4pieces-millau-TAPP100078",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 96500,
+  "surface": 95.0,
+  "terrain": null,
+  "prix_m2": 1015,
+  "score": 8,
+  "mots_detectes": "à rénover, potentiel, 1015 €/m²",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:20",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-maison-3pieces-millau-TMAI99384": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-3pieces-millau-TMAI99384",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 390000,
+  "surface": 82.0,
+  "terrain": 590.0,
+  "prix_m2": 4756,
+  "score": 0,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:20",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-maison-5pieces-millau-TMAI99377": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-5pieces-millau-TMAI99377",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 314000,
+  "surface": 162.0,
+  "terrain": 1416.0,
+  "prix_m2": 1938,
+  "score": 5,
+  "mots_detectes": "travaux, garage",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:20",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-76m-millau-TAPP100093": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-76m-millau-TAPP100093",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 115000,
+  "surface": 76.0,
+  "terrain": null,
+  "prix_m2": 1513,
+  "score": 3,
+  "mots_detectes": "travaux",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:20",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-2pieces-millau-TAPP100085": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-2pieces-millau-TAPP100085",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.jmb-immobilier.com/vente-immeuble-4pieces-millau-TIMM85680": {
+  "url": "https://www.jmb-immobilier.com/vente-immeuble-4pieces-millau-TIMM85680",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.jmb-immobilier.com/vente-maison-7pieces-ste_eulalie_de_cernon-TMAI99383": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-7pieces-ste_eulalie_de_cernon-TMAI99383",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 335500,
+  "surface": 195.0,
+  "terrain": 550.0,
+  "prix_m2": 1720,
+  "score": 0,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:20",
+  "localisation": "à vérifier",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-maison-5pieces-creissels-TMAI99380": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-5pieces-creissels-TMAI99380",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 245000,
+  "surface": 130.0,
+  "terrain": 393.0,
+  "prix_m2": 1884,
+  "score": 2,
+  "mots_detectes": "garage",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:20",
+  "localisation": "à vérifier",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-maison-210m-millau-TMAI99347": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-210m-millau-TMAI99347",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-69m-millau-TAPP100091": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-69m-millau-TAPP100091",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
+ },
+ "https://www.jmb-immobilier.com/vente-maison-3pieces-mostuejouls-TMAI99381": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-3pieces-mostuejouls-TMAI99381",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 137000,
+  "surface": 71.0,
+  "terrain": null,
+  "prix_m2": 1929,
+  "score": 6,
+  "mots_detectes": "travaux, potentiel",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:20",
+  "localisation": "à vérifier",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-49m-millau-TAPP100094": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-49m-millau-TAPP100094",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 50000,
+  "surface": 49.0,
+  "terrain": null,
+  "prix_m2": 1020,
+  "score": 5,
+  "mots_detectes": "travaux, 1020 €/m²",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:21",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-96m-veyreau-TAPP100088": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-96m-veyreau-TAPP100088",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 88000,
+  "surface": 96.0,
+  "terrain": null,
+  "prix_m2": 916,
+  "score": 7,
+  "mots_detectes": "travaux, combles, 916 €/m²",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:21",
+  "localisation": "à vérifier",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-terrain-annonce-millau-TTER91644": {
+  "url": "https://www.jmb-immobilier.com/vente-terrain-annonce-millau-TTER91644",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 130000,
+  "surface": 1119.0,
+  "terrain": 1119.0,
+  "prix_m2": 116,
+  "score": 4,
+  "mots_detectes": "remise, 116 €/m²",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:21",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-local_commercial-8pieces-millau-TLOC96055": {
+  "url": "https://www.jmb-immobilier.com/vente-local_commercial-8pieces-millau-TLOC96055",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 295000,
+  "surface": 245.0,
+  "terrain": 240.0,
+  "prix_m2": 1204,
+  "score": 3,
+  "mots_detectes": "potentiel",
+  "nouvelle": true,
+  "date_collecte": "2026-10-02 11:21",
+  "localisation": "Millau",
+  "v": 3
+ },
+ "https://www.jmb-immobilier.com/vente-immeuble-212m-millau-TIMM85675": {
+  "url": "https://www.jmb-immobilier.com/vente-immeuble-212m-millau-TIMM85675",
+  "ignoree": true,
+  "v": 3,
+  "nouvelle": false
  }
 }
