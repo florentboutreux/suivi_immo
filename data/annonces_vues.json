@@ -2964,7 +2964,7 @@
   "prix_m2": 1916,
   "score": 9,
   "mots_detectes": "a renover, immeuble, garage, loue",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-03 11:09",
   "localisation": "Millau",
   "v": 6
@@ -2979,7 +2979,7 @@
   "prix_m2": 623,
   "score": 15,
   "mots_detectes": "à rafraichir, immeuble, potentiel, succession, garage, 623 €/m²",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-03 11:09",
   "localisation": "à vérifier",
   "v": 6
@@ -2994,7 +2994,7 @@
   "prix_m2": 260,
   "score": 12,
   "mots_detectes": "a renover, immeuble, succession, garage, 260 €/m²",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-03 11:09",
   "localisation": "à vérifier",
   "v": 6
