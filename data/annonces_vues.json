@@ -2998,5 +2998,26 @@
   "date_collecte": "2026-10-03 11:09",
   "localisation": "à vérifier",
   "v": 6
+ },
+ "https://mesnard-immobilier.com/property/deux-parkings-residence-condatomag-rue-condatomag-millau-12": {
+  "url": "https://mesnard-immobilier.com/property/deux-parkings-residence-condatomag-rue-condatomag-millau-12",
+  "ignoree": true,
+  "v": 6,
+  "nouvelle": false
+ },
+ "https://mesnard-immobilier.com/property/local-professionnel-plein-centre-ville-sur-artere-principale-avec-deux-parkings-prives-millau-12-ocitanie": {
+  "url": "https://mesnard-immobilier.com/property/local-professionnel-plein-centre-ville-sur-artere-principale-avec-deux-parkings-prives-millau-12-ocitanie",
+  "agence": "Mesnard apparts",
+  "titre": "LOCAL PROFESSIONNEL PLEIN CENTRE VILLE SUR ARTERE PRINCIPALE AVEC DEUX PARKINGS PRIVES MILLAU 12 ( Ocitanie).",
+  "prix": 215000,
+  "surface": 115.0,
+  "terrain": null,
+  "prix_m2": 1869,
+  "score": 9,
+  "mots_detectes": "a renover, immeuble, garage, loue",
+  "nouvelle": true,
+  "date_collecte": "2026-10-05 13:40",
+  "localisation": "Millau",
+  "v": 6
  }
 }
