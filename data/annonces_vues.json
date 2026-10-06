@@ -3015,9 +3015,39 @@
   "prix_m2": 1869,
   "score": 9,
   "mots_detectes": "a renover, immeuble, garage, loue",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-05 13:40",
   "localisation": "Millau",
+  "v": 6
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/immeuble/9312-immeuble-centre-ville": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/9312-immeuble-centre-ville",
+  "agence": "Roques",
+  "titre": "Immeuble 320 m² 3 etage(s)",
+  "prix": 3149000,
+  "surface": 320.0,
+  "terrain": null,
+  "prix_m2": 9840,
+  "score": 9,
+  "mots_detectes": "à rénover, immeuble, grenier, investisseur",
+  "nouvelle": true,
+  "date_collecte": "2026-10-06 12:48",
+  "localisation": "Millau",
+  "v": 6
+ },
+ "https://mesnard-immobilier.com/property/ideal-promotion-immobiliere-immeuble-ivry-sur-seine-94200-val-de-marne": {
+  "url": "https://mesnard-immobilier.com/property/ideal-promotion-immobiliere-immeuble-ivry-sur-seine-94200-val-de-marne",
+  "agence": "Mesnard apparts",
+  "titre": "IDEAL PROMOTION IMMOBILIERE; IMMEUBLE IVRY SUR SEINE 94200 (Val de Marne)",
+  "prix": 69000,
+  "surface": 240.0,
+  "terrain": 471.0,
+  "prix_m2": 287,
+  "score": 11,
+  "mots_detectes": "travaux, immeuble, garage, loue, 287 €/m²",
+  "nouvelle": true,
+  "date_collecte": "2026-10-06 12:48",
+  "localisation": "à vérifier",
   "v": 6
  }
 }
