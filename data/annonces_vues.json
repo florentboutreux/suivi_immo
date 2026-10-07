@@ -3030,7 +3030,7 @@
   "prix_m2": 9840,
   "score": 9,
   "mots_detectes": "à rénover, immeuble, grenier, investisseur",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-06 12:48",
   "localisation": "Millau",
   "v": 6
@@ -3045,9 +3045,24 @@
   "prix_m2": 287,
   "score": 11,
   "mots_detectes": "travaux, immeuble, garage, loue, 287 €/m²",
-  "nouvelle": true,
+  "nouvelle": false,
   "date_collecte": "2026-10-06 12:48",
   "localisation": "à vérifier",
+  "v": 6
+ },
+ "https://mesnard-immobilier.com/property/rue-du-pont-de-fer-type-a-renover-1-er-etage-avec-terrasse-60000-euro-millau-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/rue-du-pont-de-fer-type-a-renover-1-er-etage-avec-terrasse-60000-euro-millau-12-occitanie",
+  "agence": "Mesnard apparts",
+  "titre": "RUE DU PONT DE FER IMMEUBLE COMPRENANT 3 APPARTEMENTS 229000 €URO MILLAU 12 (Occitanie).",
+  "prix": 229000,
+  "surface": 240.0,
+  "terrain": null,
+  "prix_m2": 954,
+  "score": 11,
+  "mots_detectes": "a rénover, immeuble, garage, loué, 954 €/m²",
+  "nouvelle": true,
+  "date_collecte": "2026-10-07 12:42",
+  "localisation": "Millau",
   "v": 6
  }
 }
