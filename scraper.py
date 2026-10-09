@@ -780,15 +780,35 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       <!-- KPIS -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="kpi-cards"></div>
 
-      <!-- FILTRES -->
+      <!-- FILTRES ET TRIS -->
       <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex flex-wrap gap-3 items-center justify-between">
         <input type="text" id="q" oninput="renderDeals()" placeholder="Rechercher par rue, mot-clé (ex: 'rue droite', 'immeuble')..." class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 flex-1 min-w-[200px] focus:outline-none focus:border-amber-500" />
+        
+        <select id="f-type" onchange="renderDeals()" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+          <option value="all">Tous types de biens</option>
+          <option value="immeuble">🏢 Immeubles</option>
+          <option value="maison">🏡 Maisons</option>
+          <option value="appartement">🏢 Appartements</option>
+          <option value="grange">🏚️ Granges / Plateaux</option>
+        </select>
+
+        <select id="f-sort" onchange="renderDeals()" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-amber-300 font-semibold focus:outline-none focus:border-amber-500">
+          <option value="score_desc">⚡ Score MDB V3 décroissant</option>
+          <option value="marge_desc">💰 Marge potentielle décroissante</option>
+          <option value="prix_asc">💶 Prix croissant</option>
+          <option value="prix_desc">💶 Prix décroissant</option>
+          <option value="m2_asc">📐 Prix / m² croissant</option>
+          <option value="m2_desc">📐 Prix / m² décroissant</option>
+          <option value="surface_desc">📏 Surface décroissante</option>
+        </select>
+
         <select id="f-dpe" onchange="renderDeals()" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-amber-500">
           <option value="all">Tous DPE</option>
           <option value="passoires">🔥 Passoires F & G</option>
           <option value="G">DPE G uniquement</option>
           <option value="F">DPE F uniquement</option>
         </select>
+
         <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer select-none">
           <input type="checkbox" id="f-drops" onchange="renderDeals()" class="rounded bg-slate-800 border-slate-700 text-amber-500" />
           <span>Baisses de prix uniquement</span>
@@ -951,14 +971,36 @@ TEMPLATE_HTML = """<!DOCTYPE html>
 
     function renderDeals() {
       const q = (document.getElementById('q').value || '').toLowerCase();
+      const ftype = document.getElementById('f-type').value;
+      const fsort = document.getElementById('f-sort').value;
       const fdpe = document.getElementById('f-dpe').value;
       const fdrops = document.getElementById('f-drops').checked;
 
-      const filtered = DATA.filter(a => {
-        const matchesQ = !q || (a.titre + ' ' + (a.mots_detectes || '') + ' ' + (a.agence || '')).toLowerCase().includes(q);
+      let filtered = DATA.filter(a => {
+        const fullText = (a.titre + ' ' + (a.mots_detectes || '') + ' ' + (a.agence || '')).toLowerCase();
+        const matchesQ = !q || fullText.includes(q);
         const matchesDpe = fdpe === 'all' || (fdpe === 'passoires' && (a.dpe === 'F' || a.dpe === 'G')) || a.dpe === fdpe;
         const matchesDrops = !fdrops || (a.baisse_prix_pct > 0);
-        return matchesQ && matchesDpe && matchesDrops;
+        
+        let matchesType = true;
+        if (ftype === 'immeuble') matchesType = fullText.includes('immeuble') || fullText.includes('monopropri') || fullText.includes('bâtisse');
+        else if (ftype === 'maison') matchesType = fullText.includes('maison') || fullText.includes('villa');
+        else if (ftype === 'appartement') matchesType = fullText.includes('appartement') || fullText.includes('t2') || fullText.includes('t3') || fullText.includes('studio');
+        else if (ftype === 'grange') matchesType = fullText.includes('grange') || fullText.includes('plateau') || fullText.includes('remise') || fullText.includes('atelier');
+
+        return matchesQ && matchesDpe && matchesDrops && matchesType;
+      });
+
+      // Tris
+      filtered.sort((a, b) => {
+        if (fsort === 'score_desc') return (b.score_v3 || b.score || 0) - (a.score_v3 || a.score || 0);
+        if (fsort === 'marge_desc') return (b.marge_estimee_montant || 0) - (a.marge_estimee_montant || 0);
+        if (fsort === 'prix_asc') return (a.prix || 9999999) - (b.prix || 9999999);
+        if (fsort === 'prix_desc') return (b.prix || 0) - (a.prix || 0);
+        if (fsort === 'm2_asc') return (a.prix_m2 || 9999999) - (b.prix_m2 || 9999999);
+        if (fsort === 'm2_desc') return (b.prix_m2 || 0) - (a.prix_m2 || 0);
+        if (fsort === 'surface_desc') return (b.surface || 0) - (a.surface || 0);
+        return 0;
       });
 
       const total = DATA.length;
@@ -975,7 +1017,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       const grid = document.getElementById('deals-grid');
       grid.innerHTML = '';
       if (!filtered.length) {
-        grid.innerHTML = '<div class="col-span-2 text-center py-12 text-slate-500">Aucun bien ne correspond aux filtres.</div>';
+        grid.innerHTML = '<div class="col-span-2 text-center py-12 text-slate-500">Aucun bien ne correspond aux filtres sélectionnés.</div>';
         return;
       }
 
@@ -984,30 +1026,35 @@ TEMPLATE_HTML = """<!DOCTYPE html>
           const dpeClass = a.dpe === 'G' ? 'bg-purple-900 text-purple-100 ring-1 ring-purple-400' :
                            a.dpe === 'F' ? 'bg-rose-900 text-rose-100' :
                            a.dpe === 'E' ? 'bg-amber-900 text-amber-100' : 'bg-slate-800 text-slate-300';
+          
+          const scoreVal = a.score_v3 ? a.score_v3.toFixed(1) : (a.score ? a.score + '/10' : '–');
+          const margeMontant = a.marge_estimee_montant ? '+' + a.marge_estimee_montant.toLocaleString('fr-FR') + ' €' : '–';
+          const margePct = a.marge_estimee_pct ? '(' + a.marge_estimee_pct + '%)' : '';
 
           const card = document.createElement('div');
-          card.className = 'bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 flex flex-col justify-between';
+          card.className = 'bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 flex flex-col justify-between hover:border-slate-700 transition shadow-sm';
           card.innerHTML = 
             '<div>' +
               '<div class="flex items-center justify-between gap-2 mb-2">' +
                 '<div class="flex items-center gap-1.5 flex-wrap">' +
                   '<span class="px-2 py-0.5 rounded text-[11px] font-bold ' + dpeClass + '">DPE ' + (a.dpe || '?') + '</span>' +
-                  '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300">Score ' + (a.score || 0) + '/10</span>' +
-                  (a.baisse_prix_pct > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300">-' + a.baisse_prix_pct + '%</span>' : '') +
+                  '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">⚡ Score V3: ' + scoreVal + '</span>' +
+                  (a.baisse_prix_pct > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">📉 -' + a.baisse_prix_pct + '%</span>' : '') +
+                  (a.marge_estimee_montant > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">💰 ' + margeMontant + ' ' + margePct + '</span>' : '') +
                 '</div>' +
-                '<span class="text-[11px] text-slate-500">' + (a.agence || '') + '</span>' +
+                '<span class="text-[11px] text-slate-500 font-medium">' + (a.agence || '') + '</span>' +
               '</div>' +
-              '<h3 class="text-base font-bold text-white leading-snug"><a href="' + a.url + '" target="_blank" class="hover:text-amber-400">' + (a.titre || a.url) + '</a></h3>' +
+              '<h3 class="text-base font-bold text-white leading-snug"><a href="' + a.url + '" target="_blank" class="hover:text-amber-400 transition">' + (a.titre || a.url) + '</a></h3>' +
               '<div class="grid grid-cols-3 gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 my-3 text-center">' +
-                '<div><span class="text-[9px] uppercase text-slate-500 block">Prix</span><b class="text-sm font-bold text-white">' + (a.prix ? a.prix.toLocaleString('fr-FR') + ' €' : '–') + '</b></div>' +
+                '<div><span class="text-[9px] uppercase text-slate-500 block">Prix FAI</span><b class="text-sm font-bold text-white">' + (a.prix ? a.prix.toLocaleString('fr-FR') + ' €' : '–') + '</b></div>' +
                 '<div><span class="text-[9px] uppercase text-slate-500 block">Surface</span><b class="text-sm font-bold text-slate-300">' + (a.surface ? a.surface + ' m²' : '–') + '</b></div>' +
-                '<div><span class="text-[9px] uppercase text-slate-500 block">Prix/m²</span><b class="text-sm font-bold text-slate-300">' + (a.prix_m2 ? a.prix_m2 + ' €' : '–') + '</b></div>' +
+                '<div><span class="text-[9px] uppercase text-slate-500 block">Prix au m²</span><b class="text-sm font-bold text-amber-300">' + (a.prix_m2 ? a.prix_m2 + ' €' : '–') + '</b></div>' +
               '</div>' +
-              '<div class="text-xs text-slate-400">' + (a.mots_detectes || '') + '</div>' +
+              '<div class="text-xs text-slate-400 line-clamp-2">' + (a.mots_detectes || '') + '</div>' +
             '</div>' +
             '<div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">' +
-              '<a href="' + a.url + '" target="_blank" class="text-xs text-slate-400 hover:text-white underline">Voir la fiche</a>' +
-              '<button onclick="simulerDeal(' + (a.prix || 0) + ',' + (a.surface || 0) + ')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer">Simuler ce bien</button>' +
+              '<a href="' + a.url + '" target="_blank" class="text-xs text-slate-400 hover:text-white underline">Fiche agence ↗</a>' +
+              '<button onclick="simulerDeal(' + (a.prix || 0) + ',' + (a.surface || 0) + ')" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer transition">🧮 Simuler ce bien</button>' +
             '</div>';
           grid.appendChild(card);
         } catch (e) {
