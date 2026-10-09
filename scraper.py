@@ -57,9 +57,10 @@ COMMUNES_VOISINES = [
 PRIX_MAX = 290_000          # Budget acquisition cible MDB
 SCORE_MINIMUM = 2           # Seuil pour retenir le bien
 SCORE_MINIMUM_ALERTE = 4    # Seuil pour déclencher une notification Telegram/Discord immédiate
+EXCLURE_TERRAINS_SEULS = True  # Écarte automatiquement les annonces qui concernent uniquement des terrains nus
 MAX_PAGES_PAR_AGENCE = 5
 MAX_FICHES_PAR_RUN = 200
-VERSION_PARSEUR = 8
+VERSION_PARSEUR = 9
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
@@ -136,6 +137,17 @@ MOTS_CLES_MDB = {
 
 MOTS_REDHIBITOIRES = re.compile(
     r"\b(viager|vendu|vendue|sous compromis|compromis sign[ée]|sous offre|offre accept[ée]e)\b", re.I
+)
+
+# Filtre pour écarter les annonces qui concernent UNIQUEMENT un terrain nu (sans bâti)
+RE_TERRAIN_PUR = re.compile(
+    r"^s*(?:ventes+)?(?:terrain|parcelle)|terrains+(?:às+bâtir|constructible|agricole|des+loisir|nu|viabilisé)|parcelles+nue|/terrain[/-]",
+    re.I
+)
+# Présence d'un bâtiment (qui justifie de garder le bien même s'il a du terrain)
+RE_BATI_PRESENT = re.compile(
+    r"\b(?:maison|immeuble|bâtisse|grange|hangar|atelier|remise|villa|appartement|corps de ferme|propriété|ruine|mazet|garage|local|plateau|chalet)\b",
+    re.I
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -578,6 +590,13 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     if statut == "non" or (statut == "incertain" and LOCALISATION_STRICTE):
         return None
 
+    # ÉCARTER LES ANNONCES DE TERRAINS NUS (SANS BÂTI EXISTANT)
+    if EXCLURE_TERRAINS_SEULS:
+        texte_verif = f"{titre} {h1} {urlparse(url).path}"
+        if RE_TERRAIN_PUR.search(texte_verif) and not RE_BATI_PRESENT.search(texte_verif):
+            log.info("   ✗ écartée (terrain seul sans bâti) : %s", url)
+            return None
+
     base = contenu if len(contenu) >= 200 else texte
     # Priorité 1 : Balise méta ou sélecteur de prix dédié (aucun risque de capturer des honoraires)
     prix = page.evaluate(JS_PRIX_CANONIQUE)
@@ -591,6 +610,12 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     surface = next((s for s in surfaces if 15 <= s <= 1500), None)
     m_terrain = RE_TERRAIN.search(base)
     terrain = float(m_terrain.group(1).replace(",", ".")) if m_terrain else None
+
+    # Double vérification : si 0 surface habitable et mention terrain prédominante
+    if EXCLURE_TERRAINS_SEULS and surface is None:
+        if re.search(r"\bterrain\b|\bparcelle\b", f"{titre} {h1}", re.I) and not RE_BATI_PRESENT.search(f"{titre} {h1}"):
+            log.info("   ✗ écartée (terrain sans surface habitable) : %s", url)
+            return None
     dpe = extraire_dpe(base, page.content())
 
     # HISTORIQUE DES PRIX & DÉTECTION SÉCURISÉE DES BAISSES (ANTI-FAUX POSITIFS)
@@ -602,23 +627,30 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
 
     if url in etat_existant:
         anc = etat_existant[url]
-        prix_initial = anc.get("prix_initial") or anc.get("prix") or prix
-        historique = anc.get("historique_prix", [])
-        ancien_prix = anc.get("prix")
+        # RECALIBRATION PROPRE LORS DU CHANGEMENT DE VERSION (évite de comparer avec l'ancien parseur buggé)
+        if anc.get("v") != VERSION_PARSEUR:
+            prix_initial = prix
+            historique = [{"date": now_str, "prix": prix}]
+            a_baisse = False
+            baisse_prix_pct = 0.0
+        else:
+            prix_initial = anc.get("prix_initial") or anc.get("prix") or prix
+            historique = anc.get("historique_prix", [])
+            ancien_prix = anc.get("prix")
 
-        # VERROUILLAGE ANTI-FAUX POSITIFS :
-        # Une baisse réelle doit être >= 3.0% ET >= 3 000 € d'écart (élimine les arrondis FAI / Net Vendeur)
-        # Et elle ne doit PAS dépasser 35% (au-delà, c'est une erreur de capture de loyer ou charges)
-        if ancien_prix and prix < ancien_prix:
-            delta_euros = ancien_prix - prix
-            delta_pct = ((ancien_prix - prix) / ancien_prix) * 100
+            # VERROUILLAGE ANTI-FAUX POSITIFS :
+            # Une baisse réelle doit être >= 3.0% ET >= 3 000 € d'écart (élimine les arrondis FAI / Net Vendeur)
+            # Et elle ne doit PAS dépasser 35% (au-delà, c'est une erreur de capture de loyer ou charges)
+            if ancien_prix and prix < ancien_prix:
+                delta_euros = ancien_prix - prix
+                delta_pct = ((ancien_prix - prix) / ancien_prix) * 100
 
-            if delta_euros >= 3000 and 3.0 <= delta_pct <= 35.0:
-                a_baisse = True
-                baisse_prix_pct = round(((prix_initial - prix) / prix_initial) * 100, 1)
-                log.info("📉 VRAIE BAISSE DE PRIX VALIDÉE (-%.1f%%) sur %s : %d € -> %d € (-%d €)", baisse_prix_pct, url, ancien_prix, prix, delta_euros)
-            else:
-                log.warning("⚠️ Écart de prix ignoré (faux positif évité) sur %s : %d € vs %d € (delta: %d € / %.1f%%)", url, ancien_prix, prix, delta_euros, delta_pct)
+                if delta_euros >= 3000 and 3.0 <= delta_pct <= 35.0:
+                    a_baisse = True
+                    baisse_prix_pct = round(((prix_initial - prix) / prix_initial) * 100, 1)
+                    log.info("📉 VRAIE BAISSE DE PRIX VALIDÉE (-%.1f%%) sur %s : %d € -> %d € (-%d €)", baisse_prix_pct, url, ancien_prix, prix, delta_euros)
+                else:
+                    log.warning("⚠️ Écart de prix ignoré (faux positif évité) sur %s : %d € vs %d € (delta: %d € / %.1f%%)", url, ancien_prix, prix, delta_euros, delta_pct)
 
     if not historique or historique[-1].get("prix") != prix:
         historique.append({"date": now_str, "prix": prix})
