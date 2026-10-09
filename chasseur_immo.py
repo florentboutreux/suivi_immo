@@ -10,6 +10,7 @@ Pipeline :
   5. Export CSV + JSON d'état + rapport HTML (docs/index.html, publié via GitHub Pages)
 """
 import csv
+import unicodedata
 import json
 import logging
 import random
@@ -37,11 +38,29 @@ DEBUG_DIR = Path("debug")                    # captures si 0 annonce trouvée
 # le filtre se base donc sur le NOM de la commune, pas sur le code postal seul.
 VILLES_AUTORISEES = ("millau",)
 
+# Mode strict : un bien dont la commune n'est pas CONFIRMÉE comme Millau est écarté (au lieu d'être gardé
+# avec « lieu à vérifier »). Mettre False pour retrouver l'ancien comportement.
+LOCALISATION_STRICTE = True
+
+# Communes voisines : si l'annonce en nomme une (et que Millau n'est pas cité APRÈS elle), le bien est écarté.
+# Liste modifiable : ajoutez toute commune qui vous remonte à tort.
+COMMUNES_VOISINES = [
+    "verrieres", "le rozier", "rozier", "la cavalerie", "cavalerie", "nant", "saint georges de luzencon",
+    "creissels", "compeyre", "aguessac", "paulhe", "compregnac", "peyreleau", "veyreau", "mostuejouls",
+    "montjaux", "saint rome de cernon", "saint beauzely", "la couvertoirade", "severac", "saint affrique",
+    "lapanouse", "viala du pas de jaux", "viala du tarn", "tournemire", "roquefort", "la roque sainte marguerite",
+    "candas", "massegros", "meyrueis", "riviere sur tarn", "boyne", "la cresse", "saint leons", "salles curan",
+    "lanuejols", "campestre", "le caylar", "saint jean du bruel", "saint laurent de levezou", "la bastide pradines",
+    "saint paul des fonts", "saint martin de lenne", "sainte eulalie de cernon", "castelnau pegayrols",
+    "saint germain", "montpellier", "rodez", "lodeve", "saint jean et saint paul", "balsac", "lavernhe",
+    "saint georges", "saint sernin", "belmont sur rance", "sauclieres", "le clapier", "les vignes", "florac",
+]
+
 PRIX_MAX = 250_000          # budget maximum (None pour désactiver)
 SCORE_MINIMUM = 2           # seuil pour être jugée "intéressante"
 MAX_PAGES_PAR_AGENCE = 5    # pagination
 MAX_FICHES_PAR_RUN = 200    # garde-fou
-VERSION_PARSEUR = 6         # incrémenter quand l'extraction change : les fiches déjà vues sont ré-analysées
+VERSION_PARSEUR = 7         # incrémenter quand l'extraction change : les fiches déjà vues sont ré-analysées
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
@@ -603,42 +622,76 @@ def _adresses(texte: str) -> list[tuple[str, str]]:
     return trouves
 
 
+def _norm(t: str) -> str:
+    """minuscules, sans accents, ponctuation -> espaces (« Saint-Georges » == « saint georges »)."""
+    t = unicodedata.normalize("NFD", t.lower())
+    t = "".join(ch for ch in t if unicodedata.category(ch) != "Mn")
+    return re.sub(r"[^a-z0-9]+", " ", t).strip()
+
+
+# « à deux pas de Millau », « proche de Millau », « 15 min de Millau », « viaduc de Millau »… :
+# Millau est cité comme REPÈRE, pas comme adresse du bien.
+RE_PROXIMITE = re.compile(
+    r"\b(?:a|au|aux)\s+(?:deux pas|proximite|quelques minutes|quelques km|\d+\s*(?:min\w*|mn|km|kilometres?))\s+(?:de |du |d )?millau"
+    r"|\b(?:proche|pres|aux portes|environs|alentours|secteur|region|autour|vers|entre|sud|nord|est|ouest)\s+(?:de |du |d )?millau"
+    r"|\b\d+\s*(?:min\w*|mn|km)\s+(?:de |du )millau"
+    r"|\bviaduc (?:de )?millau|\bpays de millau|\bparc .{0,25}millau|\bgrands causses",
+)
+RE_COMMUNES_VOISINES = re.compile(r"\b(" + "|".join(sorted(map(re.escape, COMMUNES_VOISINES), key=len, reverse=True)) + r")\b")
+RE_MILLAU = re.compile(r"\bmillau\b")
+# Chemins d'URL STRUCTURÉS (commune générée par le site, pas écrite par l'agent) : on peut s'y fier.
+RE_URL_MILLAU_FIABLE = re.compile(r"/\d+-millau/|/annonce/[^/]*-millau[^/]*/r\d+|-millau-[a-z]{3,5}\d{4,}/?$", re.I)
+RE_CHAMP_COMMUNE = re.compile(
+    r"\b(?:ville|commune|localit[ée]|localisation|situation|adresse)\s*:?\s*([A-Za-zÀ-ÿ' \-]{3,40})", re.I
+)
+
+
+def _lieu_dans(texte: str) -> str:
+    """
+    Commune la plus probable décrite dans `texte` : « millau », le nom d'une commune voisine, ou « » (rien).
+    Règle : les citations de proximité sont retirées, puis la DERNIÈRE commune nommée l'emporte
+    (les titres Mesnard finissent par la localisation : « …LA CAVALERIE; 28000 EURO. 12 (Occitanie) »).
+    """
+    t = RE_PROXIMITE.sub(" ", _norm(texte))
+    trouves = [(m.end(), "millau") for m in RE_MILLAU.finditer(t)]
+    trouves += [(m.end(), m.group(1)) for m in RE_COMMUNES_VOISINES.finditer(t)]
+    return max(trouves)[1] if trouves else ""
+
+
 def evaluer_localisation(url: str, h1: str, contenu: str) -> str:
     """
-    Retourne « oui » (Millau confirmé), « non » (autre commune détectée) ou « incertain ».
-
-    On n'utilise PAS le <title> ni la meta description : pour une agence basée à Millau (JMB, Roques…),
-    ils contiennent « Millau » sur toutes les pages, même pour un bien situé ailleurs.
-    Ordre de fiabilité : chemin de l'URL > titre H1 > début du contenu (sans en-tête/pied de page).
+    « oui » = Millau confirmé, « non » = autre commune, « incertain » = rien de décisif.
+    Ordre : URL structurée > titre (dernière commune nommée) > slug de l'URL > champ « Ville : … » >
+    adresse « 12100 Millau » dans le début du contenu.
     """
-    # 1) Le chemin de l'URL est propre à l'annonce (ex. /vente/435-millau/appartement/…)
-    if _est_cible(urlparse(url).path):
-        return "oui"
+    path = urlparse(url).path
 
-    # 1 bis) Slug de type « …-<commune>-<REF> » : commune différente de Millau => hors zone
-    m_slug = RE_SLUG_COMMUNE.search(urlparse(url).path)
-    if m_slug:
-        commune = m_slug.group(1).replace("_", " ").lower()
-        if commune not in MOTS_NON_COMMUNE:
-            return "oui" if _est_cible(commune) else "non"
-
-    # 2) Titre de l'annonce
-    adr_h1 = _adresses(h1)
-    if any(_est_cible(v) for _, v in adr_h1):
+    # 1) URL structurée générée par le site (Roques, Expertimo, iad, JMB)
+    if RE_URL_MILLAU_FIABLE.search(path):
         return "oui"
-    cp_autres_h1 = set(RE_CP_AVEYRON.findall(h1)) - {"12100"}
-    if adr_h1 or cp_autres_h1:
-        return "non"                       # autre commune annoncée dans le titre
-    if _est_cible(h1):
-        return "oui"
+    m_slug = RE_SLUG_COMMUNE.search(path)                     # JMB : …-veyreau-TAPP100088
+    if m_slug and m_slug.group(1).lower() not in MOTS_NON_COMMUNE:
+        return "oui" if _est_cible(m_slug.group(1)) else "non"
 
-    # 3) Début du contenu de la fiche
+    # 2) Titre de l'annonce, puis slug (Mesnard : /property/<titre-de-l-annonce>)
+    for texte in (h1, path.replace("-", " ").replace("/", " ")):
+        lieu = _lieu_dans(texte)
+        if lieu:
+            return "oui" if lieu == "millau" else "non"
+
+    # 3) Champ libellé « Ville : … » / « Commune : … » dans le contenu
+    for m in RE_CHAMP_COMMUNE.finditer(contenu[:4000]):
+        lieu = _lieu_dans(m.group(1))
+        if lieu:
+            return "oui" if lieu == "millau" else "non"
+
+    # 4) Adresse « code postal + commune » dans le début du contenu (hors pied de page)
     adr = _adresses(contenu[:3000])
     if any(_est_cible(v) for _, v in adr):
         return "oui"
     if adr:
         return "non"
-    return "incertain"                     # rien de décisif -> gardée, signalée « à vérifier »
+    return "incertain"
 
 
 _NB_DEBUG_FICHES = 0
@@ -687,6 +740,9 @@ def analyser_fiche(page, url: str, agence: str) -> Annonce | None:
     statut = evaluer_localisation(url, h1, contenu)
     if statut == "non":
         log.info("   ✗ hors Millau : %s", url)
+        return None
+    if statut == "incertain" and LOCALISATION_STRICTE:
+        log.info("   ✗ commune non confirmée (mode strict) : %s", url)
         return None
     localisation = "Millau" if statut == "oui" else "à vérifier"
 
