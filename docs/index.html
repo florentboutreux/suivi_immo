@@ -21,7 +21,7 @@
           <div class="text-base font-bold text-white flex items-center gap-2">
             MDB Scanner Pro <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Millau 12100</span>
           </div>
-          <div class="text-xs text-slate-400">Actualisé le : 09/10/2026 à 13:46</div>
+          <div class="text-xs text-slate-400">Actualisé le : 09/10/2026 à 14:00</div>
         </div>
       </div>
 
@@ -87,20 +87,41 @@
     <!-- ONGLET 2 : SIMULATEUR MDB -->
     <div id="tab-simu" class="hidden space-y-6">
       <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
-        <h2 class="text-xl font-bold text-white mb-1">Simulateur Financier d'Opération & Découpe MDB</h2>
-        <p class="text-xs text-slate-400 mb-6">Achat avec frais de notaire réduits MDB (0.715%), travaux et calcul de la marge de découpe.</p>
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <span>🧮</span> Simulateur Financier d'Opération & Découpe MDB
+            </h2>
+            <p class="text-xs text-slate-400">Business plan complet marchand de biens : acquisition 0,715%, découpe multi-lots, travaux, portage, TVA sur marge et Impôt Société (IS).</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="window.print()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 transition cursor-pointer">
+              🖨️ Imprimer / Dossier Banque
+            </button>
+            <button onclick="genererAnalyseIA()" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg transition cursor-pointer shadow-md shadow-amber-500/20">
+              ✨ Analyse Stratégique & Marge
+            </button>
+          </div>
+        </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div class="lg:col-span-7 space-y-4">
+          <div class="lg:col-span-7 space-y-5">
+            <!-- 1. ACQUISITION -->
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-              <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">1. Acquisition</h3>
-              <div class="grid grid-cols-2 gap-3 text-xs">
+              <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                <span>1. Acquisition & Frais d'acte</span>
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 <div>
-                  <label class="block text-slate-400 mb-1">Prix d'achat net vendeur (€)</label>
-                  <input type="number" id="sim-prix" value="140000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono" />
+                  <label class="block text-slate-400 mb-1">Prix affiché FAI (€)</label>
+                  <input type="number" id="sim-prix" value="149000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono font-bold" />
                 </div>
                 <div>
-                  <label class="block text-slate-400 mb-1">Frais de notaire</label>
+                  <label class="block text-slate-400 mb-1">Négociation visée (€)</label>
+                  <input type="number" id="sim-nego" value="14000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-amber-300 font-mono" />
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">Régime notaire</label>
                   <select id="sim-notaire" onchange="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono">
                     <option value="0.00715">Marchand de Biens (0,715%)</option>
                     <option value="0.078">Particulier (7,8%)</option>
@@ -109,50 +130,171 @@
               </div>
             </div>
 
+            <!-- 2. LOTS ET DECOUPE -->
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-              <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">2. Travaux & Portage</h3>
-              <div class="grid grid-cols-2 gap-3 text-xs">
-                <div>
-                  <label class="block text-slate-400 mb-1">Enveloppe Travaux totale (€)</label>
-                  <input type="number" id="sim-travaux" value="95000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-amber-300 font-mono" />
-                </div>
-                <div>
-                  <label class="block text-slate-400 mb-1">Frais financiers & portage (€)</label>
-                  <input type="number" id="sim-portage" value="5500" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 font-mono" />
-                </div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">
+                  2. Plan de Découpe & Revente Lot par Lot
+                </h3>
+                <button onclick="ajouterLot()" class="text-[11px] font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20 cursor-pointer">
+                  + Ajouter un lot
+                </button>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left">
+                  <thead class="text-slate-400 text-[10px] uppercase border-b border-slate-800">
+                    <tr>
+                      <th class="py-2">Désignation du lot</th>
+                      <th class="py-2 w-16">Surf. (m²)</th>
+                      <th class="py-2 w-24">Travaux (€)</th>
+                      <th class="py-2 w-28">Prix Revente (€)</th>
+                      <th class="py-2 w-8"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="lots-table-body" class="divide-y divide-slate-800/60 font-mono">
+                    <!-- Généré dynamiquement en JS -->
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800/60 text-xs">
+                <div class="text-slate-400">Total Surface : <b id="total-surf" class="text-white">-- m²</b></div>
+                <div class="text-slate-400">Total Travaux : <b id="total-travaux-lots" class="text-amber-400">-- €</b></div>
+                <div class="text-slate-400">Total Revente : <b id="total-revente-lots" class="text-emerald-400">-- €</b></div>
               </div>
             </div>
 
+            <!-- 3. FRAIS ANNEXES, DIVISION ET PORTAGE -->
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-              <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">3. Revente (Chiffre d'Affaires total des lots)</h3>
-              <div>
-                <label class="block text-slate-400 text-xs mb-1">Revente totale estimée de tous les lots (€)</label>
-                <input type="number" id="sim-revente" value="310000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-emerald-400 font-mono font-bold" />
+              <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                3. Frais de Division & Financement / Portage
+              </h3>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div>
+                  <label class="block text-slate-400 mb-1">Géomètre & EDD (€)</label>
+                  <input type="number" id="sim-geometre" value="3200" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono" />
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">Durée portage (mois)</label>
+                  <input type="number" id="sim-mois" value="8" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono" />
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">Taux emprunt (%)</label>
+                  <input type="number" step="0.1" id="sim-taux" value="3.8" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono" />
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">Apport (€)</label>
+                  <input type="number" id="sim-apport" value="35000" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-emerald-400 font-mono" />
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- RESULTATS -->
-          <div class="lg:col-span-5 bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
-            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Résultats Financiers</h3>
+          <!-- RESULTATS FINANCIERS DETAILLES -->
+          <div class="lg:col-span-5 bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Bilan Financier & Marges</h3>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">MDB V3</span>
+              </div>
 
-            <div class="bg-emerald-950/40 border border-emerald-500/50 p-4 rounded-xl text-center">
-              <span class="text-xs text-emerald-300 block">MARGE BRUTE OPÉRATION</span>
-              <span class="text-2xl font-black text-emerald-400 font-mono" id="res-marge-brute">+68 500 €</span>
-              <span class="text-xs text-emerald-300/80 block mt-1" id="res-marge-pct">22.1% du CA</span>
+              <!-- Cartouche Marge Brute -->
+              <div class="bg-gradient-to-br from-emerald-950/60 to-slate-900 border border-emerald-500/50 p-4 rounded-xl text-center mb-3">
+                <span class="text-[11px] text-emerald-300 block font-semibold uppercase tracking-wider">Marge Brute Opération</span>
+                <span class="text-3xl font-black text-emerald-400 font-mono" id="res-marge-brute">+68 500 €</span>
+                <span class="text-xs text-emerald-300 block mt-1" id="res-marge-pct">22.1% du CA de revente</span>
+              </div>
+
+              <!-- Cartouche Marge Nette Après IS & ROI -->
+              <div class="grid grid-cols-2 gap-2 mb-3">
+                <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-center">
+                  <span class="text-[10px] text-slate-400 block uppercase">Marge Nette (Après IS)</span>
+                  <b class="text-sm font-black text-white font-mono" id="res-marge-nette">+53 125 €</b>
+                </div>
+                <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-center">
+                  <span class="text-[10px] text-slate-400 block uppercase">ROI sur Apport</span>
+                  <b class="text-sm font-black text-amber-400 font-mono" id="res-roi">151%</b>
+                </div>
+              </div>
+
+              <!-- Décomposition Ligne à Ligne -->
+              <div class="text-xs space-y-1.5 text-slate-300 font-mono border-t border-slate-800 pt-3">
+                <div class="flex justify-between"><span>Prix d'achat net :</span><span id="res-achat" class="text-white font-semibold">135 000 €</span></div>
+                <div class="flex justify-between"><span>Frais notaire (MDB 0,715%) :</span><span id="res-notaire" class="text-white">965 €</span></div>
+                <div class="flex justify-between"><span>Travaux de rénovation :</span><span id="res-travaux" class="text-amber-300">85 000 €</span></div>
+                <div class="flex justify-between"><span>Géomètre & Division :</span><span id="res-geometre" class="text-white">3 200 €</span></div>
+                <div class="flex justify-between"><span>Portage financier & intérêts :</span><span id="res-portage" class="text-slate-400">4 600 €</span></div>
+                <div class="flex justify-between font-bold text-white pt-1.5 border-t border-slate-800">
+                  <span>Coût de revient total :</span><span id="res-revient" class="text-white">228 765 €</span>
+                </div>
+                <div class="flex justify-between font-bold text-emerald-400">
+                  <span>Chiffre d'Affaires total :</span><span id="res-revente">310 000 €</span>
+                </div>
+                <div class="flex justify-between text-slate-400 pt-1 text-[11px]">
+                  <span>Impôt Sociétés (IS estimé 15%/25%) :</span><span id="res-is" class="text-rose-400">-15 375 €</span>
+                </div>
+              </div>
             </div>
 
-            <div class="text-xs space-y-2 text-slate-400 font-mono border-t border-slate-800 pt-3">
-              <div class="flex justify-between"><span>Prix d'achat :</span><span id="res-achat" class="text-white">140 000 €</span></div>
-              <div class="flex justify-between"><span>Frais notaire :</span><span id="res-notaire" class="text-white">1 001 €</span></div>
-              <div class="flex justify-between"><span>Travaux :</span><span id="res-travaux" class="text-white">95 000 €</span></div>
-              <div class="flex justify-between"><span>Frais portage :</span><span id="res-portage" class="text-white">5 500 €</span></div>
-              <div class="flex justify-between font-bold text-white pt-2 border-t border-slate-800"><span>Coût de revient total :</span><span id="res-revient">241 501 €</span></div>
-              <div class="flex justify-between font-bold text-emerald-400"><span>Revente totale :</span><span id="res-revente">310 000 €</span></div>
+            <div class="space-y-2 pt-3">
+              <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px] text-slate-400">
+                💡 <strong>Gain statut Marchand de Biens :</strong> économie de <span id="res-gain-notaire" class="text-emerald-400 font-bold">+9 565 €</span> de droits d'enregistrement par rapport à un particulier (art. 1115 du CGI).
+              </div>
+              <button onclick="genererAnalyseIA()" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
+                🎯 Lancer l'Analyse Stratégique & Décisionnelle
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOC ANALYSE STRATÉGIQUE & EXPLICATION DE LA MARGE -->
+        <div id="bloc-analyse-strategique" class="mt-6 pt-6 border-t border-slate-800 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span class="text-amber-400">✨</span> Rapport d'Analyse Stratégique & Validation Bancaire
+            </h3>
+            <span class="text-xs text-slate-400 font-mono" id="analyse-timestamp">Prêt pour audit</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <!-- Stratégie de découpe -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <strong class="text-amber-400 text-sm block flex items-center gap-1.5">
+                🏢 Stratégie d'Arbitrage Conseillée
+              </strong>
+              <p class="text-slate-300 leading-relaxed" id="strat-arbitrage">
+                Achat en bloc d'un ensemble complet à Millau. Revente immédiate par lot à la découpe avec création de règlement de copropriété. Cible de revente privilégiée : primo-accédants et investisseurs locatifs défiscalisant en déficit foncier.
+              </p>
+              <div class="pt-2 border-t border-slate-800/80 text-[11px] text-slate-400" id="strat-lots-detail">
+                Typologie optimale : petits T2 / T3 rénovés (1 750 € à 1 950 €/m²).
+              </div>
             </div>
 
-            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px] text-slate-400">
-              💡 <strong>Avantage MDB 0,715% :</strong> vous économisez environ <span id="res-gain-notaire" class="text-emerald-400 font-bold">+9 900 €</span> par rapport à un particulier acheteur.
+            <!-- Calcul Précis Expliqué -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <strong class="text-emerald-400 text-sm block flex items-center gap-1.5">
+                📐 Explication Précise du Calcul de Marge
+              </strong>
+              <div class="text-slate-300 space-y-1.5 leading-relaxed text-[11px]" id="strat-calcul-explication">
+                <div>• <strong>Prix d'achat net</strong> = Prix négocié direct vendeur.</div>
+                <div>• <strong>Notaire réduit (0.715%)</strong> : engagement de revente sous 5 ans (art. 1115 CGI).</div>
+                <div>• <strong>Travaux budgétés</strong> : postes gros oeuvre, électricité, plomberie et compteurs divisionnaires.</div>
+                <div>• <strong>Marge Brute</strong> = Total Revente Lots - (Prix + Acte + Travaux + Géomètre + Portage).</div>
+              </div>
+            </div>
+
+            <!-- Négociation & Argumentaire -->
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <strong class="text-sky-400 text-sm block flex items-center gap-1.5">
+                💬 Argumentaire de Négociation Agence
+              </strong>
+              <p class="text-slate-300 leading-relaxed text-[11px]" id="strat-pitch">
+                « Notre offre est ferme, sans aucune condition suspensive de prêt (financement sur fonds propres / ligne de crédit pro MDB validée). Acte rapide sous 30 jours, déchargeant le vendeur de toute gestion de copropriété ou travaux de mise aux normes DPE. »
+              </p>
+              <button onclick="copierPitch()" id="btn-copy-pitch" class="mt-2 w-full py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-[11px] font-semibold rounded-lg transition cursor-pointer">
+                📋 Copier le pitch de négociation
+              </button>
             </div>
           </div>
         </div>
@@ -185,8 +327,69 @@
     </div>
   </main>
 
+    <!-- MODAL DETAIL SCORING V3 -->
+    <div id="modal-scoring" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+      <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <button onclick="fermerModalScoring()" class="absolute right-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition cursor-pointer">✕</button>
+        <div class="flex items-center gap-2 mb-2">
+          <span id="modal-badge-qualite" class="px-2.5 py-0.5 rounded text-xs font-black border bg-emerald-500/20 text-emerald-300 border-emerald-500/40">Excellente opportunité</span>
+          <span class="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Scoring V3 Millau</span>
+        </div>
+        <h3 id="modal-titre" class="text-lg font-bold text-white mb-1">Détail du bien</h3>
+        <p id="modal-sous-titre" class="text-xs text-slate-400 mb-5">Agence • Millau</p>
+
+        <!-- 4 Piliers -->
+        <div class="space-y-3 text-xs mb-5">
+          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+            <div class="flex justify-between font-bold text-white mb-1">
+              <span class="text-emerald-400">1. Marge Potentielle Prévisionnelle (35%)</span>
+              <span id="modal-pts-marge" class="text-emerald-400">-- / 35 pts</span>
+            </div>
+            <p id="modal-desc-marge" class="text-slate-400 text-[11px] leading-relaxed">Calculé sur CA Revente - Travaux - Frais MDB.</p>
+          </div>
+
+          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+            <div class="flex justify-between font-bold text-white mb-1">
+              <span class="text-indigo-400">2. Découpe & Création de Valeur (25%)</span>
+              <span id="modal-pts-decoupe" class="text-indigo-400">-- / 25 pts</span>
+            </div>
+            <p id="modal-desc-decoupe" class="text-slate-400 text-[11px] leading-relaxed">Monopropriété sans syndic, plateaux ou division en plusieurs lots.</p>
+          </div>
+
+          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+            <div class="flex justify-between font-bold text-white mb-1">
+              <span class="text-amber-400">3. Levier de Négociation & Décote (20%)</span>
+              <span id="modal-pts-negoc" class="text-amber-400">-- / 20 pts</span>
+            </div>
+            <p id="modal-desc-negoc" class="text-slate-400 text-[11px] leading-relaxed">Passoire thermique F/G, historique de baisses de prix constatées et prix/m² bas.</p>
+          </div>
+
+          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+            <div class="flex justify-between font-bold text-white mb-1">
+              <span class="text-sky-400">4. Sécurité & Risque d'Exécution (20%)</span>
+              <span id="modal-pts-securite" class="text-sky-400">-- / 20 pts</span>
+            </div>
+            <p id="modal-desc-securite" class="text-slate-400 text-[11px] leading-relaxed">Ticket d'achat liquide et absence de copropriété bloquante.</p>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
+          <button onclick="fermerModalScoring()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl">Fermer</button>
+          <button id="modal-btn-simu" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl shadow-md">🧮 Simuler ce bien</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
   <script>
     const DATA = [{"url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/9312-immeuble-centre-ville", "agence": "Roques", "titre": "Immeuble 320 m² 3 etage(s)", "prix": 149000, "prix_initial": 149000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 149000}], "surface": 320.0, "terrain": null, "prix_m2": 465, "dpe": "A", "score": 13, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, grenier, à rénover, Prix canon 465 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:17", "localisation": "Millau", "v": 9}, {"url": "https://mesnard-immobilier.com/property/rue-du-pont-de-fer-type-a-renover-1-er-etage-avec-terrasse-60000-euro-millau-12-occitanie", "agence": "Mesnard apparts", "titre": "RUE DU PONT DE FER IMMEUBLE COMPRENANT 3 APPARTEMENTS 229000 €URO MILLAU 12 (Occitanie).", "prix": 229000, "prix_initial": 229000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 229000}], "surface": 350.0, "terrain": null, "prix_m2": 654, "dpe": "INCONNU", "score": 13, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, opportunité, a rénover, Prix canon 654 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:22", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/maison-vente-8-pieces-millau-240m2/r1955348", "agence": "iad", "titre": "Maison à vendre 8 pièces 240 m² Millau", "prix": 235000, "prix_initial": 235000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 235000}], "surface": 240.0, "terrain": null, "prix_m2": 979, "dpe": "INCONNU", "score": 13, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, plateau, opportunité, Prix canon 979 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:25", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/maison/9547-maison-avec-garage-et-exterieur", "agence": "Roques", "titre": "Maison 6 pièce(s) 3 chambre(s) 175 m²", "prix": 114000, "prix_initial": 114000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 114000}], "surface": 175.0, "terrain": 30.0, "prix_m2": 651, "dpe": "A", "score": 11, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "grenier, atelier, à rénover, Prix canon 651 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:18", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-320m2/r1865029", "agence": "iad", "titre": "Maison à vendre 4 pièces 320 m² Millau", "prix": 220000, "prix_initial": 220000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 220000}], "surface": 320.0, "terrain": 320.0, "prix_m2": 687, "dpe": "INCONNU", "score": 11, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, atelier, travaux, Prix canon 687 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:25", "localisation": "Millau", "v": 9}, {"url": "https://www.jmb-immobilier.com/vente-immeuble-212m-millau-TIMM85675", "agence": "JMB", "titre": "", "prix": 290000, "prix_initial": 290000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 290000}], "surface": 212.0, "terrain": null, "prix_m2": 1367, "dpe": "INCONNU", "score": 9, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, opportunité, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:20", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-96m2/r2065526", "agence": "iad", "titre": "Maison à vendre 4 pièces 96 m² Millau", "prix": 274000, "prix_initial": 274000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 274000}], "surface": 96.0, "terrain": 26.0, "prix_m2": 2854, "dpe": "INCONNU", "score": 9, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, plateau, atelier", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:23", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-41m2/r2072404", "agence": "iad", "titre": "Appartement à vendre 3 pièces 41 m² Millau", "prix": 90000, "prix_initial": 90000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 90000}], "surface": 41.0, "terrain": null, "prix_m2": 2195, "dpe": "C", "score": 9, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, opportunité, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:23", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/maison-vente-7-pieces-millau-109m2/r2102018", "agence": "iad", "titre": "Maison à vendre 7 pièces 109 m² Millau", "prix": 237000, "prix_initial": 237000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 237000}], "surface": 109.0, "terrain": 354.0, "prix_m2": 2174, "dpe": "E", "score": 9, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, à rénover, à rafraichir", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:24", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-47m2/r2072406", "agence": "iad", "titre": "Appartement à vendre 3 pièces 47 m² Millau", "prix": 95000, "prix_initial": 95000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 95000}], "surface": 47.0, "terrain": null, "prix_m2": 2021, "dpe": "INCONNU", "score": 9, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, opportunité, à rafraîchir", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:24", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-123m2/r1843132", "agence": "iad", "titre": "Appartement à vendre 5 pièces 123 m² Millau", "prix": 240000, "prix_initial": 240000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 240000}], "surface": 123.0, "terrain": null, "prix_m2": 1951, "dpe": "E", "score": 9, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, grenier, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:24", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-52m2/r1972323", "agence": "iad", "titre": "Appartement à vendre 3 pièces 52 m² Millau", "prix": 98000, "prix_initial": 98000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 98000}], "surface": 52.0, "terrain": null, "prix_m2": 1884, "dpe": "INCONNU", "score": 9, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, opportunité, à rafraîchir", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:25", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/terrain-agricole/9972-terrain-non-constructible-avec-hangar-et-maison-de-vigne", "agence": "Roques", "titre": "Terrain agricole", "prix": 54000, "prix_initial": 54000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 54000}], "surface": 902.0, "terrain": 902.0, "prix_m2": 59, "dpe": "A", "score": 8, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "hangar, opportunité, Prix canon 59 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:18", "localisation": "Millau", "v": 9}, {"url": "https://www.jmb-immobilier.com/vente-local_commercial-1piece-millau-TLOC96057", "agence": "JMB", "titre": "", "prix": 44000, "prix_initial": 44000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 44000}], "surface": 31.0, "terrain": null, "prix_m2": 1419, "dpe": "INCONNU", "score": 8, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, divisible", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:20", "localisation": "Millau", "v": 9}, {"url": "https://www.jmb-immobilier.com/vente-terrain-annonce-millau-TTER91644", "agence": "JMB", "titre": "", "prix": 130000, "prix_initial": 130000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 130000}], "surface": 1119.0, "terrain": 1119.0, "prix_m2": 116, "dpe": "INCONNU", "score": 8, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "remise, terrain constructible, Prix canon 116 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:21", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/maison-vente-6-pieces-millau-101m2/r2090138", "agence": "iad", "titre": "Maison à vendre 6 pièces 101 m² Millau", "prix": 279500, "prix_initial": 279500, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 279500}], "surface": 101.0, "terrain": 101.0, "prix_m2": 2767, "dpe": "D", "score": 8, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, atelier, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:24", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/10190-immeuble-a-vendre-de-2-logments-a-millau", "agence": "Roques", "titre": "Immeuble 80 m² 1 etage(s)", "prix": 184700, "prix_initial": 184700, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 184700}], "surface": 80.0, "terrain": null, "prix_m2": 2308, "dpe": "A", "score": 7, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, opportunité", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:16", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/10429-immeuble-mixte-avec-appartement-et-local-commercial-belle-opportunite-a-millau", "agence": "Roques", "titre": "Immeuble 120 m²", "prix": 243000, "prix_initial": 243000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 243000}], "surface": 120.0, "terrain": null, "prix_m2": 2025, "dpe": "A", "score": 7, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, grenier", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:16", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10649-a-vendre-a-millau-appartement-t8-de-plain-pied", "agence": "Roques", "titre": "Appartement 8 pièce(s) 4 chambre(s) 239 m²", "prix": 238500, "prix_initial": 238500, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 238500}], "surface": 239.0, "terrain": null, "prix_m2": 997, "dpe": "A", "score": 7, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, Prix canon 997 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:17", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/local-commercial-vente-millau-180m2/r2018529", "agence": "iad", "titre": "Restaurant à vendre 180 m² Millau", "prix": 153400, "prix_initial": 153400, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 153400}], "surface": 180.0, "terrain": null, "prix_m2": 852, "dpe": "INCONNU", "score": 7, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, Prix canon 852 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:23", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-47m2/r2065928", "agence": "iad", "titre": "Appartement à vendre 3 pièces 47 m² Millau", "prix": 120000, "prix_initial": 120000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 120000}], "surface": 47.0, "terrain": null, "prix_m2": 2553, "dpe": "INCONNU", "score": 7, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, opportunité", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:23", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-110m2/r1978699", "agence": "iad", "titre": "Appartement à vendre 5 pièces 110 m² Millau", "prix": 250000, "prix_initial": 250000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 250000}], "surface": 110.0, "terrain": null, "prix_m2": 2272, "dpe": "INCONNU", "score": 7, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, opportunité", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:24", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/maison-vente-2-pieces-millau-91m2/r1872223", "agence": "iad", "titre": "Maison à vendre 2 pièces 90,85 m² Millau", "prix": 285000, "prix_initial": 285000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 285000}], "surface": 90.85, "terrain": 231.0, "prix_m2": 3137, "dpe": "INCONNU", "score": 7, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, opportunité", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:24", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-96m2/r1905347", "agence": "iad", "titre": "Maison à vendre 4 pièces 96 m² Millau", "prix": 244000, "prix_initial": 244000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 244000}], "surface": 96.0, "terrain": null, "prix_m2": 2541, "dpe": "E", "score": 7, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, plateau", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:25", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033765.html", "agence": "SGA", "titre": "Appartement 4 pièces, 95m²\nen vente à Millau\n180 200 € *", "prix": 180200, "prix_initial": 180200, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 180200}], "surface": 95.0, "terrain": null, "prix_m2": 1896, "dpe": "INCONNU", "score": 7, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, grenier", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:44", "localisation": "Millau", "v": 9}, {"url": "https://www.jmb-immobilier.com/vente-appartement-4pieces-millau-TAPP100078", "agence": "JMB", "titre": "", "prix": 96500, "prix_initial": 96500, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 96500}], "surface": 95.0, "terrain": null, "prix_m2": 1015, "dpe": "INCONNU", "score": 6, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "à rénover, Prix canon 1015 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:20", "localisation": "Millau", "v": 9}, {"url": "https://mesnard-immobilier.com/property/superbe-appartement-de-type-4-118-m2-rue-clausel-de-coussergues-millau-12-occitanie-156800-euro-a-saisir", "agence": "Mesnard maisons", "titre": "SUPERBE APPARTEMENT DE TYPE 4 118 M2; RUE CLAUSEL DE COUSSERGUES MILLAU (12) Occitanie. 156800 €uro. a saisir", "prix": 156800, "prix_initial": 156800, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 156800}], "surface": 150.0, "terrain": null, "prix_m2": 1045, "dpe": "INCONNU", "score": 6, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "terrain constructible, Prix canon 1045 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:21", "localisation": "Millau", "v": 9}, {"url": "https://mesnard-immobilier.com/property/fonds-de-commerce-patisserie-salon-de-the-boulevard-de-layrolle-millau-12", "agence": "Mesnard maisons", "titre": "Fonds de commerce Pâtisserie -150000 €uro Affaire à saisir salon de thé Boulevard de l’Ayrolle – Millau (12)", "prix": 150000, "prix_initial": 150000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 150000}], "surface": 150.0, "terrain": null, "prix_m2": 1000, "dpe": "INCONNU", "score": 6, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "terrain constructible, Prix canon 1000 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:22", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-51m2/r2086169", "agence": "iad", "titre": "Appartement à vendre 3 pièces 51 m² Millau", "prix": 75000, "prix_initial": 75000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 75000}], "surface": 51.0, "terrain": null, "prix_m2": 1470, "dpe": "INCONNU", "score": 6, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:22", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/maison-vente-8-pieces-millau-137m2/r2074176", "agence": "iad", "titre": "Maison à vendre 8 pièces 137,42 m² Millau", "prix": 268500, "prix_initial": 268500, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 268500}], "surface": 137.42, "terrain": null, "prix_m2": 1953, "dpe": "INCONNU", "score": 6, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:22", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-76m2/r1974169", "agence": "iad", "titre": "Appartement à vendre 3 pièces 76 m² Millau", "prix": 162000, "prix_initial": 162000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 162000}], "surface": 76.0, "terrain": null, "prix_m2": 2131, "dpe": "INCONNU", "score": 6, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, atelier", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:22", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/maison-vente-5-pieces-millau-98m2/r1981327", "agence": "iad", "titre": "Maison à vendre 5 pièces 98 m² Millau", "prix": 193000, "prix_initial": 193000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 193000}], "surface": 98.0, "terrain": 464.0, "prix_m2": 1969, "dpe": "E", "score": 6, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, remise", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:23", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-54m2/r2123708", "agence": "iad", "titre": "Appartement à vendre 3 pièces 54 m² Millau", "prix": 98000, "prix_initial": 98000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 98000}], "surface": 54.0, "terrain": null, "prix_m2": 1814, "dpe": "D", "score": 6, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:23", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-4-pieces-millau-98m2/r2125867", "agence": "iad", "titre": "Appartement à vendre 4 pièces 98 m² Millau", "prix": 169000, "prix_initial": 169000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 169000}], "surface": 98.0, "terrain": null, "prix_m2": 1724, "dpe": "INCONNU", "score": 6, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:24", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-92m2/r1928341", "agence": "iad", "titre": "Maison à vendre 4 pièces 92 m² Millau", "prix": 253000, "prix_initial": 253000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 253000}], "surface": 92.0, "terrain": null, "prix_m2": 2750, "dpe": "INCONNU", "score": 6, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:24", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-69m2/r1947495", "agence": "iad", "titre": "Appartement à vendre 3 pièces 69 m² Millau", "prix": 179000, "prix_initial": 179000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 179000}], "surface": 69.0, "terrain": null, "prix_m2": 2594, "dpe": "INCONNU", "score": 6, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:25", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/maison/8313-villa-de-106m-a-millau", "agence": "Roques", "titre": "Maison 7 pièce(s) 4 chambre(s) 106.45 m²", "prix": 213000, "prix_initial": 213000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 213000}], "surface": 106.45, "terrain": null, "prix_m2": 2000, "dpe": "A", "score": 5, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "grenier, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:17", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/appartement/8281-appartement-t3-millau-avec-garage", "agence": "Roques", "titre": "Appartement 3 pièce(s) 2 chambre(s) 82.38 m²", "prix": 104000, "prix_initial": 104000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 104000}], "surface": 82.38, "terrain": null, "prix_m2": 1262, "dpe": "A", "score": 5, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "grenier, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:17", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/appartement/9037-appartement-duplex-millau", "agence": "Roques", "titre": "Appartement 6 pièce(s) 5 chambre(s) 153 m²", "prix": 230000, "prix_initial": 230000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 230000}], "surface": 153.0, "terrain": null, "prix_m2": 1503, "dpe": "A", "score": 5, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "opportunité, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:18", "localisation": "Millau", "v": 9}, {"url": "https://www.jmb-immobilier.com/vente-appartement-49m-millau-TAPP100094", "agence": "JMB", "titre": "", "prix": 50000, "prix_initial": 50000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 50000}], "surface": 49.0, "terrain": null, "prix_m2": 1020, "dpe": "INCONNU", "score": 5, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "travaux, Prix canon 1020 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:20", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/maison/10336-maison-familiale-a-renover-proche-centre-ville", "agence": "Roques", "titre": "Maison 6 pièce(s) 5 chambre(s) 137 m²", "prix": 245000, "prix_initial": 245000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 245000}], "surface": 137.0, "terrain": 520.0, "prix_m2": 1788, "dpe": "A", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "remise, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:16", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/maison/9954-charmante-maison-avec-terrasse-et-annexes", "agence": "Roques", "titre": "Maison 3 pièce(s) 2 chambre(s) 99 m²", "prix": 208000, "prix_initial": 208000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 208000}], "surface": 99.0, "terrain": 159.0, "prix_m2": 2101, "dpe": "A", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "atelier, travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:17", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonce/vente-immeuble-millau-p-r7-1200351.html", "agence": "SGA", "titre": "Immeuble , 181m²\nen vente à Millau\n231 000 € *", "prix": 231000, "prix_initial": 231000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 231000}], "surface": 181.0, "terrain": null, "prix_m2": 1276, "dpe": "INCONNU", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:18", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonces/louer-p-r70-5-1.html", "agence": "SGA", "titre": "27 BIENS IMMOBILIERS EN LOCATION TROUVÉS", "prix": 28300, "prix_initial": 28300, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 28300}], "surface": 17.0, "terrain": null, "prix_m2": 1664, "dpe": "INCONNU", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:18", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033762.html", "agence": "SGA", "titre": "Appartement 3 pièces, 114m²\nen vente à Millau\n149 000 € *", "prix": 149000, "prix_initial": 149000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 149000}], "surface": 114.0, "terrain": null, "prix_m2": 1307, "dpe": "INCONNU", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "division", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:19", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonces-immobilieres-p-r12-1.html", "agence": "SGA", "titre": "13 BIENS IMMOBILIERS TROUVÉS", "prix": 89800, "prix_initial": 89800, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 89800}], "surface": 71.0, "terrain": null, "prix_m2": 1264, "dpe": "INCONNU", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:19", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonces/acheter-p-r70-4-1.html", "agence": "SGA", "titre": "13 BIENS IMMOBILIERS EN VENTE TROUVÉS", "prix": 89800, "prix_initial": 89800, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 89800}], "surface": 71.0, "terrain": null, "prix_m2": 1264, "dpe": "INCONNU", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:19", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonces/millau-p-r301-0-22137-1.html", "agence": "SGA", "titre": "13 BIEN(S) TROUVÉ(S) BIENS TROUVÉS À MILLAU", "prix": 89800, "prix_initial": 89800, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 89800}], "surface": 71.0, "terrain": null, "prix_m2": 1264, "dpe": "INCONNU", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:19", "localisation": "Millau", "v": 9}, {"url": "https://www.jmb-immobilier.com/vente-appartement-1piece-millau-TAPP100087", "agence": "JMB", "titre": "", "prix": 59000, "prix_initial": 59000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 59000}], "surface": 27.0, "terrain": null, "prix_m2": 2185, "dpe": "INCONNU", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:20", "localisation": "Millau", "v": 9}, {"url": "https://www.jmb-immobilier.com/vente-appartement-69m-millau-TAPP100091", "agence": "JMB", "titre": "", "prix": 124000, "prix_initial": 124000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 124000}], "surface": 69.0, "terrain": null, "prix_m2": 1797, "dpe": "INCONNU", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:21", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-102m2/r2032254", "agence": "iad", "titre": "Appartement à vendre 5 pièces 102 m² Millau", "prix": 193000, "prix_initial": 193000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 193000}], "surface": 102.0, "terrain": null, "prix_m2": 1892, "dpe": "INCONNU", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:24", "localisation": "Millau", "v": 9}, {"url": "https://www.iadfrance.fr/annonce/appartement-vente-8-pieces-millau-170m2/r1865049", "agence": "iad", "titre": "Appartement à vendre 8 pièces 170 m² Millau", "prix": 250000, "prix_initial": 250000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 250000}], "surface": 170.0, "terrain": null, "prix_m2": 1470, "dpe": "INCONNU", "score": 4, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "immeuble", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:25", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10452-appartement-t4-avec-terrasse-a-millau", "agence": "Roques", "titre": "Appartement 5 pièce(s) 4 chambre(s) 104 m²", "prix": 165000, "prix_initial": 165000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 165000}], "surface": 104.0, "terrain": null, "prix_m2": 1586, "dpe": "A", "score": 3, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "opportunité", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:16", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033781.html", "agence": "SGA", "titre": "Appartement 3 pièces, 71m²\nen vente à Millau\n89 800 € *", "prix": 89800, "prix_initial": 89800, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 89800}], "surface": 71.0, "terrain": null, "prix_m2": 1264, "dpe": "INCONNU", "score": 3, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "grenier", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:19", "localisation": "Millau", "v": 9}, {"url": "https://mesnard-immobilier.com/property/superbe-petite-maison-de-village-avec-terrasse-panoramique-sur-la-dourbie-la-roque-st-marguerite-12-occitanie", "agence": "Mesnard maisons", "titre": "SUPERBE PETITE MAISON DE VILLAGE AVEC TERRASSE PANORAMIQUE SUR LA DOURBIE; LA ROQUE ST MARGUERITE 12 (Occitanie)", "prix": 130000, "prix_initial": 130000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 130000}], "surface": 812.0, "terrain": null, "prix_m2": 160, "dpe": "INCONNU", "score": 3, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "Prix canon 160 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:21", "localisation": "Millau", "v": 9}, {"url": "https://mesnard-immobilier.com/property/ideal-investissement-locatif-type-2-loue-depuis-8-ans-prix-attractif-de-69000-euro-millau-12-occitanie", "agence": "Mesnard maisons", "titre": "IDEAL INVESTISSEMENT LOCATIF. TYPE 2 LOUE DEPUIS 8 ANS. PRIX ATTRACTIF DE 69000 €URO MILLAU 12 (Occitanie).", "prix": 69000, "prix_initial": 69000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 69000}], "surface": 80.0, "terrain": null, "prix_m2": 862, "dpe": "INCONNU", "score": 3, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "Prix canon 862 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:22", "localisation": "Millau", "v": 9}, {"url": "https://mesnard-immobilier.com/property/deux-parkings-residence-condatomag-rue-condatomag-millau-12", "agence": "Mesnard apparts", "titre": "DEUX PARKINGS RESIDENCE CONDATOMAG. RUE CONDATOMAG MILLAU (12)", "prix": 133000, "prix_initial": 133000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 133000}], "surface": 1400.0, "terrain": null, "prix_m2": 95, "dpe": "INCONNU", "score": 3, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "Prix canon 95 €/m²", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:22", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/maison/10296-maison-t7-situee-dans-un-quartier-calme-de-millau", "agence": "Roques", "titre": "Maison 7 pièce(s) 3 chambre(s) 124 m²", "prix": 200000, "prix_initial": 200000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 200000}], "surface": 124.0, "terrain": 388.0, "prix_m2": 1612, "dpe": "A", "score": 2, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:16", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/maison/10197-maison-familiale-lumineuse-sur-les-hauteurs-de-millau", "agence": "Roques", "titre": "Maison 4 pièce(s) 3 chambre(s) 156.58 m²", "prix": 280000, "prix_initial": 280000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 280000}], "surface": 156.58, "terrain": 1390.0, "prix_m2": 1788, "dpe": "A", "score": 2, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:16", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10484-appartement-t4-millau", "agence": "Roques", "titre": "Appartement 4 pièce(s) 3 chambre(s) 109.33 m²", "prix": 130000, "prix_initial": 130000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 130000}], "surface": 109.33, "terrain": null, "prix_m2": 1189, "dpe": "A", "score": 2, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:16", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/maison/8395-proche-du-centre-ville-maison-jardin-et-garage-vue-larzac", "agence": "Roques", "titre": "Maison 4 pièce(s) 3 chambre(s) 109 m²", "prix": 274000, "prix_initial": 274000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 274000}], "surface": 109.0, "terrain": 388.0, "prix_m2": 2513, "dpe": "A", "score": 2, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:17", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/maison/7620-maison-t4-avec-terrasse-et-garage", "agence": "Roques", "titre": "Maison 4 pièce(s) 3 chambre(s) 142.3 m²", "prix": 249000, "prix_initial": 249000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 249000}], "surface": 142.3, "terrain": null, "prix_m2": 1749, "dpe": "A", "score": 2, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "atelier", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:17", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033753.html", "agence": "SGA", "titre": "Appartement 3 pièces, 51m²\nen vente à Millau\n90 000 € *", "prix": 90000, "prix_initial": 90000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 90000}], "surface": 51.0, "terrain": null, "prix_m2": 1764, "dpe": "E", "score": 2, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:19", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033784.html", "agence": "SGA", "titre": "Appartement 4 pièces, 79m²\nen vente à Millau\n130 000 € *", "prix": 130000, "prix_initial": 130000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 130000}], "surface": 79.0, "terrain": null, "prix_m2": 1645, "dpe": "INCONNU", "score": 2, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:19", "localisation": "Millau", "v": 9}, {"url": "https://www.jmb-immobilier.com/vente-appartement-76m-millau-TAPP100093", "agence": "JMB", "titre": "", "prix": 115000, "prix_initial": 115000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 115000}], "surface": 76.0, "terrain": null, "prix_m2": 1513, "dpe": "INCONNU", "score": 2, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "travaux", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:20", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10401-appartement-t2-vendu-loue-a-millau", "agence": "Roques", "titre": "Appartement 2 pièce(s) 1 chambre(s) 42.2 m²", "prix": 65000, "prix_initial": 65000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 65000}], "surface": 42.2, "terrain": 939.0, "prix_m2": 1540, "dpe": "A", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:16", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10593-appartement-t4-millau-avec-t2-independant", "agence": "Roques", "titre": "Appartement 5 pièce(s) 4 chambre(s) 130.67 m²", "prix": 239000, "prix_initial": 239000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 239000}], "surface": 130.67, "terrain": null, "prix_m2": 1829, "dpe": "A", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:16", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10067-appartement-t3-dans-residence-securisee", "agence": "Roques", "titre": "Appartement 3 pièce(s) 2 chambre(s) 80 m²", "prix": 129500, "prix_initial": 129500, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 129500}], "surface": 80.0, "terrain": null, "prix_m2": 1618, "dpe": "A", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:17", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/maison/8536-programme-neuf-villa-t4-avec-jardin", "agence": "Roques", "titre": "Maison 4 pièce(s) 3 chambre(s) 90.71 m²", "prix": 289000, "prix_initial": 289000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 289000}], "surface": 90.71, "terrain": 230.0, "prix_m2": 3185, "dpe": "A", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:17", "localisation": "Millau", "v": 9}, {"url": "https://www.roques-immobilier.com/vente/435-millau/appartement/9571-appartement-t3-avec-parking-et-balcon-a-millau", "agence": "Roques", "titre": "Appartement 4 pièce(s) 2 chambre(s) 92 m²", "prix": 171500, "prix_initial": 171500, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 171500}], "surface": 92.0, "terrain": null, "prix_m2": 1864, "dpe": "A", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:18", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033744.html", "agence": "SGA", "titre": "Appartement 3 pièces, 53m²\nen vente à Millau\n153 000 € *", "prix": 153000, "prix_initial": 153000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 153000}], "surface": 53.0, "terrain": null, "prix_m2": 2886, "dpe": "INCONNU", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:18", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonces/appartement-p-r70-2-1.html", "agence": "SGA", "titre": "9 APPARTEMENTS TROUVÉS", "prix": 89800, "prix_initial": 89800, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 89800}], "surface": 71.0, "terrain": null, "prix_m2": 1264, "dpe": "INCONNU", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:18", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033761.html", "agence": "SGA", "titre": "Appartement 4 pièces, 67m²\nen vente à Millau\n118 000 € *", "prix": 118000, "prix_initial": 118000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 118000}], "surface": 67.0, "terrain": null, "prix_m2": 1761, "dpe": "INCONNU", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:18", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033760.html", "agence": "SGA", "titre": "Appartement 4 pièces, 82m²\nen vente à Millau\n126 000 € *", "prix": 126000, "prix_initial": 126000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 126000}], "surface": 82.0, "terrain": null, "prix_m2": 1536, "dpe": "INCONNU", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:19", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033787.html", "agence": "SGA", "titre": "Appartement 4 pièces, 77m²\nen vente à Millau\n175 000 € *", "prix": 175000, "prix_initial": 175000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 175000}], "surface": 77.0, "terrain": null, "prix_m2": 2272, "dpe": "INCONNU", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:19", "localisation": "Millau", "v": 9}, {"url": "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033754.html", "agence": "SGA", "titre": "Maison 4 pièces, 156m²\nen vente à Millau\n280 000 € *", "prix": 280000, "prix_initial": 280000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 280000}], "surface": 156.0, "terrain": null, "prix_m2": 1794, "dpe": "INCONNU", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:20", "localisation": "Millau", "v": 9}, {"url": "https://www.jmb-immobilier.com/vente-appartement-2pieces-millau-TAPP100092", "agence": "JMB", "titre": "", "prix": 64000, "prix_initial": 64000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 64000}], "surface": 30.0, "terrain": null, "prix_m2": 2133, "dpe": "INCONNU", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:20", "localisation": "Millau", "v": 9}, {"url": "https://www.jmb-immobilier.com/vente-maison-210m-millau-TMAI99347", "agence": "JMB", "titre": "", "prix": 278000, "prix_initial": 278000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 278000}], "surface": 210.0, "terrain": 700.0, "prix_m2": 1323, "dpe": "A", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:20", "localisation": "Millau", "v": 9}, {"url": "https://www.jmb-immobilier.com/vente-appartement-27m-millau-TAPP100095", "agence": "JMB", "titre": "", "prix": 40000, "prix_initial": 40000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 40000}], "surface": 27.0, "terrain": null, "prix_m2": 1481, "dpe": "INCONNU", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:20", "localisation": "Millau", "v": 9}, {"url": "https://mesnard-immobilier.com/property/grande-jasse-de-600-m2-a-deux-pas-de-millau", "agence": "Mesnard maisons", "titre": "GRANDE JASSE DE 600 M2 A DEUX PAS DE MILLAU (12) OCCITANIE.", "prix": 154000, "prix_initial": 154000, "baisse_prix_pct": 0.0, "historique_prix": [{"date": "09/10/2026", "prix": 154000}], "surface": 118.0, "terrain": null, "prix_m2": 1305, "dpe": "INCONNU", "score": 0, "score_v3": 0.0, "marge_estimee_montant": 0, "marge_estimee_pct": 0.0, "mots_detectes": "", "nouvelle": true, "a_baisse": false, "date_collecte": "2026-10-09 12:21", "localisation": "Millau", "v": 9}];
+    let currentLots = [
+      { id: '1', nom: 'Lot 1 : Local RDC / Garage', surface: 45, travaux: 18000, revente: 42000 },
+      { id: '2', nom: 'Lot 2 : T2 1er étage rénové', surface: 60, travaux: 45000, revente: 105000 },
+      { id: '3', nom: 'Lot 3 : T3 2ème étage rénové', surface: 65, travaux: 48000, revente: 118000 },
+      { id: '4', nom: 'Lot 4 : Loft sous combles', surface: 70, travaux: 52000, revente: 125000 },
+    ];
+    let selectedDealContext = null;
 
     function setTab(name) {
       ['deals', 'simu', 'audit'].forEach(t => {
@@ -201,37 +404,220 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function simulerDeal(prix, surface) {
-      document.getElementById('sim-prix').value = prix || 120000;
-      const m2 = surface || 100;
-      document.getElementById('sim-travaux').value = Math.round(m2 * 750);
-      document.getElementById('sim-revente').value = Math.round(m2 * 1850);
+    function renderLotsTable() {
+      const tbody = document.getElementById('lots-table-body');
+      tbody.innerHTML = '';
+      let totalSurf = 0;
+      let totalTrav = 0;
+      let totalRev = 0;
+
+      currentLots.forEach((lot, idx) => {
+        totalSurf += lot.surface || 0;
+        totalTrav += lot.travaux || 0;
+        totalRev += lot.revente || 0;
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/60 transition';
+        tr.innerHTML = 
+          '<td class="py-2 pr-2"><input type="text" value="' + lot.nom + '" onchange="updateLot(' + idx + ', 'nom', this.value)" class="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-slate-200 text-xs focus:border-amber-500" /></td>' +
+          '<td class="py-2 pr-2"><input type="number" value="' + lot.surface + '" oninput="updateLot(' + idx + ', 'surface', parseFloat(this.value)||0)" class="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-white text-xs" /></td>' +
+          '<td class="py-2 pr-2"><input type="number" value="' + lot.travaux + '" oninput="updateLot(' + idx + ', 'travaux', parseFloat(this.value)||0)" class="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-amber-300 text-xs" /></td>' +
+          '<td class="py-2 pr-2"><input type="number" value="' + lot.revente + '" oninput="updateLot(' + idx + ', 'revente', parseFloat(this.value)||0)" class="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-emerald-400 font-bold text-xs" /></td>' +
+          '<td class="py-2 text-center"><button onclick="supprimerLot(' + idx + ')" class="text-slate-600 hover:text-rose-400 text-xs cursor-pointer">✕</button></td>';
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('total-surf').textContent = totalSurf + ' m²';
+      document.getElementById('total-travaux-lots').textContent = totalTrav.toLocaleString('fr-FR') + ' €';
+      document.getElementById('total-revente-lots').textContent = totalRev.toLocaleString('fr-FR') + ' €';
+
       calculerSimu();
+    }
+
+    function ajouterLot() {
+      const num = currentLots.length + 1;
+      currentLots.push({
+        id: Date.now().toString(),
+        nom: 'Lot ' + num + ' : T2 rénové',
+        surface: 50,
+        travaux: 38000,
+        revente: 92000
+      });
+      renderLotsTable();
+    }
+
+    function supprimerLot(idx) {
+      if (currentLots.length <= 1) return;
+      currentLots.splice(idx, 1);
+      renderLotsTable();
+    }
+
+    function updateLot(idx, field, val) {
+      if (currentLots[idx]) {
+        currentLots[idx][field] = val;
+        renderLotsTable();
+      }
+    }
+
+    function simulerDeal(prix, surface, titre, dpe, agence) {
+      selectedDealContext = { prix, surface, titre, dpe, agence };
+      document.getElementById('sim-prix').value = prix || 140000;
+      document.getElementById('sim-nego').value = Math.round((prix || 140000) * 0.08);
+
+      const m2 = surface || 160;
+      // Régénérer les lots proportionnellement à la surface réelle
+      if (m2 > 180) {
+        currentLots = [
+          { id: '1', nom: 'RDC : Local d’activité / Garage', surface: Math.round(m2 * 0.22), travaux: Math.round(m2 * 0.22 * 450), revente: Math.round(m2 * 0.22 * 1100) },
+          { id: '2', nom: '1er étage : T2 rénové', surface: Math.round(m2 * 0.26), travaux: Math.round(m2 * 0.26 * 850), revente: Math.round(m2 * 0.26 * 1900) },
+          { id: '3', nom: '2ème étage : T3 rénové', surface: Math.round(m2 * 0.26), travaux: Math.round(m2 * 0.26 * 800), revente: Math.round(m2 * 0.26 * 1900) },
+          { id: '4', nom: '3ème étage : Loft sous combles', surface: Math.round(m2 * 0.26), travaux: Math.round(m2 * 0.26 * 850), revente: Math.round(m2 * 0.26 * 1950) }
+        ];
+      } else if (m2 > 100) {
+        currentLots = [
+          { id: '1', nom: 'Lot 1 : T3 avec jardin/terrasse', surface: Math.round(m2 * 0.55), travaux: Math.round(m2 * 0.55 * 800), revente: Math.round(m2 * 0.55 * 1950) },
+          { id: '2', nom: 'Lot 2 : T2 indépendant', surface: Math.round(m2 * 0.45), travaux: Math.round(m2 * 0.45 * 850), revente: Math.round(m2 * 0.45 * 1900) }
+        ];
+      } else {
+        currentLots = [
+          { id: '1', nom: 'Lot unique : Réhabilitation complète', surface: m2, travaux: Math.round(m2 * (dpe === 'G' ? 950 : 750)), revente: Math.round(m2 * 1900) }
+        ];
+      }
+
+      renderLotsTable();
+      genererAnalyseIA();
       setTab('simu');
     }
 
     function calculerSimu() {
-      const prix = parseFloat(document.getElementById('sim-prix').value) || 0;
+      const prixAffiche = parseFloat(document.getElementById('sim-prix').value) || 0;
+      const negociation = parseFloat(document.getElementById('sim-nego').value) || 0;
+      const prixNet = Math.max(0, prixAffiche - negociation);
       const tauxNotaire = parseFloat(document.getElementById('sim-notaire').value) || 0.00715;
-      const notaire = Math.round(prix * tauxNotaire);
-      const travaux = parseFloat(document.getElementById('sim-travaux').value) || 0;
-      const portage = parseFloat(document.getElementById('sim-portage').value) || 0;
-      const revente = parseFloat(document.getElementById('sim-revente').value) || 0;
+      const notaire = Math.round(prixNet * tauxNotaire);
+      const geometre = parseFloat(document.getElementById('sim-geometre').value) || 0;
+      const dureeMois = parseFloat(document.getElementById('sim-mois').value) || 8;
+      const tauxCredit = parseFloat(document.getElementById('sim-taux').value) || 3.8;
+      const apport = parseFloat(document.getElementById('sim-apport').value) || 35000;
 
-      const revient = prix + notaire + travaux + portage;
-      const marge = revente - revient;
-      const pct = revente > 0 ? ((marge / revente) * 100).toFixed(1) : 0;
-      const gainNotaire = Math.round(prix * (0.078 - 0.00715));
+      const totalTravaux = currentLots.reduce((sum, l) => sum + (l.travaux || 0), 0);
+      const reventeTotale = currentLots.reduce((sum, l) => sum + (l.revente || 0), 0);
 
-      document.getElementById('res-achat').textContent = prix.toLocaleString('fr-FR') + ' €';
+      // Portage
+      const emprunt = Math.max(0, prixNet + notaire + totalTravaux + geometre - apport);
+      const portage = Math.round(emprunt * (tauxCredit / 100) * (dureeMois / 12) + (emprunt * 0.01));
+
+      const revient = prixNet + notaire + totalTravaux + geometre + portage;
+      const margeBrute = reventeTotale - revient;
+      const pctBrute = reventeTotale > 0 ? ((margeBrute / reventeTotale) * 100).toFixed(1) : 0;
+
+      // Impôt sur les sociétés (15% jusqu'à 42500€ puis 25%)
+      let isEstime = 0;
+      if (margeBrute > 0) {
+        if (margeBrute <= 42500) isEstime = Math.round(margeBrute * 0.15);
+        else isEstime = Math.round((42500 * 0.15) + ((margeBrute - 42500) * 0.25));
+      }
+      const margeNette = Math.max(0, margeBrute - isEstime);
+      const roi = apport > 0 ? Math.round((margeNette / apport) * 100) : 0;
+      const gainNotaire = Math.round(prixNet * (0.078 - 0.00715));
+
+      document.getElementById('res-achat').textContent = prixNet.toLocaleString('fr-FR') + ' €';
       document.getElementById('res-notaire').textContent = notaire.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-travaux').textContent = travaux.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-travaux').textContent = totalTravaux.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-geometre').textContent = geometre.toLocaleString('fr-FR') + ' €';
       document.getElementById('res-portage').textContent = portage.toLocaleString('fr-FR') + ' €';
       document.getElementById('res-revient').textContent = revient.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-revente').textContent = revente.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-marge-brute').textContent = (marge >= 0 ? '+' : '') + marge.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-marge-pct').textContent = pct + '% du CA';
+      document.getElementById('res-revente').textContent = reventeTotale.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-is').textContent = (isEstime > 0 ? '-' : '') + isEstime.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-marge-brute').textContent = (margeBrute >= 0 ? '+' : '') + margeBrute.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-marge-pct').textContent = pctBrute + '% du CA de revente';
+      document.getElementById('res-marge-nette').textContent = (margeNette >= 0 ? '+' : '') + margeNette.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-roi').textContent = roi + '%';
       document.getElementById('res-gain-notaire').textContent = '+' + gainNotaire.toLocaleString('fr-FR') + ' €';
+    }
+
+    function genererAnalyseIA() {
+      const prix = parseFloat(document.getElementById('sim-prix').value) || 140000;
+      const nego = parseFloat(document.getElementById('sim-nego').value) || 14000;
+      const prixNet = prix - nego;
+      const nbLots = currentLots.length;
+      const revente = currentLots.reduce((s, l) => s + (l.revente || 0), 0);
+      const travaux = currentLots.reduce((s, l) => s + (l.travaux || 0), 0);
+      const revient = parseFloat(document.getElementById('res-revient').textContent.replace(/[^d]/g, '')) || 220000;
+      const marge = revente - revient;
+      const margePct = revente > 0 ? ((marge / revente) * 100).toFixed(1) : 0;
+
+      const titre = selectedDealContext ? selectedDealContext.titre : 'Ensemble immobilier Millau';
+      const dpe = selectedDealContext ? selectedDealContext.dpe : 'F';
+
+      document.getElementById('analyse-timestamp').textContent = 'Audit généré le ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+      // Stratégie
+      if (nbLots >= 3) {
+        document.getElementById('strat-arbitrage').innerHTML =
+          '<strong>Découpe cadastrale en ' + nbLots + ' lots en copropriété neuve.</strong><br/>Acheter la monopropriété en bloc (statut MDB art. 1115 CGI, notaire ~0.715%). Créer l’EDD et le règlement de copropriété avec géomètre. Rénovation par tranche : le cash flow des 2 premières ventes solde le crédit bancaire.';
+        document.getElementById('strat-lots-detail').textContent =
+          'Cible de revente Millau : T2 et T3 prêts à habiter (1 800 à 1 950 €/m²). Marché très demandeur.';
+      } else {
+        document.getElementById('strat-arbitrage').innerHTML =
+          '<strong>Réhabilitation thermique & arbitrage rapide.</strong><br/>Sortir le bien du statut de passoire (DPE ' + dpe + ') par isolation globale et PAC. Revente à la découpe ou en bloc rénové.';
+        document.getElementById('strat-lots-detail').textContent =
+          'Revente estimée à 1 850 €/m² pour des appartements DPE C.';
+      }
+
+      // Explication calcul
+      document.getElementById('strat-calcul-explication').innerHTML =
+        '<div>• <strong>Prix achat net négocié :</strong> ' + prixNet.toLocaleString('fr-FR') + ' € (-' + nego.toLocaleString('fr-FR') + ' € d’offre).</div>' +
+        '<div>• <strong>Budget travaux global :</strong> ' + travaux.toLocaleString('fr-FR') + ' € (compteurs Enedis individuels, réfection totale).</div>' +
+        '<div>• <strong>Coût de revient total :</strong> ' + revient.toLocaleString('fr-FR') + ' € (frais MDB + géomètre + portage inclus).</div>' +
+        '<div>• <strong>Chiffre d’Affaires :</strong> ' + revente.toLocaleString('fr-FR') + ' € sur ' + nbLots + ' lots.</div>' +
+        '<div>• <strong>Marge Brute dégagée :</strong> <span class="text-emerald-400 font-bold">+' + marge.toLocaleString('fr-FR') + ' € (' + margePct + '%)</span>.</div>';
+
+      // Pitch agence
+      document.getElementById('strat-pitch').textContent =
+        '« Bonjour, suite à notre visite du bien "' + titre.substring(0, 50) + '...", nous vous transmettons notre offre ferme à ' + prixNet.toLocaleString('fr-FR') + ' € net vendeur. Notre dossier est sans condition suspensive de prêt (financement pro MDB disponible). Nous prenons le bien en l’état avec l’audit énergétique et nous nous engageons sur une signature sous 30 jours. »';
+    }
+
+    function copierPitch() {
+      const text = document.getElementById('strat-pitch').textContent;
+      navigator.clipboard.writeText(text);
+      const btn = document.getElementById('btn-copy-pitch');
+      btn.textContent = '✅ Argumentaire copié !';
+      setTimeout(() => { btn.textContent = '📋 Copier le pitch de négociation'; }, 2000);
+    }
+
+    function afficherModalScoring(idx) {
+      const a = DATA[idx];
+      if (!a) return;
+      document.getElementById('modal-titre').textContent = a.titre || 'Bien immobilier';
+      document.getElementById('modal-sous-titre').textContent = (a.agence || '') + ' • Millau • ' + (a.prix ? a.prix.toLocaleString('fr-FR') + ' €' : '') + ' (' + (a.prix_m2 || '') + ' €/m²)';
+
+      const marge = a.marge_estimee_montant || 0;
+      const margePct = a.marge_estimee_pct || 0;
+      document.getElementById('modal-pts-marge').textContent = (margePct >= 18 ? '30' : (margePct >= 12 ? '20' : '10')) + ' / 35 pts';
+      document.getElementById('modal-desc-marge').textContent = 'Marge brute estimée : +' + marge.toLocaleString('fr-FR') + ' € (' + margePct + '% du CA). Standard MDB de sécurité financière.';
+
+      document.getElementById('modal-pts-decoupe').textContent = (a.surface > 150 ? '25' : (a.surface > 80 ? '18' : '10')) + ' / 25 pts';
+      document.getElementById('modal-desc-decoupe').textContent = 'Surface ' + (a.surface || 0) + ' m². Potentiel de division en ' + (a.surface > 150 ? '3 à 4 lots' : '2 lots') + ' indépendants.';
+
+      const ptsNegoc = (a.dpe === 'G' ? 8 : (a.dpe === 'F' ? 6 : 0)) + (a.baisse_prix_pct > 0 ? 8 : 0);
+      document.getElementById('modal-pts-negoc').textContent = ptsNegoc + ' / 20 pts';
+      document.getElementById('modal-desc-negoc').textContent = 'DPE ' + (a.dpe || '?') + ' + Baisses de prix constatées (-' + (a.baisse_prix_pct || 0) + '%). Fort pouvoir de négociation.';
+
+      document.getElementById('modal-pts-securite').textContent = '16 / 20 pts';
+      document.getElementById('modal-desc-securite').textContent = 'Marché millavois liquide sous 180 000 €. Absence de copropriété complexe bloquante.';
+
+      const btnSimu = document.getElementById('modal-btn-simu');
+      btnSimu.onclick = function() {
+        fermerModalScoring();
+        simulerDeal(a.prix, a.surface, a.titre, a.dpe, a.agence);
+      };
+
+      document.getElementById('modal-scoring').classList.remove('hidden');
+    }
+
+    function fermerModalScoring() {
+      document.getElementById('modal-scoring').classList.add('hidden');
     }
 
     function renderDeals() {
@@ -298,12 +684,16 @@
 
           const card = document.createElement('div');
           card.className = 'bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 flex flex-col justify-between hover:border-slate-700 transition shadow-sm';
+          const titreEscaped = (a.titre || '').replace(/'/g, "'");
+          const agenceEscaped = (a.agence || '').replace(/'/g, "'");
+          const dpeVal = a.dpe || '?';
+
           card.innerHTML = 
             '<div>' +
               '<div class="flex items-center justify-between gap-2 mb-2">' +
                 '<div class="flex items-center gap-1.5 flex-wrap">' +
-                  '<span class="px-2 py-0.5 rounded text-[11px] font-bold ' + dpeClass + '">DPE ' + (a.dpe || '?') + '</span>' +
-                  '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">⚡ Score V3: ' + scoreVal + '</span>' +
+                  '<span class="px-2 py-0.5 rounded text-[11px] font-bold ' + dpeClass + '">DPE ' + dpeVal + '</span>' +
+                  '<button onclick="afficherModalScoring(' + DATA.indexOf(a) + ')" class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 transition cursor-pointer" title="Cliquer pour voir les 4 piliers de scoring">⚡ Score V3: ' + scoreVal + '</button>' +
                   (a.baisse_prix_pct > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">📉 -' + a.baisse_prix_pct + '%</span>' : '') +
                   (a.marge_estimee_montant > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">💰 ' + margeMontant + ' ' + margePct + '</span>' : '') +
                 '</div>' +
@@ -318,8 +708,11 @@
               '<div class="text-xs text-slate-400 line-clamp-2">' + (a.mots_detectes || '') + '</div>' +
             '</div>' +
             '<div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">' +
-              '<a href="' + a.url + '" target="_blank" class="text-xs text-slate-400 hover:text-white underline">Fiche agence ↗</a>' +
-              '<button onclick="simulerDeal(' + (a.prix || 0) + ',' + (a.surface || 0) + ')" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer transition">🧮 Simuler ce bien</button>' +
+              '<div class="flex items-center gap-2">' +
+                '<a href="' + a.url + '" target="_blank" class="text-xs text-slate-400 hover:text-white underline">Fiche ↗</a>' +
+                '<button onclick="afficherModalScoring(' + DATA.indexOf(a) + ')" class="text-xs text-amber-400 hover:text-amber-300 underline font-medium cursor-pointer">Piliers & Détail</button>' +
+              '</div>' +
+              '<button onclick="simulerDeal(' + (a.prix || 0) + ',' + (a.surface || 0) + ','' + titreEscaped + '','' + dpeVal + '','' + agenceEscaped + '')" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer transition">🧮 Simuler ce bien</button>' +
             '</div>';
           grid.appendChild(card);
         } catch (e) {
@@ -328,6 +721,7 @@
       });
     }
 
+    renderLotsTable();
     renderDeals();
     calculerSimu();
   </script>
