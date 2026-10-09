@@ -102,13 +102,16 @@ AGENCES = [
     },
     {
         "nom": "Expertimo",
-        "url": "https://www.reseau-expertimo.fr/vente/1",
+        # Page directe Millau (435 = code Millau plateforme La Boite Immo)
+        "url": "https://www.reseau-expertimo.fr/vente/435-millau/1",
         "pattern_fiche": r"/vente/\d+-millau/(?:[^/]+/)+\d{4,}-",
-        "mode": "pattern",
-        "preparation": "filtre_ville",
-        "ville": "Millau",
+        "mode": "auto",
     },
-    {"nom": "AP Immobilier", "url": "https://www.apimmobilier.fr/recherche/"},
+    {
+        "nom": "AP Immobilier",
+        "url": "https://www.apimmobilier.fr/recherche/",
+        "mode": "prix",
+    },
 ]
 
 EXCLUS = re.compile(
@@ -1063,18 +1066,34 @@ def main():
     # Sauvegarde de l'état
     FICHIER_ETAT.write_text(json.dumps(etat, ensure_ascii=False, indent=1), encoding="utf-8")
 
-    annonces = [
-        Annonce(**d) for d in etat.values()
-        if not d.get("ignoree") and d.get("v") == VERSION_PARSEUR
-    ]
-    annonces = [a for a in annonces if PRIX_MAX is None or a.prix is None or a.prix <= PRIX_MAX]
+    # Export des annonces valides (avec filtre anti-terrains nus renforcé)
+    annonces = []
+    for d in etat.values():
+        if d.get("ignoree"):
+            continue
+        titre_l = (d.get("titre") or "").lower()
+        surface_val = d.get("surface")
+
+        # Écarter formellement tout terrain nu restant
+        if EXCLURE_TERRAINS_SEULS:
+            est_terrain_nu = (
+                surface_val is None and any(w in titre_l for w in ["terrain", "parcelle"]) and
+                not any(w in titre_l for w in ["maison", "immeuble", "grange", "bâtisse", "remise", "atelier", "villa", "appartement", "corps de ferme", "ruine", "mazet", "plateau"])
+            )
+            if est_terrain_nu:
+                continue
+
+        annonces.append(Annonce(**d))
+
+    if PRIX_MAX:
+        annonces = [a for a in annonces if a.prix is None or a.prix <= PRIX_MAX]
     annonces.sort(key=lambda a: (a.score or 0), reverse=True)
 
     exporter_csv(annonces)
     exporter_html(annonces)
 
     interessantes = [a for a in annonces if a.score >= SCORE_MINIMUM]
-    log.info("🎯 Scan terminé avec succès ! %d annonces pertinentes à Millau.", len(interessantes))
+    log.info("🎯 Scan terminé avec succès ! %d annonces publiées (%d à fort potentiel MDB).", len(annonces), len(interessantes))
     print(f"\n✅ Terminé : {len(annonces)} annonces publiées dans docs/index.html")
 
 if __name__ == "__main__":
