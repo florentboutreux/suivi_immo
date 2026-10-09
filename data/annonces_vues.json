@@ -2608,9 +2608,28 @@
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033765.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033765.html",
-  "ignoree": true,
-  "v": 7,
-  "nouvelle": false
+  "agence": "SGA",
+  "titre": "Appartement 4 pièces, 95m²\nen vente à Millau\n180 200 € *",
+  "prix": 180200,
+  "prix_initial": 180200,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 180200
+   }
+  ],
+  "surface": 95.0,
+  "terrain": null,
+  "prix_m2": 1896,
+  "dpe": "INCONNU",
+  "score": 7,
+  "mots_detectes": "immeuble, grenier",
+  "nouvelle": false,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 11:29",
+  "localisation": "Millau",
+  "v": 8
  },
  "https://www.jmb-immobilier.com/vente-immeuble-4pieces-millau-TIMM85678": {
   "url": "https://www.jmb-immobilier.com/vente-immeuble-4pieces-millau-TIMM85678",
