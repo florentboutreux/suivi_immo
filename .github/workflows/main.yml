@@ -1,31 +1,44 @@
-name: Veille immobilière
- 
+name: Veille MDB Millau (Scraping & Alertes)
+
 on:
+  # Exécution automatique 3 fois par jour (8h00, 12h30, 18h30 heure française)
   schedule:
-    - cron: "0 6 * * *"   # tous les jours à 6h UTC
+    - cron: '0 6 * * *'
+  # Permet aussi de lancer manuellement un scan depuis l'onglet Actions
   workflow_dispatch:
- 
+
 permissions:
   contents: write
- 
+
 jobs:
-  scrape:
+  run-scraper:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: 1. Récupération du code
+        uses: actions/checkout@v4
+
+      - name: 2. Configuration de Python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - run: |
-          pip install -r requirements.txt
-          playwright install --with-deps chromium
-      - run: python chasseur_immo.py
-      - name: Commit des résultats
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 3. Installation de Playwright
         run: |
-          git config user.name "veille-bot"
-          git config user.email "bot@users.noreply.github.com"
+          python -m pip install --upgrade pip
+          pip install playwright playwright-stealth
+          playwright install --with-deps chromium
+
+      - name: 4. Exécution du scraper MDB
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python scraper.py
+
+      - name: 5. Sauvegarde des données et mise à jour GitHub Pages
+        run: |
+          git config --global user.name "MDB Bot Scraper"
+          git config --global user.email "bot@marchand-de-biens.local"
           git add data/ docs/
-          git diff --staged --quiet || git commit -m "Veille du $(date +%F)"
-          git push
- 
- 
+          git diff --quiet && git diff --staged --quiet || (git commit -m "auto: actualisation des annonces et baisses de prix" && git push)
