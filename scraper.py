@@ -694,81 +694,292 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     )
 
 # --------------------------------------------------------------------------- #
-# EXPORT HTML & CSV
+# EXPORT HTML MULTI-ONGLETS & SIMULATEUR EMBARQUÉ (GITHUB PAGES)
 # --------------------------------------------------------------------------- #
 TEMPLATE_HTML = """<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MDB Millau – Veille Marchand de Biens</title>
+<title>MDB Scanner Pro – Millau (12100)</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root { --bg:#0b0f17; --card:#131a26; --txt:#f1f5f9; --mut:#94a3b8; --bd:#1e293b; --acc:#f59e0b; --new:#ef4444; --ok:#10b981; }
-  * { box-sizing:border-box; font-family:system-ui,-apple-system,sans-serif; }
-  body { margin:0; background:var(--bg); color:var(--txt); padding:20px; font-size:14px; }
-  header { max-width:1300px; margin:auto; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--bd); padding-bottom:16px; flex-wrap:wrap; gap:10px; }
-  h1 { margin:0; font-size:22px; color:var(--acc); }
-  .kpis { display:flex; gap:12px; max-width:1300px; margin:16px auto; flex-wrap:wrap; }
-  .kpi { background:var(--card); border:1px solid var(--bd); border-radius:10px; padding:12px 18px; }
-  .kpi b { font-size:22px; display:block; color:#fff; }
-  .kpi span { font-size:11px; color:var(--mut); text-transform:uppercase; }
-  table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--bd); border-radius:10px; overflow:hidden; }
-  th, td { padding:10px 12px; text-align:left; border-bottom:1px solid var(--bd); white-space:nowrap; }
-  th { font-size:11px; text-transform:uppercase; color:var(--mut); }
-  td.wrap { white-space:normal; min-width:280px; }
-  a { color:var(--acc); text-decoration:none; font-weight:600; }
-  .dpe { display:inline-block; padding:2px 8px; border-radius:4px; font-weight:800; font-size:11px; }
-  .dpe-G { background:#581c87; color:#f3e8ff; border:1px solid #a855f7; }
-  .dpe-F { background:#991b1b; color:#fee2e2; }
-  .dpe-E { background:#c2410c; color:#ffedd5; }
-  .drop { color:#f43f5e; font-weight:bold; }
-  .badge { padding:2px 6px; border-radius:4px; font-size:10px; font-weight:bold; margin-left:6px; background:#ef4444; color:#fff; }
+  :root { color-scheme: dark; }
 </style>
 </head>
-<body>
-<header>
-  <div><h1>Veille Marchand de Biens – Millau (12100)</h1><div style="color:var(--mut);font-size:12px">Actualisé le : __DATE__</div></div>
-</header>
-<div class="kpis" id="kpis"></div>
-<div style="max-width:1300px;margin:auto;overflow-x:auto;">
-  <table>
-    <thead><tr><th>Score</th><th>DPE</th><th>Annonce</th><th>Agence</th><th>Prix</th><th>Baisse</th><th>Surface</th><th>€/m²</th><th>Signaux MDB</th></tr></thead>
-    <tbody id="body"></tbody>
-  </table>
-</div>
-<script>
-const DATA = __DATA__;
-const $ = id => document.getElementById(id);
-const fmt = (v, suf="") => v == null ? "–" : Number(v).toLocaleString("fr-FR") + suf;
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans pb-16">
+  <!-- HEADER -->
+  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 font-black text-lg shadow-md shadow-amber-500/20">
+          MDB
+        </div>
+        <div>
+          <div class="text-base font-bold text-white flex items-center gap-2">
+            MDB Scanner Pro <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Millau 12100</span>
+          </div>
+          <div class="text-xs text-slate-400">Actualisé le : __DATE__</div>
+        </div>
+      </div>
 
-const total = DATA.length;
-const drops = DATA.filter(a => a.baisse_prix_pct > 0).length;
-const passoires = DATA.filter(a => a.dpe === 'F' || a.dpe === 'G').length;
-const news = DATA.filter(a => a.nouvelle).length;
+      <nav class="flex space-x-1 sm:space-x-2">
+        <button onclick="setTab('deals')" id="btn-tab-deals" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-amber-500 text-slate-950 cursor-pointer">
+          🏢 Annonces & Deals
+        </button>
+        <button onclick="setTab('simu')" id="btn-tab-simu" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:bg-slate-800 cursor-pointer">
+          🧮 Simulateur MDB
+        </button>
+        <button onclick="setTab('audit')" id="btn-tab-audit" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:bg-slate-800 cursor-pointer">
+          🎯 Stratégie MDB
+        </button>
+      </nav>
+    </div>
+  </header>
 
-$("kpis").innerHTML = 
-  '<div class="kpi"><b>' + total + '</b><span>Biens suivis</span></div>' +
-  '<div class="kpi"><b>' + news + '</b><span>Nouvelles</span></div>' +
-  '<div class="kpi"><b>' + drops + '</b><span>Baisses de prix</span></div>' +
-  '<div class="kpi"><b>' + passoires + '</b><span>Passoires F/G</span></div>';
+  <main class="max-w-7xl mx-auto px-4 py-6">
+    <!-- ONGLET 1 : ANNONCES & DEALS -->
+    <div id="tab-deals" class="space-y-6">
+      <!-- KPIS -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="kpi-cards"></div>
 
-DATA.sort((a,b) => (b.score || 0) - (a.score || 0));
-DATA.forEach(a => {
-  const tr = document.createElement("tr");
-  tr.innerHTML = 
-    '<td><b>' + (a.score || 0) + '/10</b></td>' +
-    '<td><span class="dpe dpe-' + (a.dpe || '') + '">' + (a.dpe || '–') + '</span></td>' +
-    '<td class="wrap"><a href="' + a.url + '" target="_blank">' + (a.titre || a.url) + '</a>' + (a.nouvelle ? '<span class="badge">NOUVEAU</span>' : '') + '</td>' +
-    '<td>' + (a.agence || '') + '</td>' +
-    '<td><b>' + fmt(a.prix, " €") + '</b></td>' +
-    '<td class="drop">' + (a.baisse_prix_pct > 0 ? '-' + a.baisse_prix_pct + '%' : '–') + '</td>' +
-    '<td>' + fmt(a.surface, " m²") + '</td>' +
-    '<td>' + fmt(a.prix_m2, " €") + '</td>' +
-    '<td class="wrap" style="color:var(--mut);font-size:12px">' + (a.mots_detectes || '') + '</td>';
-  $("body").appendChild(tr);
-});
-</script>
-</body></html>"""
+      <!-- FILTRES -->
+      <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex flex-wrap gap-3 items-center justify-between">
+        <input type="text" id="q" oninput="renderDeals()" placeholder="Rechercher par rue, mot-clé (ex: 'rue droite', 'immeuble')..." class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 flex-1 min-w-[200px] focus:outline-none focus:border-amber-500" />
+        <select id="f-dpe" onchange="renderDeals()" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-amber-500">
+          <option value="all">Tous DPE</option>
+          <option value="passoires">🔥 Passoires F & G</option>
+          <option value="G">DPE G uniquement</option>
+          <option value="F">DPE F uniquement</option>
+        </select>
+        <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer select-none">
+          <input type="checkbox" id="f-drops" onchange="renderDeals()" class="rounded bg-slate-800 border-slate-700 text-amber-500" />
+          <span>Baisses de prix uniquement</span>
+        </label>
+      </div>
+
+      <!-- LISTE DES DEALS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="deals-grid"></div>
+    </div>
+
+    <!-- ONGLET 2 : SIMULATEUR MDB -->
+    <div id="tab-simu" class="hidden space-y-6">
+      <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+        <h2 class="text-xl font-bold text-white mb-1">Simulateur Financier d'Opération & Découpe MDB</h2>
+        <p class="text-xs text-slate-400 mb-6">Achat avec frais de notaire réduits MDB (0.715%), travaux et calcul de la marge de découpe.</p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-7 space-y-4">
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+              <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">1. Acquisition</h3>
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <label class="block text-slate-400 mb-1">Prix d'achat net vendeur (€)</label>
+                  <input type="number" id="sim-prix" value="140000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono" />
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">Frais de notaire</label>
+                  <select id="sim-notaire" onchange="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono">
+                    <option value="0.00715">Marchand de Biens (0,715%)</option>
+                    <option value="0.078">Particulier (7,8%)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+              <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">2. Travaux & Portage</h3>
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <label class="block text-slate-400 mb-1">Enveloppe Travaux totale (€)</label>
+                  <input type="number" id="sim-travaux" value="95000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-amber-300 font-mono" />
+                </div>
+                <div>
+                  <label class="block text-slate-400 mb-1">Frais financiers & portage (€)</label>
+                  <input type="number" id="sim-portage" value="5500" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-300 font-mono" />
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+              <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider">3. Revente (Chiffre d'Affaires total des lots)</h3>
+              <div>
+                <label class="block text-slate-400 text-xs mb-1">Revente totale estimée de tous les lots (€)</label>
+                <input type="number" id="sim-revente" value="310000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-emerald-400 font-mono font-bold" />
+              </div>
+            </div>
+          </div>
+
+          <!-- RESULTATS -->
+          <div class="lg:col-span-5 bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Résultats Financiers</h3>
+
+            <div class="bg-emerald-950/40 border border-emerald-500/50 p-4 rounded-xl text-center">
+              <span class="text-xs text-emerald-300 block">MARGE BRUTE OPÉRATION</span>
+              <span class="text-2xl font-black text-emerald-400 font-mono" id="res-marge-brute">+68 500 €</span>
+              <span class="text-xs text-emerald-300/80 block mt-1" id="res-marge-pct">22.1% du CA</span>
+            </div>
+
+            <div class="text-xs space-y-2 text-slate-400 font-mono border-t border-slate-800 pt-3">
+              <div class="flex justify-between"><span>Prix d'achat :</span><span id="res-achat" class="text-white">140 000 €</span></div>
+              <div class="flex justify-between"><span>Frais notaire :</span><span id="res-notaire" class="text-white">1 001 €</span></div>
+              <div class="flex justify-between"><span>Travaux :</span><span id="res-travaux" class="text-white">95 000 €</span></div>
+              <div class="flex justify-between"><span>Frais portage :</span><span id="res-portage" class="text-white">5 500 €</span></div>
+              <div class="flex justify-between font-bold text-white pt-2 border-t border-slate-800"><span>Coût de revient total :</span><span id="res-revient">241 501 €</span></div>
+              <div class="flex justify-between font-bold text-emerald-400"><span>Revente totale :</span><span id="res-revente">310 000 €</span></div>
+            </div>
+
+            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px] text-slate-400">
+              💡 <strong>Avantage MDB 0,715% :</strong> vous économisez environ <span id="res-gain-notaire" class="text-emerald-400 font-bold">+9 900 €</span> par rapport à un particulier acheteur.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONGLET 3 : STRATEGIE MDB -->
+    <div id="tab-audit" class="hidden space-y-6">
+      <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
+        <h2 class="text-xl font-bold text-white">Les 4 Piliers Rentables du Marchand de Biens à Millau</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-300">
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+            <strong class="text-amber-400 text-sm block mb-1">1. Monopropriétés Centre Ancien (Rue Droite, Halles)</strong>
+            <p class="text-slate-400 leading-relaxed">Acheter des immeubles R+3 complets à 550 - 800 €/m² et découper en plusieurs lots (T2/T3). Aucun syndic de copro bloquant.</p>
+          </div>
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+            <strong class="text-purple-400 text-sm block mb-1">2. Passoires thermiques G et F (Loi Climat)</strong>
+            <p class="text-slate-400 leading-relaxed">Les bailleurs ne peuvent plus louer sans de lourds travaux. Négociation agressive (-20% à -30%) en mettant en avant le devis de rénovation globale.</p>
+          </div>
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+            <strong class="text-emerald-400 text-sm block mb-1">3. Découpe de parcelles & Granges (Faubourgs)</strong>
+            <p class="text-slate-400 leading-relaxed">Détachement d'un terrain constructible viabilisé pour amortir immédiatement l'acquisition, et rénovation du bâtiment restant.</p>
+          </div>
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+            <strong class="text-sky-400 text-sm block mb-1">4. Prix de Revente Cible Millau</strong>
+            <p class="text-slate-400 leading-relaxed">À Millau, les T2 et T3 rénovés avec DPE C/D se revendent entre 1 650 € et 2 100 €/m².</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const DATA = __DATA__;
+
+    function setTab(name) {
+      ['deals', 'simu', 'audit'].forEach(t => {
+        document.getElementById('tab-' + t).classList.toggle('hidden', t !== name);
+        const btn = document.getElementById('btn-tab-' + t);
+        if (t === name) {
+          btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-amber-500 text-slate-950 cursor-pointer';
+        } else {
+          btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:bg-slate-800 cursor-pointer';
+        }
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function simulerDeal(prix, surface) {
+      document.getElementById('sim-prix').value = prix || 120000;
+      const m2 = surface || 100;
+      document.getElementById('sim-travaux').value = Math.round(m2 * 750);
+      document.getElementById('sim-revente').value = Math.round(m2 * 1850);
+      calculerSimu();
+      setTab('simu');
+    }
+
+    function calculerSimu() {
+      const prix = parseFloat(document.getElementById('sim-prix').value) || 0;
+      const tauxNotaire = parseFloat(document.getElementById('sim-notaire').value) || 0.00715;
+      const notaire = Math.round(prix * tauxNotaire);
+      const travaux = parseFloat(document.getElementById('sim-travaux').value) || 0;
+      const portage = parseFloat(document.getElementById('sim-portage').value) || 0;
+      const revente = parseFloat(document.getElementById('sim-revente').value) || 0;
+
+      const revient = prix + notaire + travaux + portage;
+      const marge = revente - revient;
+      const pct = revente > 0 ? ((marge / revente) * 100).toFixed(1) : 0;
+      const gainNotaire = Math.round(prix * (0.078 - 0.00715));
+
+      document.getElementById('res-achat').textContent = prix.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-notaire').textContent = notaire.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-travaux').textContent = travaux.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-portage').textContent = portage.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-revient').textContent = revient.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-revente').textContent = revente.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-marge-brute').textContent = (marge >= 0 ? '+' : '') + marge.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-marge-pct').textContent = pct + '% du CA';
+      document.getElementById('res-gain-notaire').textContent = '+' + gainNotaire.toLocaleString('fr-FR') + ' €';
+    }
+
+    function renderDeals() {
+      const q = (document.getElementById('q').value || '').toLowerCase();
+      const fdpe = document.getElementById('f-dpe').value;
+      const fdrops = document.getElementById('f-drops').checked;
+
+      const filtered = DATA.filter(a => {
+        const matchesQ = !q || (a.titre + ' ' + (a.mots_detectes || '') + ' ' + (a.agence || '')).toLowerCase().includes(q);
+        const matchesDpe = fdpe === 'all' || (fdpe === 'passoires' && (a.dpe === 'F' || a.dpe === 'G')) || a.dpe === fdpe;
+        const matchesDrops = !fdrops || (a.baisse_prix_pct > 0);
+        return matchesQ && matchesDpe && matchesDrops;
+      });
+
+      const total = DATA.length;
+      const drops = DATA.filter(a => a.baisse_prix_pct > 0).length;
+      const passoires = DATA.filter(a => a.dpe === 'F' || a.dpe === 'G').length;
+      const news = DATA.filter(a => a.nouvelle).length;
+
+      document.getElementById('kpi-cards').innerHTML =
+        '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl"><b class="text-xl font-bold text-white block">' + total + '</b><span class="text-[10px] uppercase text-slate-400">Biens suivis</span></div>' +
+        '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl"><b class="text-xl font-bold text-amber-400 block">' + news + '</b><span class="text-[10px] uppercase text-slate-400">Nouveautés</span></div>' +
+        '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl"><b class="text-xl font-bold text-rose-400 block">' + drops + '</b><span class="text-[10px] uppercase text-slate-400">Baisses de prix</span></div>' +
+        '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl"><b class="text-xl font-bold text-purple-400 block">' + passoires + '</b><span class="text-[10px] uppercase text-slate-400">Passoires F/G</span></div>';
+
+      const grid = document.getElementById('deals-grid');
+      grid.innerHTML = '';
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="col-span-2 text-center py-12 text-slate-500">Aucun bien ne correspond aux filtres.</div>';
+        return;
+      }
+
+      filtered.forEach(a => {
+        const dpeClass = a.dpe === 'G' ? 'bg-purple-900 text-purple-100 ring-1 ring-purple-400' :
+                         a.dpe === 'F' ? 'bg-rose-900 text-rose-100' :
+                         a.dpe === 'E' ? 'bg-amber-900 text-amber-100' : 'bg-slate-800 text-slate-300';
+
+        const card = document.createElement('div');
+        card.className = 'bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 flex flex-col justify-between';
+        card.innerHTML = 
+          '<div>' +
+            '<div class="flex items-center justify-between gap-2 mb-2">' +
+              '<div class="flex items-center gap-1.5 flex-wrap">' +
+                '<span class="px-2 py-0.5 rounded text-[11px] font-bold ' + dpeClass + '">DPE ' + (a.dpe || '?') + '</span>' +
+                '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300">Score ' + (a.score || 0) + '/10</span>' +
+                (a.baisse_prix_pct > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300">-' + a.baisse_prix_pct + '%</span>' : '') +
+              '</div>' +
+              '<span class="text-[11px] text-slate-500">' + (a.agence || '') + '</span>' +
+            '</div>' +
+            '<h3 class="text-base font-bold text-white leading-snug"><a href="' + a.url + '" target="_blank" class="hover:text-amber-400">' + (a.titre || a.url) + '</a></h3>' +
+            '<div class="grid grid-cols-3 gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 my-3 text-center">' +
+              '<div><span class="text-[9px] uppercase text-slate-500 block">Prix</span><b class="text-sm font-bold text-white">' + (a.prix ? a.prix.toLocaleString('fr-FR') + ' €' : '–') + '</b></div>' +
+              '<div><span class="text-[9px] uppercase text-slate-500 block">Surface</span><b class="text-sm font-bold text-slate-300">' + (a.surface ? a.surface + ' m²' : '–') + '</b></div>' +
+              '<div><span class="text-[9px] uppercase text-slate-500 block">Prix/m²</span><b class="text-sm font-bold text-slate-300">' + (a.prix_m2 ? a.prix_m2 + ' €' : '–') + '</b></div>' +
+            '</div>' +
+            '<div class="text-xs text-slate-400">' + (a.mots_detectes || '') + '</div>' +
+          '</div>' +
+          '<div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">' +
+            '<a href="' + a.url + '" target="_blank" class="text-xs text-slate-400 hover:text-white underline">Voir l\'annonce</a>' +
+            '<button onclick="simulerDeal(' + (a.prix || 0) + ',' + (a.surface || 0) + ')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer">Simuler ce bien</button>' +
+          '</div>';
+        grid.appendChild(card);
+      });
+    }
+
+    renderDeals();
+    calculerSimu();
+  </script>
+</body>
+</html>"""
 
 def exporter_html(annonces: list[Annonce]):
     DOSSIER_DOCS.mkdir(exist_ok=True)
