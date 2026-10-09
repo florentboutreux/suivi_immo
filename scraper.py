@@ -76,23 +76,38 @@ PATTERN_FICHE_DEFAUT = (
 
 AGENCES = [
     {
+        # Roques propose une page par commune : « Voir tous les biens à Millau » (435 = identifiant de Millau).
+        # On ne collecte que les fiches de la forme /vente/435-millau/<type>/<id>-<titre> :
+        # les communes voisines (Montjaux, Le Caylar, Lanuéjols…) du « secteur Millau » sont exclues d'emblée.
         "nom": "Roques",
         "url": "https://www.roques-immobilier.com/vente/435-millau/1",
         "pattern_fiche": r"/vente/435-millau/[^/]+/\d+-",
         "mode": "pattern",
+        "page_template": "https://www.roques-immobilier.com/vente/435-millau/{n}",
+        "max_pages": 10,
     },
     {"nom": "SGA", "url": "https://www.sga-immobilier.com/immobilier/immobilier-vente-millau.htm"},
+    # /a-vendre renvoyait une 404 : la vraie page de vente est /resultats?transac=vente
     {"nom": "JMB", "url": "https://www.jmb-immobilier.com/resultats?transac=vente", "mode": "prix"},
     {
+        # Le site est une appli JavaScript : l'ancienne URL /vente/maison/millau-12 affichait toute la France.
+        # Le script saisit « Millau » dans le champ de localisation, choisit la suggestion puis lance la
+        # recherche. L'URL filtrée obtenue est écrite dans le log (« URL filtrée ») : vous pouvez la coller
+        # ici à la place de "url" et supprimer "preparation" pour figer le filtre.
         "nom": "Notaires",
         "url": "https://www.immobilier.notaires.fr/fr/annonces-immobilieres-liste?typeTransaction=VENTE,VNI,VAE",
         "mode": "prix",
         "preparation": "filtre_ville",
         "ville": "Millau",
     },
-    {"nom": "Mesnard maisons", "url": "https://mesnard-immobilier.com/property-type/maison/", "pattern_fiche": r"/property/"},
-    {"nom": "Mesnard apparts", "url": "https://mesnard-immobilier.com/property-type/appartement/", "pattern_fiche": r"/property/"},
+    {"nom": "Mesnard maisons", "url": "https://mesnard-immobilier.com/property-type/maison/",
+     "pattern_fiche": r"/property/"},
+    {"nom": "Mesnard apparts", "url": "https://mesnard-immobilier.com/property-type/appartement/",
+     "pattern_fiche": r"/property/"},
     {
+        # iad : mandataires indépendants. Page « Millau (12100) » : 45 biens, 30 par page (?page=2).
+        # Fiches : /annonce/<type>-vente-<n>-pieces-millau-<m2>/r<id>. On ne garde que les slugs « millau »
+        # (le 12100 inclut aussi Saint-Georges-de-Luzençon, La Roque-Sainte-Marguerite…).
         "nom": "iad",
         "url": "https://www.iadfrance.fr/annonces/millau-12100/vente",
         "pattern_fiche": r"/annonce/[^/]*millau[^/]*/r\d+",
@@ -100,14 +115,25 @@ AGENCES = [
         "page_param": "page",
     },
     {
+        # Expertimo (plateforme La Boîte Immo, comme Roques). « 29729 » est l'identifiant de Millau sur ce site :
+        # page dédiée de 104 biens (9 par page, 12 pages au moment du test).
         "nom": "Expertimo",
-        "url": "https://www.reseau-expertimo.fr/vente/1",
-        "pattern_fiche": r"/vente/\d+-millau/(?:[^/]+/)+\d{4,}-",
+        "url": "https://www.reseau-expertimo.fr/vente/29729-millau/1",
+        "pattern_fiche": r"/vente/29729-millau/(?:[^/]+/)+\d{4,}-",
         "mode": "pattern",
-        "preparation": "filtre_ville",
-        "ville": "Millau",
+        "page_template": "https://www.reseau-expertimo.fr/vente/29729-millau/{n}",
+        "max_pages": 15,
     },
-    {"nom": "AP Immobilier", "url": "https://www.apimmobilier.fr/recherche/"},
+    {
+        # /recherche/ n'existe pas : la liste est sur /biens (cartes générées en JavaScript, basée à Aguessac,
+        # beaucoup de locations). Mode « prix » : un lien est retenu s'il est dans une carte affichant un prix.
+        "nom": "AP Immobilier",
+        "url": "https://www.apimmobilier.fr/biens",
+        "mode": "prix",
+    },
+]
+ 
+# Pages annexes à ignorer (testées sur le chemin, pas sur tout le lien)
 ]
 
 EXCLUS = re.compile(
