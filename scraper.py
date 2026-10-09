@@ -946,35 +946,39 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       }
 
       filtered.forEach(a => {
-        const dpeClass = a.dpe === 'G' ? 'bg-purple-900 text-purple-100 ring-1 ring-purple-400' :
-                         a.dpe === 'F' ? 'bg-rose-900 text-rose-100' :
-                         a.dpe === 'E' ? 'bg-amber-900 text-amber-100' : 'bg-slate-800 text-slate-300';
+        try {
+          const dpeClass = a.dpe === 'G' ? 'bg-purple-900 text-purple-100 ring-1 ring-purple-400' :
+                           a.dpe === 'F' ? 'bg-rose-900 text-rose-100' :
+                           a.dpe === 'E' ? 'bg-amber-900 text-amber-100' : 'bg-slate-800 text-slate-300';
 
-        const card = document.createElement('div');
-        card.className = 'bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 flex flex-col justify-between';
-        card.innerHTML = 
-          '<div>' +
-            '<div class="flex items-center justify-between gap-2 mb-2">' +
-              '<div class="flex items-center gap-1.5 flex-wrap">' +
-                '<span class="px-2 py-0.5 rounded text-[11px] font-bold ' + dpeClass + '">DPE ' + (a.dpe || '?') + '</span>' +
-                '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300">Score ' + (a.score || 0) + '/10</span>' +
-                (a.baisse_prix_pct > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300">-' + a.baisse_prix_pct + '%</span>' : '') +
+          const card = document.createElement('div');
+          card.className = 'bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 flex flex-col justify-between';
+          card.innerHTML = 
+            '<div>' +
+              '<div class="flex items-center justify-between gap-2 mb-2">' +
+                '<div class="flex items-center gap-1.5 flex-wrap">' +
+                  '<span class="px-2 py-0.5 rounded text-[11px] font-bold ' + dpeClass + '">DPE ' + (a.dpe || '?') + '</span>' +
+                  '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300">Score ' + (a.score || 0) + '/10</span>' +
+                  (a.baisse_prix_pct > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300">-' + a.baisse_prix_pct + '%</span>' : '') +
+                '</div>' +
+                '<span class="text-[11px] text-slate-500">' + (a.agence || '') + '</span>' +
               '</div>' +
-              '<span class="text-[11px] text-slate-500">' + (a.agence || '') + '</span>' +
+              '<h3 class="text-base font-bold text-white leading-snug"><a href="' + a.url + '" target="_blank" class="hover:text-amber-400">' + (a.titre || a.url) + '</a></h3>' +
+              '<div class="grid grid-cols-3 gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 my-3 text-center">' +
+                '<div><span class="text-[9px] uppercase text-slate-500 block">Prix</span><b class="text-sm font-bold text-white">' + (a.prix ? a.prix.toLocaleString('fr-FR') + ' €' : '–') + '</b></div>' +
+                '<div><span class="text-[9px] uppercase text-slate-500 block">Surface</span><b class="text-sm font-bold text-slate-300">' + (a.surface ? a.surface + ' m²' : '–') + '</b></div>' +
+                '<div><span class="text-[9px] uppercase text-slate-500 block">Prix/m²</span><b class="text-sm font-bold text-slate-300">' + (a.prix_m2 ? a.prix_m2 + ' €' : '–') + '</b></div>' +
+              '</div>' +
+              '<div class="text-xs text-slate-400">' + (a.mots_detectes || '') + '</div>' +
             '</div>' +
-            '<h3 class="text-base font-bold text-white leading-snug"><a href="' + a.url + '" target="_blank" class="hover:text-amber-400">' + (a.titre || a.url) + '</a></h3>' +
-            '<div class="grid grid-cols-3 gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 my-3 text-center">' +
-              '<div><span class="text-[9px] uppercase text-slate-500 block">Prix</span><b class="text-sm font-bold text-white">' + (a.prix ? a.prix.toLocaleString('fr-FR') + ' €' : '–') + '</b></div>' +
-              '<div><span class="text-[9px] uppercase text-slate-500 block">Surface</span><b class="text-sm font-bold text-slate-300">' + (a.surface ? a.surface + ' m²' : '–') + '</b></div>' +
-              '<div><span class="text-[9px] uppercase text-slate-500 block">Prix/m²</span><b class="text-sm font-bold text-slate-300">' + (a.prix_m2 ? a.prix_m2 + ' €' : '–') + '</b></div>' +
-            '</div>' +
-            '<div class="text-xs text-slate-400">' + (a.mots_detectes || '') + '</div>' +
-          '</div>' +
-          '<div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">' +
-            '<a href="' + a.url + '" target="_blank" class="text-xs text-slate-400 hover:text-white underline">Voir l\'annonce</a>' +
-            '<button onclick="simulerDeal(' + (a.prix || 0) + ',' + (a.surface || 0) + ')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer">Simuler ce bien</button>' +
-          '</div>';
-        grid.appendChild(card);
+            '<div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">' +
+              '<a href="' + a.url + '" target="_blank" class="text-xs text-slate-400 hover:text-white underline">Voir la fiche</a>' +
+              '<button onclick="simulerDeal(' + (a.prix || 0) + ',' + (a.surface || 0) + ')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer">Simuler ce bien</button>' +
+            '</div>';
+          grid.appendChild(card);
+        } catch (e) {
+          console.warn('Erreur affichage carte:', e);
+        }
       });
     }
 
