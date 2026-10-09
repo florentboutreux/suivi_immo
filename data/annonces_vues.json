@@ -1,0 +1,3311 @@
+{
+ "https://www.roques-immobilier.com/vente/435-millau/immeuble/10429-immeuble-mixte-avec-appartement-et-local-commercial-belle-opportunite-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/10429-immeuble-mixte-avec-appartement-et-local-commercial-belle-opportunite-a-millau",
+  "agence": "Roques",
+  "titre": "Immeuble 120 m²",
+  "prix": 243000,
+  "prix_initial": 243000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 243000
+   }
+  ],
+  "surface": 120.0,
+  "terrain": null,
+  "prix_m2": 2025,
+  "dpe": "A",
+  "score": 7,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -109851,
+  "marge_estimee_pct": -49.5,
+  "mots_detectes": "immeuble, grenier",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:14",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/terrain-a-batir/10348-terrain-constructible-de-823-m-non-viabilise": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/terrain-a-batir/10348-terrain-constructible-de-823-m-non-viabilise",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10242-maison-familiale-millau-avec-piscine": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10242-maison-familiale-millau-avec-piscine",
+  "agence": "Roques",
+  "titre": "Maison 7 pièce(s) 6 chambre(s) 172 m²",
+  "prix": 395000,
+  "prix_initial": 395000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 395000
+   }
+  ],
+  "surface": 172.0,
+  "terrain": null,
+  "prix_m2": 2296,
+  "dpe": "A",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -205515,
+  "marge_estimee_pct": -64.6,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:14",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10067-appartement-t3-dans-residence-securisee": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10067-appartement-t3-dans-residence-securisee",
+  "agence": "Roques",
+  "titre": "Appartement 3 pièce(s) 2 chambre(s) 80 m²",
+  "prix": 129500,
+  "prix_initial": 129500,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 129500
+   }
+  ],
+  "surface": 80.0,
+  "terrain": null,
+  "prix_m2": 1618,
+  "dpe": "A",
+  "score": 0,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -39881,
+  "marge_estimee_pct": -26.9,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:14",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10336-maison-familiale-a-renover-proche-centre-ville": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10336-maison-familiale-a-renover-proche-centre-ville",
+  "agence": "Roques",
+  "titre": "Maison 6 pièce(s) 5 chambre(s) 137 m²",
+  "prix": 245000,
+  "prix_initial": 245000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 245000
+   }
+  ],
+  "surface": 137.0,
+  "terrain": 520.0,
+  "prix_m2": 1788,
+  "dpe": "A",
+  "score": 4,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -90715,
+  "marge_estimee_pct": -35.8,
+  "mots_detectes": "remise, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:14",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10197-maison-familiale-lumineuse-sur-les-hauteurs-de-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10197-maison-familiale-lumineuse-sur-les-hauteurs-de-millau",
+  "agence": "Roques",
+  "titre": "Maison 4 pièce(s) 3 chambre(s) 156.58 m²",
+  "prix": 280000,
+  "prix_initial": 280000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 280000
+   }
+  ],
+  "surface": 156.58,
+  "terrain": 1390.0,
+  "prix_m2": 1788,
+  "dpe": "A",
+  "score": 2,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -103235,
+  "marge_estimee_pct": -35.6,
+  "mots_detectes": "travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10050-ideal-investisseur-a-deux-pas-du-centre-ville": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10050-ideal-investisseur-a-deux-pas-du-centre-ville",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10401-appartement-t2-vendu-loue-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10401-appartement-t2-vendu-loue-a-millau",
+  "agence": "Roques",
+  "titre": "Appartement 2 pièce(s) 1 chambre(s) 42.2 m²",
+  "prix": 65000,
+  "prix_initial": 65000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 65000
+   }
+  ],
+  "surface": 42.2,
+  "terrain": 939.0,
+  "prix_m2": 1540,
+  "dpe": "A",
+  "score": 0,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -18955,
+  "marge_estimee_pct": -24.3,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/immeuble/10190-immeuble-a-vendre-de-2-logments-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/10190-immeuble-a-vendre-de-2-logments-a-millau",
+  "agence": "Roques",
+  "titre": "Immeuble 80 m² 1 etage(s)",
+  "prix": 184700,
+  "prix_initial": 184700,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 184700
+   }
+  ],
+  "surface": 80.0,
+  "terrain": null,
+  "prix_m2": 2308,
+  "dpe": "A",
+  "score": 7,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -98227,
+  "marge_estimee_pct": -66.4,
+  "mots_detectes": "immeuble, opportunité",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10305-appartement-t2-millau-vendu-loue": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10305-appartement-t2-millau-vendu-loue",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10296-maison-t7-situee-dans-un-quartier-calme-de-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10296-maison-t7-situee-dans-un-quartier-calme-de-millau",
+  "agence": "Roques",
+  "titre": "Maison 7 pièce(s) 3 chambre(s) 124 m²",
+  "prix": 200000,
+  "prix_initial": 200000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 200000
+   }
+  ],
+  "surface": 124.0,
+  "terrain": 388.0,
+  "prix_m2": 1612,
+  "dpe": "A",
+  "score": 2,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -59400,
+  "marge_estimee_pct": -25.9,
+  "mots_detectes": "travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10484-appartement-t4-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10484-appartement-t4-millau",
+  "agence": "Roques",
+  "titre": "Appartement 4 pièce(s) 3 chambre(s) 109.33 m²",
+  "prix": 130000,
+  "prix_initial": 130000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 130000
+   }
+  ],
+  "surface": 109.33,
+  "terrain": null,
+  "prix_m2": 1189,
+  "dpe": "A",
+  "score": 2,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -3748,
+  "marge_estimee_pct": -1.9,
+  "mots_detectes": "travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10649-a-vendre-a-millau-appartement-t8-de-plain-pied": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10649-a-vendre-a-millau-appartement-t8-de-plain-pied",
+  "agence": "Roques",
+  "titre": "Appartement 8 pièce(s) 4 chambre(s) 239 m²",
+  "prix": 238500,
+  "prix_initial": 238500,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 238500
+   }
+  ],
+  "surface": 239.0,
+  "terrain": null,
+  "prix_m2": 997,
+  "dpe": "A",
+  "score": 7,
+  "score_v3": 4.0,
+  "marge_estimee_montant": 43656,
+  "marge_estimee_pct": 9.9,
+  "mots_detectes": "immeuble, Prix canon 997 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10295-maison-familiale-renovee-de-240m-sur-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10295-maison-familiale-renovee-de-240m-sur-millau",
+  "agence": "Roques",
+  "titre": "Maison 5 pièce(s) 4 chambre(s) 180 m²",
+  "prix": 540000,
+  "prix_initial": 540000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 540000
+   }
+  ],
+  "surface": 180.0,
+  "terrain": 565.0,
+  "prix_m2": 3000,
+  "dpe": "A",
+  "score": 2,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -348780,
+  "marge_estimee_pct": -104.7,
+  "mots_detectes": "travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/terrain-a-batir/10302-terrain-a-batir-sur-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/terrain-a-batir/10302-terrain-a-batir-sur-millau",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10030-a-vendre-a-millau-une-maison-t6-avec-garage-piscine-pool-house-et-jardin": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10030-a-vendre-a-millau-une-maison-t6-avec-garage-piscine-pool-house-et-jardin",
+  "agence": "Roques",
+  "titre": "Maison 6 pièce(s) 5 chambre(s) 147 m²",
+  "prix": 325000,
+  "prix_initial": 325000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 325000
+   }
+  ],
+  "surface": 147.0,
+  "terrain": null,
+  "prix_m2": 2210,
+  "dpe": "A",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -162775,
+  "marge_estimee_pct": -59.9,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10593-appartement-t4-millau-avec-t2-independant": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10593-appartement-t4-millau-avec-t2-independant",
+  "agence": "Roques",
+  "titre": "Appartement 5 pièce(s) 4 chambre(s) 130.67 m²",
+  "prix": 239000,
+  "prix_initial": 239000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 239000
+   }
+  ],
+  "surface": 130.67,
+  "terrain": null,
+  "prix_m2": 1829,
+  "dpe": "A",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -92285,
+  "marge_estimee_pct": -38.2,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/immeuble/10444-immeuble-6-logements": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/10444-immeuble-6-logements",
+  "agence": "Roques",
+  "titre": "Immeuble 227 m²",
+  "prix": 400000,
+  "prix_initial": 400000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 400000
+   }
+  ],
+  "surface": 227.0,
+  "terrain": 817.0,
+  "prix_m2": 1762,
+  "dpe": "A",
+  "score": 7,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -142050,
+  "marge_estimee_pct": -33.8,
+  "mots_detectes": "immeuble, opportunité",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10452-appartement-t4-avec-terrasse-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10452-appartement-t4-avec-terrasse-a-millau",
+  "agence": "Roques",
+  "titre": "Appartement 5 pièce(s) 4 chambre(s) 104 m²",
+  "prix": 165000,
+  "prix_initial": 165000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 165000
+   }
+  ],
+  "surface": 104.0,
+  "terrain": null,
+  "prix_m2": 1586,
+  "dpe": "A",
+  "score": 3,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -47405,
+  "marge_estimee_pct": -24.6,
+  "mots_detectes": "opportunité",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10206-maison-millau-avec-maison-de-vigne": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10206-maison-millau-avec-maison-de-vigne",
+  "agence": "Roques",
+  "titre": "Maison 4 pièce(s) 3 chambre(s) 127 m²",
+  "prix": 297000,
+  "prix_initial": 297000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 297000
+   }
+  ],
+  "surface": 127.0,
+  "terrain": 1035.0,
+  "prix_m2": 2338,
+  "dpe": "A",
+  "score": 3,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -158179,
+  "marge_estimee_pct": -67.3,
+  "mots_detectes": "opportunité",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/9954-charmante-maison-avec-terrasse-et-annexes": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/9954-charmante-maison-avec-terrasse-et-annexes",
+  "agence": "Roques",
+  "titre": "Maison 3 pièce(s) 2 chambre(s) 99 m²",
+  "prix": 208000,
+  "prix_initial": 208000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 208000
+   }
+  ],
+  "surface": 99.0,
+  "terrain": 159.0,
+  "prix_m2": 2101,
+  "dpe": "A",
+  "score": 4,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -99106,
+  "marge_estimee_pct": -54.1,
+  "mots_detectes": "atelier, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:15",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/9512-maison-t5-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/9512-maison-t5-millau",
+  "agence": "Roques",
+  "titre": "Maison 5 pièce(s) 4 chambre(s) 105 m²",
+  "prix": 310000,
+  "prix_initial": 310000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 310000
+   }
+  ],
+  "surface": 105.0,
+  "terrain": 720.0,
+  "prix_m2": 2952,
+  "dpe": "A",
+  "score": 3,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -199420,
+  "marge_estimee_pct": -102.7,
+  "mots_detectes": "opportunité",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/7620-maison-t4-avec-terrasse-et-garage": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/7620-maison-t4-avec-terrasse-et-garage",
+  "agence": "Roques",
+  "titre": "Maison 4 pièce(s) 3 chambre(s) 142.3 m²",
+  "prix": 249000,
+  "prix_initial": 249000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 249000
+   }
+  ],
+  "surface": 142.3,
+  "terrain": null,
+  "prix_m2": 1749,
+  "dpe": "A",
+  "score": 2,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -88318,
+  "marge_estimee_pct": -33.5,
+  "mots_detectes": "atelier",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/terrain-agricole/9972-terrain-non-constructible-avec-hangar-et-maison-de-vigne": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/terrain-agricole/9972-terrain-non-constructible-avec-hangar-et-maison-de-vigne",
+  "agence": "Roques",
+  "titre": "Terrain agricole",
+  "prix": 54000,
+  "prix_initial": 54000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 54000
+   }
+  ],
+  "surface": 902.0,
+  "terrain": 902.0,
+  "prix_m2": 59,
+  "dpe": "A",
+  "score": 8,
+  "score_v3": 6.3,
+  "marge_estimee_montant": 1067422,
+  "marge_estimee_pct": 64.0,
+  "mots_detectes": "hangar, opportunité, Prix canon 59 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/8281-appartement-t3-millau-avec-garage": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/8281-appartement-t3-millau-avec-garage",
+  "agence": "Roques",
+  "titre": "Appartement 3 pièce(s) 2 chambre(s) 82.38 m²",
+  "prix": 104000,
+  "prix_initial": 104000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 104000
+   }
+  ],
+  "surface": 82.38,
+  "terrain": null,
+  "prix_m2": 1262,
+  "dpe": "A",
+  "score": 5,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -9953,
+  "marge_estimee_pct": -6.5,
+  "mots_detectes": "grenier, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/8395-proche-du-centre-ville-maison-jardin-et-garage-vue-larzac": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/8395-proche-du-centre-ville-maison-jardin-et-garage-vue-larzac",
+  "agence": "Roques",
+  "titre": "Maison 4 pièce(s) 3 chambre(s) 109 m²",
+  "prix": 274000,
+  "prix_initial": 274000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 274000
+   }
+  ],
+  "surface": 109.0,
+  "terrain": 388.0,
+  "prix_m2": 2513,
+  "dpe": "A",
+  "score": 2,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -156368,
+  "marge_estimee_pct": -77.5,
+  "mots_detectes": "travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/9159-a-vendre-maison-de-ville-t2-avec-terrasse-et-cave": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/9159-a-vendre-maison-de-ville-t2-avec-terrasse-et-cave",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/immeuble/9312-immeuble-centre-ville": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/9312-immeuble-centre-ville",
+  "agence": "Roques",
+  "titre": "Immeuble 320 m² 3 etage(s)",
+  "prix": 149000,
+  "prix_initial": 149000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 149000
+   }
+  ],
+  "surface": 320.0,
+  "terrain": null,
+  "prix_m2": 465,
+  "dpe": "A",
+  "score": 13,
+  "score_v3": 8.2,
+  "marge_estimee_montant": 239507,
+  "marge_estimee_pct": 40.5,
+  "mots_detectes": "immeuble, grenier, à rénover, Prix canon 465 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/8313-villa-de-106m-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/8313-villa-de-106m-a-millau",
+  "agence": "Roques",
+  "titre": "Maison 7 pièce(s) 4 chambre(s) 106.45 m²",
+  "prix": 213000,
+  "prix_initial": 213000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 213000
+   }
+  ],
+  "surface": 106.45,
+  "terrain": null,
+  "prix_m2": 2000,
+  "dpe": "A",
+  "score": 5,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -95079,
+  "marge_estimee_pct": -48.3,
+  "mots_detectes": "grenier, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/9574-maison-de-plain-pied-avec-jardin": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/9574-maison-de-plain-pied-avec-jardin",
+  "agence": "Roques",
+  "titre": "Maison 3 pièce(s) 2 chambre(s) 110 m²",
+  "prix": 360000,
+  "prix_initial": 360000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 360000
+   }
+  ],
+  "surface": 110.0,
+  "terrain": 200.0,
+  "prix_m2": 3272,
+  "dpe": "A",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -246020,
+  "marge_estimee_pct": -120.9,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/9897-maison-des-annees-50-avec-piscine-a-renover": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/9897-maison-des-annees-50-avec-piscine-a-renover",
+  "agence": "Roques",
+  "titre": "Maison 4 pièce(s) 3 chambre(s) 162 m²",
+  "prix": 314000,
+  "prix_initial": 314000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 314000
+   }
+  ],
+  "surface": 162.0,
+  "terrain": null,
+  "prix_m2": 1938,
+  "dpe": "A",
+  "score": 7,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -132398,
+  "marge_estimee_pct": -44.2,
+  "mots_detectes": "remise, opportunité, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10021-maison-en-viager-occupe-sur-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10021-maison-en-viager-occupe-sur-millau",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/immeuble/7794-immeuble-de-600-m-sur-3-niveaux-avec-parking": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/immeuble/7794-immeuble-de-600-m-sur-3-niveaux-avec-parking",
+  "agence": "Roques",
+  "titre": "Immeuble 600 m² 3 etage(s)",
+  "prix": 560000,
+  "prix_initial": 560000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 560000
+   }
+  ],
+  "surface": 600.0,
+  "terrain": 360.0,
+  "prix_m2": 933,
+  "dpe": "A",
+  "score": 10,
+  "score_v3": 6.0,
+  "marge_estimee_montant": 155080,
+  "marge_estimee_pct": 14.0,
+  "mots_detectes": "immeuble, plateau brut, Prix canon 933 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/9978-maison-2012-bbc-158-m-avec-terrasse-90-m-sur-7770-m-terrain": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/9978-maison-2012-bbc-158-m-avec-terrasse-90-m-sur-7770-m-terrain",
+  "agence": "Roques",
+  "titre": "Maison 7 pièce(s) 4 chambre(s) 158 m²",
+  "prix": 399400,
+  "prix_initial": 399400,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 399400
+   }
+  ],
+  "surface": 158.0,
+  "terrain": 60.0,
+  "prix_m2": 2527,
+  "dpe": "D",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -227665,
+  "marge_estimee_pct": -77.9,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/8274-maison-de-caractere-a-decouvrir-dans-un-quartier-recherche-a-proximite-des-ecoles-et-du-centre-ville": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/8274-maison-de-caractere-a-decouvrir-dans-un-quartier-recherche-a-proximite-des-ecoles-et-du-centre-ville",
+  "agence": "Roques",
+  "titre": "Maison 4 pièce(s) 3 chambre(s) 175 m²",
+  "prix": 320000,
+  "prix_initial": 320000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 320000
+   }
+  ],
+  "surface": 175.0,
+  "terrain": 583.0,
+  "prix_m2": 1828,
+  "dpe": "A",
+  "score": 2,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -122490,
+  "marge_estimee_pct": -37.8,
+  "mots_detectes": "à rafraichir",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:16",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/8536-programme-neuf-villa-t4-avec-jardin": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/8536-programme-neuf-villa-t4-avec-jardin",
+  "agence": "Roques",
+  "titre": "Maison 4 pièce(s) 3 chambre(s) 90.71 m²",
+  "prix": 289000,
+  "prix_initial": 289000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 289000
+   }
+  ],
+  "surface": 90.71,
+  "terrain": 230.0,
+  "prix_m2": 3185,
+  "dpe": "A",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -195085,
+  "marge_estimee_pct": -116.3,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:17",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/9547-maison-avec-garage-et-exterieur": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/9547-maison-avec-garage-et-exterieur",
+  "agence": "Roques",
+  "titre": "Maison 6 pièce(s) 3 chambre(s) 175 m²",
+  "prix": 114000,
+  "prix_initial": 114000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 114000
+   }
+  ],
+  "surface": 175.0,
+  "terrain": 30.0,
+  "prix_m2": 651,
+  "dpe": "A",
+  "score": 11,
+  "score_v3": 6.3,
+  "marge_estimee_montant": 95252,
+  "marge_estimee_pct": 29.4,
+  "mots_detectes": "grenier, atelier, à rénover, Prix canon 651 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:17",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/9037-appartement-duplex-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/9037-appartement-duplex-millau",
+  "agence": "Roques",
+  "titre": "Appartement 6 pièce(s) 5 chambre(s) 153 m²",
+  "prix": 230000,
+  "prix_initial": 230000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 230000
+   }
+  ],
+  "surface": 153.0,
+  "terrain": null,
+  "prix_m2": 1503,
+  "dpe": "A",
+  "score": 5,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -54860,
+  "marge_estimee_pct": -19.4,
+  "mots_detectes": "opportunité, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:17",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/9571-appartement-t3-avec-parking-et-balcon-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/9571-appartement-t3-avec-parking-et-balcon-a-millau",
+  "agence": "Roques",
+  "titre": "Appartement 4 pièce(s) 2 chambre(s) 92 m²",
+  "prix": 171500,
+  "prix_initial": 171500,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 171500
+   }
+  ],
+  "surface": 92.0,
+  "terrain": null,
+  "prix_m2": 1864,
+  "dpe": "A",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -69275,
+  "marge_estimee_pct": -40.7,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:17",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/terrain/9371-terrain-a-batir-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/terrain/9371-terrain-a-batir-a-millau",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033753.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033753.html",
+  "agence": "SGA",
+  "titre": "Appartement 3 pièces, 51m²\nen vente à Millau\n90 000 € *",
+  "prix": 90000,
+  "prix_initial": 90000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 90000
+   }
+  ],
+  "surface": 51.0,
+  "terrain": null,
+  "prix_m2": 1764,
+  "dpe": "E",
+  "score": 2,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -34380,
+  "marge_estimee_pct": -36.4,
+  "mots_detectes": "travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:17",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033760.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033760.html",
+  "agence": "SGA",
+  "titre": "Appartement 4 pièces, 82m²\nen vente à Millau\n126 000 € *",
+  "prix": 126000,
+  "prix_initial": 126000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 126000
+   }
+  ],
+  "surface": 82.0,
+  "terrain": null,
+  "prix_m2": 1536,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -33682,
+  "marge_estimee_pct": -22.2,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:17",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033788.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033788.html",
+  "agence": "SGA",
+  "titre": "Maison 3 pièces, 82m²\nen vente à Millau\n390 000 € *",
+  "prix": 390000,
+  "prix_initial": 390000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 390000
+   }
+  ],
+  "surface": 82.0,
+  "terrain": 590.0,
+  "prix_m2": 4756,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -312730,
+  "marge_estimee_pct": -206.2,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:17",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonces/acheter-p-r70-4-1.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonces/acheter-p-r70-4-1.html",
+  "agence": "SGA",
+  "titre": "13 BIENS IMMOBILIERS EN VENTE TROUVÉS",
+  "prix": 89800,
+  "prix_initial": 89800,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 89800
+   }
+  ],
+  "surface": 71.0,
+  "terrain": null,
+  "prix_m2": 1264,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -9168,
+  "marge_estimee_pct": -7.0,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:17",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonces/appartement-p-r70-2-1.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonces/appartement-p-r70-2-1.html",
+  "agence": "SGA",
+  "titre": "9 APPARTEMENTS TROUVÉS",
+  "prix": 89800,
+  "prix_initial": 89800,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 89800
+   }
+  ],
+  "surface": 71.0,
+  "terrain": null,
+  "prix_m2": 1264,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -9168,
+  "marge_estimee_pct": -7.0,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:17",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/programmes-neufs-millau-cedex-p-r43-liste_neuf-1.html": {
+  "url": "https://www.sga-immobilier.com/fr/programmes-neufs-millau-cedex-p-r43-liste_neuf-1.html",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonces/louer-p-r70-5-1.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonces/louer-p-r70-5-1.html",
+  "agence": "SGA",
+  "titre": "27 BIENS IMMOBILIERS EN LOCATION TROUVÉS",
+  "prix": 28300,
+  "prix_initial": 28300,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 28300
+   }
+  ],
+  "surface": 17.0,
+  "terrain": null,
+  "prix_m2": 1664,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": 0,
+  "marge_estimee_pct": 0.0,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:17",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033781.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033781.html",
+  "agence": "SGA",
+  "titre": "Appartement 3 pièces, 71m²\nen vente à Millau\n89 800 € *",
+  "prix": 89800,
+  "prix_initial": 89800,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 89800
+   }
+  ],
+  "surface": 71.0,
+  "terrain": null,
+  "prix_m2": 1264,
+  "dpe": "INCONNU",
+  "score": 3,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -9168,
+  "marge_estimee_pct": -7.0,
+  "mots_detectes": "grenier",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:17",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033784.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033784.html",
+  "agence": "SGA",
+  "titre": "Appartement 4 pièces, 79m²\nen vente à Millau\n130 000 € *",
+  "prix": 130000,
+  "prix_initial": 130000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 130000
+   }
+  ],
+  "surface": 79.0,
+  "terrain": null,
+  "prix_m2": 1645,
+  "dpe": "INCONNU",
+  "score": 2,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -41660,
+  "marge_estimee_pct": -28.5,
+  "mots_detectes": "travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:18",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonces/millau-p-r301-0-22137-1.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonces/millau-p-r301-0-22137-1.html",
+  "agence": "SGA",
+  "titre": "13 BIEN(S) TROUVÉ(S) BIENS TROUVÉS À MILLAU",
+  "prix": 89800,
+  "prix_initial": 89800,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 89800
+   }
+  ],
+  "surface": 71.0,
+  "terrain": null,
+  "prix_m2": 1264,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -9168,
+  "marge_estimee_pct": -7.0,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:18",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033762.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033762.html",
+  "agence": "SGA",
+  "titre": "Appartement 3 pièces, 114m²\nen vente à Millau\n149 000 € *",
+  "prix": 149000,
+  "prix_initial": 149000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 149000
+   }
+  ],
+  "surface": 114.0,
+  "terrain": null,
+  "prix_m2": 1307,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -17993,
+  "marge_estimee_pct": -8.5,
+  "mots_detectes": "division",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:18",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033787.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033787.html",
+  "agence": "SGA",
+  "titre": "Appartement 4 pièces, 77m²\nen vente à Millau\n175 000 € *",
+  "prix": 175000,
+  "prix_initial": 175000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 175000
+   }
+  ],
+  "surface": 77.0,
+  "terrain": null,
+  "prix_m2": 2272,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -91725,
+  "marge_estimee_pct": -64.4,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:18",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033761.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033761.html",
+  "agence": "SGA",
+  "titre": "Appartement 4 pièces, 67m²\nen vente à Millau\n118 000 € *",
+  "prix": 118000,
+  "prix_initial": 118000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 118000
+   }
+  ],
+  "surface": 67.0,
+  "terrain": null,
+  "prix_m2": 1761,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -43976,
+  "marge_estimee_pct": -35.5,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:18",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonces-immobilieres-p-r12-1.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonces-immobilieres-p-r12-1.html",
+  "agence": "SGA",
+  "titre": "13 BIENS IMMOBILIERS TROUVÉS",
+  "prix": 89800,
+  "prix_initial": 89800,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 89800
+   }
+  ],
+  "surface": 71.0,
+  "terrain": null,
+  "prix_m2": 1264,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -9168,
+  "marge_estimee_pct": -7.0,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:18",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033744.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033744.html",
+  "agence": "SGA",
+  "titre": "Appartement 3 pièces, 53m²\nen vente à Millau\n153 000 € *",
+  "prix": 153000,
+  "prix_initial": 153000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 153000
+   }
+  ],
+  "surface": 53.0,
+  "terrain": null,
+  "prix_m2": 2886,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -98471,
+  "marge_estimee_pct": -100.4,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:18",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-immeuble-millau-p-r7-1200351.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-immeuble-millau-p-r7-1200351.html",
+  "agence": "SGA",
+  "titre": "Immeuble , 181m²\nen vente à Millau\n231 000 € *",
+  "prix": 231000,
+  "prix_initial": 231000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 231000
+   }
+  ],
+  "surface": 181.0,
+  "terrain": null,
+  "prix_m2": 1276,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -20917,
+  "marge_estimee_pct": -6.2,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:18",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033754.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033754.html",
+  "agence": "SGA",
+  "titre": "Maison 4 pièces, 156m²\nen vente à Millau\n280 000 € *",
+  "prix": 280000,
+  "prix_initial": 280000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 280000
+   }
+  ],
+  "surface": 156.0,
+  "terrain": null,
+  "prix_m2": 1794,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -103960,
+  "marge_estimee_pct": -36.0,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:18",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033749.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033749.html",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.sga-immobilier.com/fr/annonces/maison-p-r70-1-1.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonces/maison-p-r70-1-1.html",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-maison-210m-millau-TMAI99347": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-210m-millau-TMAI99347",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 278000,
+  "prix_initial": 278000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 278000
+   }
+  ],
+  "surface": 210.0,
+  "terrain": 700.0,
+  "prix_m2": 1323,
+  "dpe": "A",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -34346,
+  "marge_estimee_pct": -8.8,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-2pieces-millau-TAPP100092": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-2pieces-millau-TAPP100092",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 64000,
+  "prix_initial": 64000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 64000
+   }
+  ],
+  "surface": 30.0,
+  "terrain": null,
+  "prix_m2": 2133,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -33148,
+  "marge_estimee_pct": -59.7,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-27m-millau-TAPP100095": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-27m-millau-TAPP100095",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 40000,
+  "prix_initial": 40000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 40000
+   }
+  ],
+  "surface": 27.0,
+  "terrain": null,
+  "prix_m2": 1481,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -11530,
+  "marge_estimee_pct": -23.1,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-maison-5pieces-millau-TMAI99377": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-5pieces-millau-TMAI99377",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 314000,
+  "prix_initial": 314000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 314000
+   }
+  ],
+  "surface": 162.0,
+  "terrain": 1416.0,
+  "prix_m2": 1938,
+  "dpe": "INCONNU",
+  "score": 2,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -132398,
+  "marge_estimee_pct": -44.2,
+  "mots_detectes": "travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-96m-veyreau-TAPP100088": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-96m-veyreau-TAPP100088",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-immeuble-4pieces-millau-TIMM85680": {
+  "url": "https://www.jmb-immobilier.com/vente-immeuble-4pieces-millau-TIMM85680",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 306000,
+  "prix_initial": 306000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 306000
+   }
+  ],
+  "surface": 49.0,
+  "terrain": null,
+  "prix_m2": 6244,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -265192,
+  "marge_estimee_pct": -292.5,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-local_commercial-8pieces-millau-TLOC96055": {
+  "url": "https://www.jmb-immobilier.com/vente-local_commercial-8pieces-millau-TLOC96055",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 295000,
+  "prix_initial": 295000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 295000
+   }
+  ],
+  "surface": 245.0,
+  "terrain": 240.0,
+  "prix_m2": 1204,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 2.9,
+  "marge_estimee_montant": -8565,
+  "marge_estimee_pct": -1.9,
+  "mots_detectes": "divisible",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-maison-3pieces-millau-TMAI99384": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-3pieces-millau-TMAI99384",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 390000,
+  "prix_initial": 390000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 390000
+   }
+  ],
+  "surface": 82.0,
+  "terrain": 590.0,
+  "prix_m2": 4756,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -312730,
+  "marge_estimee_pct": -206.2,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-49m-millau-TAPP100094": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-49m-millau-TAPP100094",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 50000,
+  "prix_initial": 50000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 50000
+   }
+  ],
+  "surface": 49.0,
+  "terrain": null,
+  "prix_m2": 1020,
+  "dpe": "INCONNU",
+  "score": 5,
+  "score_v3": 2.4,
+  "marge_estimee_montant": 5400,
+  "marge_estimee_pct": 6.0,
+  "mots_detectes": "travaux, Prix canon 1020 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-immeuble-212m-millau-TIMM85675": {
+  "url": "https://www.jmb-immobilier.com/vente-immeuble-212m-millau-TIMM85675",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 290000,
+  "prix_initial": 290000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 290000
+   }
+  ],
+  "surface": 212.0,
+  "terrain": null,
+  "prix_m2": 1367,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -44530,
+  "marge_estimee_pct": -11.4,
+  "mots_detectes": "immeuble, opportunité, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-maison-3pieces-mostuejouls-TMAI99381": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-3pieces-mostuejouls-TMAI99381",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-1piece-millau-TAPP100087": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-1piece-millau-TAPP100087",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 59000,
+  "prix_initial": 59000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 59000
+   }
+  ],
+  "surface": 27.0,
+  "terrain": null,
+  "prix_m2": 2185,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -31613,
+  "marge_estimee_pct": -63.3,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-maison-5pieces-creissels-TMAI99380": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-5pieces-creissels-TMAI99380",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-terrain-annonce-millau-TTER91644": {
+  "url": "https://www.jmb-immobilier.com/vente-terrain-annonce-millau-TTER91644",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 130000,
+  "prix_initial": 130000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 130000
+   }
+  ],
+  "surface": 1119.0,
+  "terrain": 1119.0,
+  "prix_m2": 116,
+  "dpe": "INCONNU",
+  "score": 8,
+  "score_v3": 6.3,
+  "marge_estimee_montant": 1258340,
+  "marge_estimee_pct": 60.8,
+  "mots_detectes": "remise, terrain constructible, Prix canon 116 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-69m-millau-TAPP100091": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-69m-millau-TAPP100091",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 124000,
+  "prix_initial": 124000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 124000
+   }
+  ],
+  "surface": 69.0,
+  "terrain": null,
+  "prix_m2": 1797,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -47818,
+  "marge_estimee_pct": -37.5,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-2pieces-millau-TAPP100085": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-2pieces-millau-TAPP100085",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-76m-millau-TAPP100093": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-76m-millau-TAPP100093",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 115000,
+  "prix_initial": 115000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 115000
+   }
+  ],
+  "surface": 76.0,
+  "terrain": null,
+  "prix_m2": 1513,
+  "dpe": "INCONNU",
+  "score": 2,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -29555,
+  "marge_estimee_pct": -21.0,
+  "mots_detectes": "travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:19",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-maison-4pieces-salles_curan-TMAI99385": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-4pieces-salles_curan-TMAI99385",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-maison-7pieces-ste_eulalie_de_cernon-TMAI99383": {
+  "url": "https://www.jmb-immobilier.com/vente-maison-7pieces-ste_eulalie_de_cernon-TMAI99383",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-4pieces-millau-TAPP100078": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-4pieces-millau-TAPP100078",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 96500,
+  "prix_initial": 96500,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 96500
+   }
+  ],
+  "surface": 95.0,
+  "terrain": null,
+  "prix_m2": 1015,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 2.4,
+  "marge_estimee_montant": 13750,
+  "marge_estimee_pct": 7.8,
+  "mots_detectes": "à rénover, Prix canon 1015 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:20",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-immeuble-4pieces-millau-TIMM85678": {
+  "url": "https://www.jmb-immobilier.com/vente-immeuble-4pieces-millau-TIMM85678",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 335000,
+  "prix_initial": 335000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 335000
+   }
+  ],
+  "surface": 640.0,
+  "terrain": 640.0,
+  "prix_m2": 523,
+  "dpe": "INCONNU",
+  "score": 7,
+  "score_v3": 7.9,
+  "marge_estimee_montant": 442905,
+  "marge_estimee_pct": 37.4,
+  "mots_detectes": "immeuble, Prix canon 523 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:20",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.jmb-immobilier.com/vente-local_commercial-1piece-millau-TLOC96057": {
+  "url": "https://www.jmb-immobilier.com/vente-local_commercial-1piece-millau-TLOC96057",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 44000,
+  "prix_initial": 44000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 44000
+   }
+  ],
+  "surface": 31.0,
+  "terrain": null,
+  "prix_m2": 1419,
+  "dpe": "INCONNU",
+  "score": 8,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -10758,
+  "marge_estimee_pct": -18.8,
+  "mots_detectes": "immeuble, divisible",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:20",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/vallee-de-la-sorgue-tres-beau-village-de-saint-beaulize-superbe-maison-t3-occitanie-12": {
+  "url": "https://mesnard-immobilier.com/property/vallee-de-la-sorgue-tres-beau-village-de-saint-beaulize-superbe-maison-t3-occitanie-12",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/superbe-maison-caussenarde-sur-le-causse-de-sauveterre-saint-georges-de-levejac-48-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/superbe-maison-caussenarde-sur-le-causse-de-sauveterre-saint-georges-de-levejac-48-occitanie",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/gorges-du-tarn-et-de-la-jonte-le-rozier-maison-de-village-avec-commerce-en-rdc-103-000-euro-occitanie-12": {
+  "url": "https://mesnard-immobilier.com/property/gorges-du-tarn-et-de-la-jonte-le-rozier-maison-de-village-avec-commerce-en-rdc-103-000-euro-occitanie-12",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/superbe-villa-t6-sur-1400-m2-quartier-martel-millau-12-occitanie-375000-euro": {
+  "url": "https://mesnard-immobilier.com/property/superbe-villa-t6-sur-1400-m2-quartier-martel-millau-12-occitanie-375000-euro",
+  "agence": "Mesnard maisons",
+  "titre": "SUPERBE VILLA T6 SUR 1400 M2 QUARTIER MARTEL; MILLAU 12 (Occitanie). 375000 €uro",
+  "prix": 375000,
+  "prix_initial": 375000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 375000
+   }
+  ],
+  "surface": 80.0,
+  "terrain": null,
+  "prix_m2": 4687,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -299375,
+  "marge_estimee_pct": -202.3,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:20",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/superbe-appartement-de-type-4-118-m2-rue-clausel-de-coussergues-millau-12-occitanie-156800-euro-a-saisir": {
+  "url": "https://mesnard-immobilier.com/property/superbe-appartement-de-type-4-118-m2-rue-clausel-de-coussergues-millau-12-occitanie-156800-euro-a-saisir",
+  "agence": "Mesnard maisons",
+  "titre": "SUPERBE APPARTEMENT DE TYPE 4 118 M2; RUE CLAUSEL DE COUSSERGUES MILLAU (12) Occitanie. 156800 €uro. a saisir",
+  "prix": 156800,
+  "prix_initial": 156800,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 156800
+   }
+  ],
+  "surface": 150.0,
+  "terrain": null,
+  "prix_m2": 1045,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 2.1,
+  "marge_estimee_montant": 18763,
+  "marge_estimee_pct": 6.8,
+  "mots_detectes": "terrain constructible, Prix canon 1045 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:20",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/26-000-euro-pour-cette-maison-t4-lapanouse-de-severac-occitanie-12": {
+  "url": "https://mesnard-immobilier.com/property/26-000-euro-pour-cette-maison-t4-lapanouse-de-severac-occitanie-12",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/superbe-ferme-typiquement-caussenarde-proche-du-centre-ville-de-millau-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/superbe-ferme-typiquement-caussenarde-proche-du-centre-ville-de-millau-12-occitanie",
+  "agence": "Mesnard maisons",
+  "titre": "SUPERBE FERME TYPIQUEMENT CAUSSENARDE PROCHE DU CENTRE VILLE DE MILLAU 12 ( Occitanie).",
+  "prix": 375000,
+  "prix_initial": 375000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 375000
+   }
+  ],
+  "surface": 80.0,
+  "terrain": null,
+  "prix_m2": 4687,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -299375,
+  "marge_estimee_pct": -202.3,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:20",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/ancien-corps-de-ferme-comprenant-un-type-2-loue-et-un-type-4-libre-grand-terrain-constructible-la-cavalerie-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/ancien-corps-de-ferme-comprenant-un-type-2-loue-et-un-type-4-libre-grand-terrain-constructible-la-cavalerie-12-occitanie",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/superbe-maison-t4-dans-village-de-saint-beauzely-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/superbe-maison-t4-dans-village-de-saint-beauzely-12-occitanie",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/ideal-investissement-locatif-type-2-loue-depuis-8-ans-prix-attractif-de-69000-euro-millau-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/ideal-investissement-locatif-type-2-loue-depuis-8-ans-prix-attractif-de-69000-euro-millau-12-occitanie",
+  "agence": "Mesnard maisons",
+  "titre": "IDEAL INVESTISSEMENT LOCATIF. TYPE 2 LOUE DEPUIS 8 ANS. PRIX ATTRACTIF DE 69000 €URO MILLAU 12 (Occitanie).",
+  "prix": 69000,
+  "prix_initial": 69000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 69000
+   }
+  ],
+  "surface": 80.0,
+  "terrain": null,
+  "prix_m2": 862,
+  "dpe": "INCONNU",
+  "score": 3,
+  "score_v3": 4.4,
+  "marge_estimee_montant": 24067,
+  "marge_estimee_pct": 16.3,
+  "mots_detectes": "Prix canon 862 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:20",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/fonds-de-commerce-patisserie-salon-de-the-boulevard-de-layrolle-millau-12": {
+  "url": "https://mesnard-immobilier.com/property/fonds-de-commerce-patisserie-salon-de-the-boulevard-de-layrolle-millau-12",
+  "agence": "Mesnard maisons",
+  "titre": "Fonds de commerce Pâtisserie -150000 €uro Affaire à saisir salon de thé Boulevard de l’Ayrolle – Millau (12)",
+  "prix": 150000,
+  "prix_initial": 150000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 150000
+   }
+  ],
+  "surface": 150.0,
+  "terrain": null,
+  "prix_m2": 1000,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 2.4,
+  "marge_estimee_montant": 25950,
+  "marge_estimee_pct": 9.4,
+  "mots_detectes": "terrain constructible, Prix canon 1000 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:21",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/exceptionnel-viager-80-libres-sans-rente-corps-de-ferme-vezins-de-levezou-occitanie-12": {
+  "url": "https://mesnard-immobilier.com/property/exceptionnel-viager-80-libres-sans-rente-corps-de-ferme-vezins-de-levezou-occitanie-12",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/grande-jasse-de-600-m2-a-deux-pas-de-millau": {
+  "url": "https://mesnard-immobilier.com/property/grande-jasse-de-600-m2-a-deux-pas-de-millau",
+  "agence": "Mesnard maisons",
+  "titre": "GRANDE JASSE DE 600 M2 A DEUX PAS DE MILLAU (12) OCCITANIE.",
+  "prix": 154000,
+  "prix_initial": 154000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 154000
+   }
+  ],
+  "surface": 118.0,
+  "terrain": null,
+  "prix_m2": 1305,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -18278,
+  "marge_estimee_pct": -8.4,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:21",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/superbe-petite-maison-de-village-avec-terrasse-panoramique-sur-la-dourbie-la-roque-st-marguerite-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/superbe-petite-maison-de-village-avec-terrasse-panoramique-sur-la-dourbie-la-roque-st-marguerite-12-occitanie",
+  "agence": "Mesnard maisons",
+  "titre": "SUPERBE PETITE MAISON DE VILLAGE AVEC TERRASSE PANORAMIQUE SUR LA DOURBIE; LA ROQUE ST MARGUERITE 12 (Occitanie)",
+  "prix": 130000,
+  "prix_initial": 130000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 130000
+   }
+  ],
+  "surface": 812.0,
+  "terrain": null,
+  "prix_m2": 160,
+  "dpe": "INCONNU",
+  "score": 3,
+  "score_v3": 6.3,
+  "marge_estimee_montant": 874590,
+  "marge_estimee_pct": 58.2,
+  "mots_detectes": "Prix canon 160 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:21",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/verrieres-la-graillerie-maison-typique-a-renover-prix-negociable-de-79500-euro-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/verrieres-la-graillerie-maison-typique-a-renover-prix-negociable-de-79500-euro-12-occitanie",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/deux-parkings-residence-condatomag-rue-condatomag-millau-12": {
+  "url": "https://mesnard-immobilier.com/property/deux-parkings-residence-condatomag-rue-condatomag-millau-12",
+  "agence": "Mesnard apparts",
+  "titre": "DEUX PARKINGS RESIDENCE CONDATOMAG. RUE CONDATOMAG MILLAU (12)",
+  "prix": 133000,
+  "prix_initial": 133000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 133000
+   }
+  ],
+  "surface": 1400.0,
+  "terrain": null,
+  "prix_m2": 95,
+  "dpe": "INCONNU",
+  "score": 3,
+  "score_v3": 6.3,
+  "marge_estimee_montant": 1606419,
+  "marge_estimee_pct": 62.0,
+  "mots_detectes": "Prix canon 95 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:21",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/rue-du-pont-de-fer-type-a-renover-1-er-etage-avec-terrasse-60000-euro-millau-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/rue-du-pont-de-fer-type-a-renover-1-er-etage-avec-terrasse-60000-euro-millau-12-occitanie",
+  "agence": "Mesnard apparts",
+  "titre": "RUE DU PONT DE FER IMMEUBLE COMPRENANT 3 APPARTEMENTS 229000 €URO MILLAU 12 (Occitanie).",
+  "prix": 229000,
+  "prix_initial": 229000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 229000
+   }
+  ],
+  "surface": 350.0,
+  "terrain": null,
+  "prix_m2": 654,
+  "dpe": "INCONNU",
+  "score": 13,
+  "score_v3": 7.9,
+  "marge_estimee_montant": 192447,
+  "marge_estimee_pct": 29.7,
+  "mots_detectes": "immeuble, opportunité, a rénover, Prix canon 654 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:21",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-127m2/r1998308": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-127m2/r1998308",
+  "agence": "iad",
+  "titre": "Appartement à vendre 5 pièces 127 m² Millau",
+  "prix": 365000,
+  "prix_initial": 365000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 365000
+   }
+  ],
+  "surface": 127.0,
+  "terrain": null,
+  "prix_m2": 2874,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -230055,
+  "marge_estimee_pct": -97.9,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:21",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-96m2/r2065526": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-96m2/r2065526",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 96 m² Millau",
+  "prix": 274000,
+  "prix_initial": 274000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 274000
+   }
+  ],
+  "surface": 96.0,
+  "terrain": 26.0,
+  "prix_m2": 2854,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -172618,
+  "marge_estimee_pct": -97.2,
+  "mots_detectes": "immeuble, plateau, atelier",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:21",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-5-pieces-millau-201m2/r2086763": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-5-pieces-millau-201m2/r2086763",
+  "agence": "iad",
+  "titre": "Maison à vendre 5 pièces 201 m² Millau",
+  "prix": 610000,
+  "prix_initial": 610000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 610000
+   }
+  ],
+  "surface": 201.0,
+  "terrain": null,
+  "prix_m2": 3034,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -396520,
+  "marge_estimee_pct": -106.6,
+  "mots_detectes": "immeuble, plateau, atelier",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:21",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-7-pieces-millau-109m2/r2102018": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-7-pieces-millau-109m2/r2102018",
+  "agence": "iad",
+  "titre": "Maison à vendre 7 pièces 109 m² Millau",
+  "prix": 237000,
+  "prix_initial": 237000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 237000
+   }
+  ],
+  "surface": 109.0,
+  "terrain": 354.0,
+  "prix_m2": 2174,
+  "dpe": "E",
+  "score": 9,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -117259,
+  "marge_estimee_pct": -58.1,
+  "mots_detectes": "immeuble, à rénover, à rafraichir",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:21",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/local-commercial-vente-millau-180m2/r2018529": {
+  "url": "https://www.iadfrance.fr/annonce/local-commercial-vente-millau-180m2/r2018529",
+  "agence": "iad",
+  "titre": "Restaurant à vendre 180 m² Millau",
+  "prix": 153400,
+  "prix_initial": 153400,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 153400
+   }
+  ],
+  "surface": 180.0,
+  "terrain": null,
+  "prix_m2": 852,
+  "dpe": "INCONNU",
+  "score": 7,
+  "score_v3": 7.0,
+  "marge_estimee_montant": 59857,
+  "marge_estimee_pct": 18.0,
+  "mots_detectes": "immeuble, Prix canon 852 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:21",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/local-commercial-vente-millau/r2098791": {
+  "url": "https://www.iadfrance.fr/annonce/local-commercial-vente-millau/r2098791",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-122m2/r2057386": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-122m2/r2057386",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 122 m² Millau",
+  "prix": 495000,
+  "prix_initial": 495000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 495000
+   }
+  ],
+  "surface": 122.0,
+  "terrain": 875.0,
+  "prix_m2": 4057,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -373715,
+  "marge_estimee_pct": -165.6,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-76m2/r1974169": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-76m2/r1974169",
+  "agence": "iad",
+  "titre": "Appartement à vendre 3 pièces 76 m² Millau",
+  "prix": 162000,
+  "prix_initial": 162000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 162000
+   }
+  ],
+  "surface": 76.0,
+  "terrain": null,
+  "prix_m2": 2131,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -79234,
+  "marge_estimee_pct": -56.4,
+  "mots_detectes": "immeuble, atelier",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-51m2/r2086169": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-51m2/r2086169",
+  "agence": "iad",
+  "titre": "Appartement à vendre 3 pièces 51 m² Millau",
+  "prix": 75000,
+  "prix_initial": 75000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 75000
+   }
+  ],
+  "surface": 51.0,
+  "terrain": null,
+  "prix_m2": 1470,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -18525,
+  "marge_estimee_pct": -19.6,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-102m2/r2032254": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-102m2/r2032254",
+  "agence": "iad",
+  "titre": "Appartement à vendre 5 pièces 102 m² Millau",
+  "prix": 193000,
+  "prix_initial": 193000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 193000
+   }
+  ],
+  "surface": 102.0,
+  "terrain": null,
+  "prix_m2": 1892,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -79501,
+  "marge_estimee_pct": -42.1,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-54m2/r2123708": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-54m2/r2123708",
+  "agence": "iad",
+  "titre": "Appartement à vendre 3 pièces 54 m² Millau",
+  "prix": 98000,
+  "prix_initial": 98000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 98000
+   }
+  ],
+  "surface": 54.0,
+  "terrain": null,
+  "prix_m2": 1814,
+  "dpe": "D",
+  "score": 6,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -39086,
+  "marge_estimee_pct": -39.1,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-6-pieces-millau-121m2/r2070970": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-6-pieces-millau-121m2/r2070970",
+  "agence": "iad",
+  "titre": "Maison à vendre 6 pièces 121 m² Millau",
+  "prix": 345000,
+  "prix_initial": 345000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 345000
+   }
+  ],
+  "surface": 121.0,
+  "terrain": 930.0,
+  "prix_m2": 2851,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -216415,
+  "marge_estimee_pct": -96.7,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-47m2/r2065928": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-47m2/r2065928",
+  "agence": "iad",
+  "titre": "Appartement à vendre 3 pièces 47 m² Millau",
+  "prix": 120000,
+  "prix_initial": 120000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 120000
+   }
+  ],
+  "surface": 47.0,
+  "terrain": null,
+  "prix_m2": 2553,
+  "dpe": "INCONNU",
+  "score": 7,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -71090,
+  "marge_estimee_pct": -81.8,
+  "mots_detectes": "immeuble, opportunité",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-41m2/r2072404": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-41m2/r2072404",
+  "agence": "iad",
+  "titre": "Appartement à vendre 3 pièces 41 m² Millau",
+  "prix": 90000,
+  "prix_initial": 90000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 90000
+   }
+  ],
+  "surface": 41.0,
+  "terrain": null,
+  "prix_m2": 2195,
+  "dpe": "C",
+  "score": 9,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -46880,
+  "marge_estimee_pct": -61.8,
+  "mots_detectes": "immeuble, opportunité, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-136m2/r2061735": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-136m2/r2061735",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 136 m² Millau",
+  "prix": 335000,
+  "prix_initial": 335000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 335000
+   }
+  ],
+  "surface": 136.0,
+  "terrain": 855.0,
+  "prix_m2": 2463,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -187095,
+  "marge_estimee_pct": -74.4,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-121m2/r1965552": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-121m2/r1965552",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 121 m² Millau",
+  "prix": 394000,
+  "prix_initial": 394000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 394000
+   }
+  ],
+  "surface": 121.0,
+  "terrain": null,
+  "prix_m2": 3256,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -268208,
+  "marge_estimee_pct": -119.8,
+  "mots_detectes": "immeuble, atelier, opportunité",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-47m2/r2072406": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-47m2/r2072406",
+  "agence": "iad",
+  "titre": "Appartement à vendre 3 pièces 47 m² Millau",
+  "prix": 95000,
+  "prix_initial": 95000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 95000
+   }
+  ],
+  "surface": 47.0,
+  "terrain": null,
+  "prix_m2": 2021,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -44665,
+  "marge_estimee_pct": -51.4,
+  "mots_detectes": "immeuble, opportunité, à rafraîchir",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-5-pieces-millau-98m2/r1981327": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-5-pieces-millau-98m2/r1981327",
+  "agence": "iad",
+  "titre": "Maison à vendre 5 pièces 98 m² Millau",
+  "prix": 193000,
+  "prix_initial": 193000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 193000
+   }
+  ],
+  "surface": 98.0,
+  "terrain": 464.0,
+  "prix_m2": 1969,
+  "dpe": "E",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -84501,
+  "marge_estimee_pct": -46.6,
+  "mots_detectes": "immeuble, remise",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:22",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/terrain-vente-millau-902m2/r2001829": {
+  "url": "https://www.iadfrance.fr/annonce/terrain-vente-millau-902m2/r2001829",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-7-pieces-millau-222m2/r2029243": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-7-pieces-millau-222m2/r2029243",
+  "agence": "iad",
+  "titre": "Maison à vendre 7 pièces 222 m² Millau",
+  "prix": 315000,
+  "prix_initial": 315000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 315000
+   }
+  ],
+  "surface": 222.0,
+  "terrain": 2500.0,
+  "prix_m2": 1418,
+  "dpe": "INCONNU",
+  "score": 14,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -58455,
+  "marge_estimee_pct": -14.2,
+  "mots_detectes": "immeuble, atelier, opportunité, à rénover, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-6-pieces-millau-122m2/r1984473": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-6-pieces-millau-122m2/r1984473",
+  "agence": "iad",
+  "titre": "Maison à vendre 6 pièces 122 m² Millau",
+  "prix": 375000,
+  "prix_initial": 375000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 375000
+   }
+  ],
+  "surface": 122.0,
+  "terrain": null,
+  "prix_m2": 3073,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -246875,
+  "marge_estimee_pct": -109.4,
+  "mots_detectes": "immeuble, atelier",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-8-pieces-millau-137m2/r2074176": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-8-pieces-millau-137m2/r2074176",
+  "agence": "iad",
+  "titre": "Maison à vendre 8 pièces 137,42 m² Millau",
+  "prix": 268500,
+  "prix_initial": 268500,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 268500
+   }
+  ],
+  "surface": 137.42,
+  "terrain": null,
+  "prix_m2": 1953,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -115029,
+  "marge_estimee_pct": -45.2,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-110m2/r1978699": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-110m2/r1978699",
+  "agence": "iad",
+  "titre": "Appartement à vendre 5 pièces 110 m² Millau",
+  "prix": 250000,
+  "prix_initial": 250000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 250000
+   }
+  ],
+  "surface": 110.0,
+  "terrain": null,
+  "prix_m2": 2272,
+  "dpe": "INCONNU",
+  "score": 7,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -129750,
+  "marge_estimee_pct": -63.8,
+  "mots_detectes": "immeuble, opportunité",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-6-pieces-millau-101m2/r2090138": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-6-pieces-millau-101m2/r2090138",
+  "agence": "iad",
+  "titre": "Maison à vendre 6 pièces 101 m² Millau",
+  "prix": 279500,
+  "prix_initial": 279500,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 279500
+   }
+  ],
+  "surface": 101.0,
+  "terrain": 101.0,
+  "prix_m2": 2767,
+  "dpe": "D",
+  "score": 8,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -172181,
+  "marge_estimee_pct": -92.1,
+  "mots_detectes": "immeuble, atelier, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-6-pieces-millau-130m2/r2028531": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-6-pieces-millau-130m2/r2028531",
+  "agence": "iad",
+  "titre": "Maison à vendre 6 pièces 130 m² Millau",
+  "prix": 330000,
+  "prix_initial": 330000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 330000
+   }
+  ],
+  "surface": 130.0,
+  "terrain": 500.0,
+  "prix_m2": 2538,
+  "dpe": "C",
+  "score": 7,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -189310,
+  "marge_estimee_pct": -78.7,
+  "mots_detectes": "immeuble, grenier",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-4-pieces-millau-98m2/r2125867": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-4-pieces-millau-98m2/r2125867",
+  "agence": "iad",
+  "titre": "Appartement à vendre 4 pièces 98 m² Millau",
+  "prix": 169000,
+  "prix_initial": 169000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 169000
+   }
+  ],
+  "surface": 98.0,
+  "terrain": null,
+  "prix_m2": 1724,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -59133,
+  "marge_estimee_pct": -32.6,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-7-pieces-millau-218m2/r2033458": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-7-pieces-millau-218m2/r2033458",
+  "agence": "iad",
+  "titre": "Maison à vendre 7 pièces 218 m² Millau",
+  "prix": 337000,
+  "prix_initial": 337000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 337000
+   }
+  ],
+  "surface": 218.0,
+  "terrain": null,
+  "prix_m2": 1545,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -86709,
+  "marge_estimee_pct": -21.5,
+  "mots_detectes": "immeuble, atelier, à rénover",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-131m2/r1995215": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-131m2/r1995215",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 131 m² Millau",
+  "prix": 347000,
+  "prix_initial": 347000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 347000
+   }
+  ],
+  "surface": 131.0,
+  "terrain": 1752.0,
+  "prix_m2": 2648,
+  "dpe": "INCONNU",
+  "score": 7,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -206029,
+  "marge_estimee_pct": -85.0,
+  "mots_detectes": "immeuble, plateau",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-92m2/r1928341": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-92m2/r1928341",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 92 m² Millau",
+  "prix": 253000,
+  "prix_initial": 253000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 253000
+   }
+  ],
+  "surface": 92.0,
+  "terrain": null,
+  "prix_m2": 2750,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -155421,
+  "marge_estimee_pct": -91.3,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-69m2/r1947495": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-69m2/r1947495",
+  "agence": "iad",
+  "titre": "Appartement à vendre 3 pièces 69 m² Millau",
+  "prix": 179000,
+  "prix_initial": 179000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 179000
+   }
+  ],
+  "surface": 69.0,
+  "terrain": null,
+  "prix_m2": 2594,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -105953,
+  "marge_estimee_pct": -83.0,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-123m2/r1843132": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-123m2/r1843132",
+  "agence": "iad",
+  "titre": "Appartement à vendre 5 pièces 123 m² Millau",
+  "prix": 240000,
+  "prix_initial": 240000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 240000
+   }
+  ],
+  "surface": 123.0,
+  "terrain": null,
+  "prix_m2": 1951,
+  "dpe": "E",
+  "score": 9,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -102930,
+  "marge_estimee_pct": -45.2,
+  "mots_detectes": "immeuble, grenier, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:23",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-52m2/r1972323": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-3-pieces-millau-52m2/r1972323",
+  "agence": "iad",
+  "titre": "Appartement à vendre 3 pièces 52 m² Millau",
+  "prix": 98000,
+  "prix_initial": 98000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 98000
+   }
+  ],
+  "surface": 52.0,
+  "terrain": null,
+  "prix_m2": 1884,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -41586,
+  "marge_estimee_pct": -43.2,
+  "mots_detectes": "immeuble, opportunité, à rafraîchir",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:24",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/terrain-vente-millau-638m2/r1915721": {
+  "url": "https://www.iadfrance.fr/annonce/terrain-vente-millau-638m2/r1915721",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-8-pieces-millau-170m2/r1865049": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-8-pieces-millau-170m2/r1865049",
+  "agence": "iad",
+  "titre": "Appartement à vendre 8 pièces 170 m² Millau",
+  "prix": 250000,
+  "prix_initial": 250000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 250000
+   }
+  ],
+  "surface": 170.0,
+  "terrain": null,
+  "prix_m2": 1470,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -54750,
+  "marge_estimee_pct": -17.4,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:24",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-2-pieces-millau-91m2/r1872223": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-2-pieces-millau-91m2/r1872223",
+  "agence": "iad",
+  "titre": "Maison à vendre 2 pièces 90,85 m² Millau",
+  "prix": 285000,
+  "prix_initial": 285000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 285000
+   }
+  ],
+  "surface": 90.85,
+  "terrain": 231.0,
+  "prix_m2": 3137,
+  "dpe": "INCONNU",
+  "score": 7,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -190683,
+  "marge_estimee_pct": -113.5,
+  "mots_detectes": "immeuble, opportunité",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:24",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-92m2/r1873871": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-92m2/r1873871",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 92,28 m² Millau",
+  "prix": 339000,
+  "prix_initial": 339000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 339000
+   }
+  ],
+  "surface": 92.28,
+  "terrain": 600.0,
+  "prix_m2": 3673,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -245973,
+  "marge_estimee_pct": -144.1,
+  "mots_detectes": "immeuble, opportunité, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:24",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-96m2/r1905347": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-96m2/r1905347",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 96 m² Millau",
+  "prix": 244000,
+  "prix_initial": 244000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 244000
+   }
+  ],
+  "surface": 96.0,
+  "terrain": null,
+  "prix_m2": 2541,
+  "dpe": "E",
+  "score": 7,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -140908,
+  "marge_estimee_pct": -79.3,
+  "mots_detectes": "immeuble, plateau",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:24",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-6-pieces-millau-120m2/r1864117": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-6-pieces-millau-120m2/r1864117",
+  "agence": "iad",
+  "titre": "Maison à vendre 6 pièces 120 m² Millau",
+  "prix": 430000,
+  "prix_initial": 430000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 430000
+   }
+  ],
+  "surface": 120.0,
+  "terrain": null,
+  "prix_m2": 3583,
+  "dpe": "C",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -307510,
+  "marge_estimee_pct": -138.5,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:24",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/terrain-vente-millau-297m2/r1843033": {
+  "url": "https://www.iadfrance.fr/annonce/terrain-vente-millau-297m2/r1843033",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-8-pieces-millau-240m2/r1955348": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-8-pieces-millau-240m2/r1955348",
+  "agence": "iad",
+  "titre": "Maison à vendre 8 pièces 240 m² Millau",
+  "prix": 235000,
+  "prix_initial": 235000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 235000
+   }
+  ],
+  "surface": 240.0,
+  "terrain": null,
+  "prix_m2": 979,
+  "dpe": "INCONNU",
+  "score": 13,
+  "score_v3": 5.0,
+  "marge_estimee_montant": 48605,
+  "marge_estimee_pct": 10.9,
+  "mots_detectes": "immeuble, plateau, opportunité, Prix canon 979 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:24",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/immeuble-vente-millau-237m2/r1820638": {
+  "url": "https://www.iadfrance.fr/annonce/immeuble-vente-millau-237m2/r1820638",
+  "agence": "iad",
+  "titre": "Immeuble à vendre 237 m² Millau",
+  "prix": 473000,
+  "prix_initial": 473000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 473000
+   }
+  ],
+  "surface": 237.0,
+  "terrain": 817.0,
+  "prix_m2": 1995,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -206711,
+  "marge_estimee_pct": -47.1,
+  "mots_detectes": "immeuble, gros travaux, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:24",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-320m2/r1865029": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-320m2/r1865029",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 320 m² Millau",
+  "prix": 220000,
+  "prix_initial": 220000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 220000
+   }
+  ],
+  "surface": 320.0,
+  "terrain": 320.0,
+  "prix_m2": 687,
+  "dpe": "INCONNU",
+  "score": 11,
+  "score_v3": 7.9,
+  "marge_estimee_montant": 164460,
+  "marge_estimee_pct": 27.8,
+  "mots_detectes": "immeuble, atelier, travaux, Prix canon 687 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:24",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-7-pieces-millau-154m2/r1915911": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-7-pieces-millau-154m2/r1915911",
+  "agence": "iad",
+  "titre": "Maison à vendre 7 pièces 154 m² Millau",
+  "prix": 348000,
+  "prix_initial": 348000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "09/10/2026",
+    "prix": 348000
+   }
+  ],
+  "surface": 154.0,
+  "terrain": null,
+  "prix_m2": 2259,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -178336,
+  "marge_estimee_pct": -62.6,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-09 14:24",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://www.reseau-expertimo.fr/vente/435-cros-de-cagnes/villa/t3/1538-charmante-villa-nicoise-en-bord-de-mer": {
+  "url": "https://www.reseau-expertimo.fr/vente/435-cros-de-cagnes/villa/t3/1538-charmante-villa-nicoise-en-bord-de-mer",
+  "ignoree": true,
+  "v": 9
+ }
+}
