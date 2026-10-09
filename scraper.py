@@ -427,12 +427,59 @@ def get_liens_agences_locales(context) -> dict[str, str]:
 # --------------------------------------------------------------------------- #
 # EXTRACTION FICHE AVEC DPE & PRIX
 # --------------------------------------------------------------------------- #
+# --------------------------------------------------------------------------- #
+# EXTRACTION DU PRIX CANONIQUE & PROTECTION ANTI-FAUX-POSITIFS
+# --------------------------------------------------------------------------- #
+# JS pour extraire le prix OFFICIEL depuis les balises structurées (évite 100% des pièges de texte)
+JS_PRIX_CANONIQUE = """() => {
+  // 1. Balises méta canoniques (les plus fiables, insensibles au texte de l'annonce)
+  const metaPrice = document.querySelector('meta[property="og:price:amount"], meta[property="product:price:amount"], meta[itemprop="price"], input[name*="prix" i]');
+  if (metaPrice && metaPrice.content) {
+    const val = parseInt(metaPrice.content.replace(/\D/g, ''), 10);
+    if (val >= 15000 && val <= 5000000) return val;
+  }
+
+  // 2. JSON-LD structuré
+  for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
+    try {
+      const data = JSON.parse(script.textContent);
+      const items = Array.isArray(data) ? data : [data, data.offers, data['@graph']].flat().filter(Boolean);
+      for (const item of items) {
+        const p = item.price || (item.offers && item.offers.price);
+        if (p) {
+          const val = parseInt(String(p).replace(/\D/g, ''), 10);
+          if (val >= 15000 && val <= 5000000) return val;
+        }
+      }
+    } catch (e) {}
+  }
+
+  // 3. Sélecteurs CSS dédiés au bloc prix principal (en-tête de fiche)
+  const sels = [
+    '.fiche-prix', '.prix-bien', '.detail-prix', '.price-val', '.bien-prix',
+    '.price', '[class*="price" i]', '[class*="prix" i]'
+  ];
+  for (const sel of sels) {
+    for (const el of document.querySelectorAll(sel)) {
+      const t = el.innerText || '';
+      // Évite les blocs trop volumineux (qui contiennent les honoraires ou mensualités)
+      if (t.length > 80) continue;
+      const m = t.match(/(\d[\d\s.\u00a0\u202f]*)\s*(?:€|euros?)/i);
+      if (m) {
+        const val = parseInt(m[1].replace(/\D/g, ''), 10);
+        if (val >= 15000 && val <= 5000000) return val;
+      }
+    }
+  }
+  return null;
+}"""
+
 _NUM = r"\d{1,3}(?:[ \u00a0\u202f.,]\d{3})+|\d{4,8}"
 RE_PRIX = re.compile(
     rf"(?:€\s*({_NUM})(?![\d])|({_NUM})(?:[.,]\d{{1,2}})?\s*(?:€|euros?\b|eur\b))", re.I
 )
-CTX_POSITIF = re.compile(r"prix|vente|f\.a\.i|net vendeur|à vendre", re.I)
-CTX_NEGATIF = re.compile(r"honoraires?|frais|charges?|taxe|fonci[èe]re|loyer|par mois|commission", re.I)
+CTX_POSITIF = re.compile(r"\bprix\b|\bvente\b|\bf\.a\.i\b|\bnet vendeur\b", re.I)
+CTX_NEGATIF = re.compile(r"\bhonoraires?\b|\bfrais\b|\bcharges?\b|\btaxe\b|\bfonci[èe]re\b|\bloyer\b|\bpar mois\b|\bmensualit", re.I)
 RE_SURFACE = re.compile(r"(\d{2,4}(?:[.,]\d{1,2})?)\s*m(?:²|2)\b", re.I)
 RE_TERRAIN = re.compile(r"(?:terrain|parcelle|jardin)[^\d]{0,40}(\d{2,6}(?:[.,]\d{1,2})?)\s*m(?:²|2)", re.I)
 
@@ -455,14 +502,17 @@ def extraire_dpe(texte: str, html: str = "") -> str:
         return m_html.group(1).upper()
     return "INCONNU"
 
-def extraire_prix(texte: str, html: str = "") -> int | None:
+def extraire_prix_fallback(texte: str) -> int | None:
     candidats = []
     for m in RE_PRIX.finditer(texte):
         val = int(re.sub(r"\D", "", m.group(1) or m.group(2)))
-        if not 10_000 <= val <= 5_000_000:
+        if not 15_000 <= val <= 3_000_000:
             continue
         ctx = texte[max(0, m.start() - 50): m.end() + 30]
-        pts = (2 if CTX_POSITIF.search(ctx) else 0) - (3 if CTX_NEGATIF.search(ctx) else 0)
+        # Pénalisation stricte des honoraires et taxes
+        if CTX_NEGATIF.search(ctx):
+            continue
+        pts = 2 if CTX_POSITIF.search(ctx) else 0
         candidats.append((pts, -m.start(), val))
     if candidats:
         return max(candidats)[2]
@@ -529,7 +579,11 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
         return None
 
     base = contenu if len(contenu) >= 200 else texte
-    prix = extraire_prix(base, page.content())
+    # Priorité 1 : Balise méta ou sélecteur de prix dédié (aucun risque de capturer des honoraires)
+    prix = page.evaluate(JS_PRIX_CANONIQUE)
+    # Priorité 2 : Repli avec exclusion stricte des mentions de charges/taxes
+    if prix is None:
+        prix = extraire_prix_fallback(base)
     if prix is None:
         return None
 
@@ -539,7 +593,7 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     terrain = float(m_terrain.group(1).replace(",", ".")) if m_terrain else None
     dpe = extraire_dpe(base, page.content())
 
-    # HISTORIQUE DES PRIX & DÉTECTION BAISSE (AMÉLIORATION MDB)
+    # HISTORIQUE DES PRIX & DÉTECTION SÉCURISÉE DES BAISSES (ANTI-FAUX POSITIFS)
     now_str = datetime.now().strftime("%d/%m/%Y")
     historique = []
     prix_initial = prix
@@ -551,10 +605,20 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
         prix_initial = anc.get("prix_initial") or anc.get("prix") or prix
         historique = anc.get("historique_prix", [])
         ancien_prix = anc.get("prix")
+
+        # VERROUILLAGE ANTI-FAUX POSITIFS :
+        # Une baisse réelle doit être >= 3.0% ET >= 3 000 € d'écart (élimine les arrondis FAI / Net Vendeur)
+        # Et elle ne doit PAS dépasser 35% (au-delà, c'est une erreur de capture de loyer ou charges)
         if ancien_prix and prix < ancien_prix:
-            a_baisse = True
-            baisse_prix_pct = round(((prix_initial - prix) / prix_initial) * 100, 1)
-            log.info("📉 BAISSE DE PRIX DÉTECTÉE (-%.1f%%) sur %s : %d € -> %d €", baisse_prix_pct, url, ancien_prix, prix)
+            delta_euros = ancien_prix - prix
+            delta_pct = ((ancien_prix - prix) / ancien_prix) * 100
+
+            if delta_euros >= 3000 and 3.0 <= delta_pct <= 35.0:
+                a_baisse = True
+                baisse_prix_pct = round(((prix_initial - prix) / prix_initial) * 100, 1)
+                log.info("📉 VRAIE BAISSE DE PRIX VALIDÉE (-%.1f%%) sur %s : %d € -> %d € (-%d €)", baisse_prix_pct, url, ancien_prix, prix, delta_euros)
+            else:
+                log.warning("⚠️ Écart de prix ignoré (faux positif évité) sur %s : %d € vs %d € (delta: %d € / %.1f%%)", url, ancien_prix, prix, delta_euros, delta_pct)
 
     if not historique or historique[-1].get("prix") != prix:
         historique.append({"date": now_str, "prix": prix})
