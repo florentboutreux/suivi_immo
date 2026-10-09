@@ -173,6 +173,9 @@ class Annonce:
     prix_m2: int | None = None
     dpe: str = "INCONNU"
     score: int = 0
+    score_v3: float = 0.0
+    marge_estimee_montant: int = 0
+    marge_estimee_pct: float = 0.0
     mots_detectes: str = ""
     nouvelle: bool = False
     a_baisse: bool = False
@@ -190,6 +193,8 @@ def envoyer_alerte_push(annonce: Annonce, motif: str = "PÉPITE DÉTECTÉE"):
         f"📍 {annonce.agence} | DPE : <b>{annonce.dpe}</b>\n"
         f"💰 Prix : <b>{annonce.prix:,} €</b> ({annonce.prix_m2 or '?'} €/m²)\n"
     )
+    if annonce.marge_estimee_montant > 0:
+        texte += f"📈 Marge Prévisionnelle : <b>+{annonce.marge_estimee_montant:,} € ({annonce.marge_estimee_pct:.1f}%)</b> | Score V3 : <b>{annonce.score_v3}/10</b>\n"
     if annonce.baisse_prix_pct > 0:
         texte += f"📉 Baisse constatée : <b>-{annonce.baisse_prix_pct:.1f}%</b> (ancien : {annonce.prix_initial:,} €)\n"
     texte += f"🏷 Signaux : {annonce.mots_detectes}\n🔗 {annonce.url}"
@@ -658,7 +663,7 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     if not historique or historique[-1].get("prix") != prix:
         historique.append({"date": now_str, "prix": prix})
 
-    # SCORING MDB
+    # SCORING MDB CLASSIQUE (V2)
     score, detectes = 0, []
     texte_bas = f"{titre} {base}".lower()
 
@@ -686,12 +691,41 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
         score += 3
         detectes.append(f"Prix canon {prix_m2} €/m²")
 
+    # ----------------------------------------------------------------------- #
+    # NOUVEAU : CALCUL DE LA MARGE POTENTIELLE ESTIMÉE & SCORING V3 (4 PILIERS)
+    # ----------------------------------------------------------------------- #
+    marge_estimee_montant = 0
+    marge_estimee_pct = 0.0
+    score_v3 = float(score)
+
+    if surface and surface > 20 and prix:
+        # 1. Chiffre d'Affaires Revente Prévisionnel (prix moyen découpe/rénové Millau: ~1 850 €/m²)
+        ca_estime = int(surface * 1850)
+        # 2. Travaux estimés par m² selon DPE
+        cout_travaux_m2 = 900 if dpe == "G" else (750 if dpe == "F" else 600)
+        total_travaux = int(surface * cout_travaux_m2)
+        # 3. Frais MDB (notaire réduit 2.2% + division/géomètre 3 000 € + portage 8 mois 3.5%)
+        frais_mdb = int((prix * 0.022) + 3000 + (prix * 0.035))
+        # 4. Marge Nette Prévisionnelle
+        cout_revient = prix + total_travaux + frais_mdb
+        marge_estimee_montant = ca_estime - cout_revient
+        marge_estimee_pct = round((marge_estimee_montant / ca_estime) * 100, 1) if ca_estime > 0 else 0.0
+
+        # Score V3 pondéré sur 100 (Marge 35%, Découpe 25%, Négociation 20%, Risque 20%)
+        pts_marge = 35 if marge_estimee_pct >= 22 else (30 if marge_estimee_pct >= 18 else (20 if marge_estimee_pct >= 14 else (10 if marge_estimee_pct >= 10 else 0)))
+        pts_decoupe = 25 if "immeuble" in texte_bas or "monopropri" in texte_bas else (18 if "divisible" in texte_bas or "plateau" in texte_bas else 10)
+        pts_negoc = (8 if dpe in ("F", "G") else 0) + (8 if baisse_prix_pct >= 10 else (4 if baisse_prix_pct >= 5 else 0)) + (4 if prix_m2 and prix_m2 < 800 else 0)
+        pts_securite = (8 if "immeuble" in texte_bas else 4) + (6 if prix <= 150000 else 3) + 4
+        score_v3 = round(min(10.0, (pts_marge + pts_decoupe + pts_negoc + pts_securite) / 10.0), 1)
+
     return Annonce(
         url=url, agence=agence, titre=titre[:140], prix=prix,
         prix_initial=prix_initial, baisse_prix_pct=baisse_prix_pct,
         historique_prix=historique, a_baisse=a_baisse,
         surface=surface, terrain=terrain, prix_m2=prix_m2, dpe=dpe,
-        score=score, mots_detectes=", ".join(dict.fromkeys(detectes)),
+        score=score, score_v3=score_v3, marge_estimee_montant=marge_estimee_montant,
+        marge_estimee_pct=marge_estimee_pct,
+        mots_detectes=", ".join(dict.fromkeys(detectes)),
         date_collecte=datetime.now().strftime("%Y-%m-%d %H:%M"),
         localisation="Millau",
     )
