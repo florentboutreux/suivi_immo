@@ -3307,5 +3307,66 @@
   "url": "https://www.reseau-expertimo.fr/vente/435-cros-de-cagnes/villa/t3/1538-charmante-villa-nicoise-en-bord-de-mer",
   "ignoree": true,
   "v": 9
+ },
+ "https://mesnard-immobilier.com/property/local-de-100-m2-avec-parking-la-cavalerie-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/local-de-100-m2-avec-parking-la-cavalerie-12-occitanie",
+  "ignoree": true,
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/containers-de-stockage-a-louer-ideal-pour-garde-meubles-millau-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/containers-de-stockage-a-louer-ideal-pour-garde-meubles-millau-12-occitanie",
+  "agence": "Mesnard maisons",
+  "titre": "CONTAINERS DE STOCKAGE A LOUER. IDEAL POUR GARDE MEUBLES. MILLAU (12) OCCITANIE",
+  "prix": 450000,
+  "prix_initial": 450000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "10/10/2026",
+    "prix": 450000
+   }
+  ],
+  "surface": 120.0,
+  "terrain": null,
+  "prix_m2": 3750,
+  "dpe": "INCONNU",
+  "score": 3,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -328650,
+  "marge_estimee_pct": -148.0,
+  "mots_detectes": "a rénover",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-10 11:59",
+  "localisation": "Millau",
+  "v": 9
+ },
+ "https://mesnard-immobilier.com/property/exceptionnel-vente-de-la-nue-propriete-du-moulin-de-corp-gorges-de-la-dourbie-millau-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/exceptionnel-vente-de-la-nue-propriete-du-moulin-de-corp-gorges-de-la-dourbie-millau-12-occitanie",
+  "agence": "Mesnard apparts",
+  "titre": "EXCEPTIONNEL; VENTE DE LA NUE PROPRIETE DU MOULIN DE CORP; GORGES DE LA DOURBIE. MILLAU 12 (Occitanie).",
+  "prix": 450000,
+  "prix_initial": 450000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "10/10/2026",
+    "prix": 450000
+   }
+  ],
+  "surface": 130.0,
+  "terrain": null,
+  "prix_m2": 3461,
+  "dpe": "INCONNU",
+  "score": 3,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -316150,
+  "marge_estimee_pct": -131.5,
+  "mots_detectes": "a renover",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-10 11:59",
+  "localisation": "Millau",
+  "v": 9
  }
 }
