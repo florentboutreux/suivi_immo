@@ -127,7 +127,6 @@ MOTS_CLES_MDB = {
     r"\bdivisible\b|\bdivision\b|\bd[ée]tachable\b|\bplusieurs lots\b": 4,
     r"\bplateau( brut)?\b|\bcombles am[ée]nageables?\b|\bgrenier\b": 3,
     r"\bgrange\b|\bhangar\b|\batelier\b|\bremise\b|\bgarage double\b": 2,
-    r"\bterrain constructible\b|\bparcelle constructible\b": 3,
 
     # 2. Vendeurs sous pression
     r"\bsuccession\b|\bvendeur press[ée]\b|\bvente urgente\b|\bopportunit[ée]\b": 3,
@@ -142,9 +141,15 @@ MOTS_REDHIBITOIRES = re.compile(
     r"\b(viager|vendu|vendue|sous compromis|compromis sign[ée]|sous offre|offre accept[ée]e)\b", re.I
 )
 
-# Filtre pour écarter les annonces qui concernent UNIQUEMENT un terrain nu (sans bâti)
+# EXCLUSION ABSOLUE DES TERRAINS ET DES TERRAINS AGRICOLES (Priorité MDB Bâti uniquement)
+RE_AGRICOLE = re.compile(
+    r"\b(?:agricole|agricoles|agronomie|agropastoral|viticole|bois[ée]|for[êe]t|inconstructible|zone\s*a\b|zone\s*n\b|terre\s+agricole|parcelle\s+agricole|terrain\s+agricole|pr[ée]s?|champs?|vignes?)\b",
+    re.I
+)
+
+# Filtre pour écarter tout terrain nu, terrain à bâtir ou parcelle (sans bâti)
 RE_TERRAIN_PUR = re.compile(
-    r"^s*(?:ventes+)?(?:terrain|parcelle)|terrains+(?:às+bâtir|constructible|agricole|des+loisir|nu|viabilisé)|parcelles+nue|/terrain[/-]",
+    r"^\s*(?:vente\s+)?(?:terrain|parcelle)\b|\bterrain\s+(?:[àa]\s+b[âa]tir|constructible|agricole|de\s+loisir|nu|viabilis[ée])\b|\bparcelle\s+(?:nue|agricole|constructible)\b|/(?:terrain|terrains|terrain-[^/]+|parcelle)[/-]",
     re.I
 )
 # Présence d'un bâtiment (qui justifie de garder le bien même s'il a du terrain)
@@ -598,12 +603,19 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     if statut == "non" or (statut == "incertain" and LOCALISATION_STRICTE):
         return None
 
-    # ÉCARTER LES ANNONCES DE TERRAINS NUS (SANS BÂTI EXISTANT)
-    if EXCLURE_TERRAINS_SEULS:
-        texte_verif = f"{titre} {h1} {urlparse(url).path}"
-        if RE_TERRAIN_PUR.search(texte_verif) and not RE_BATI_PRESENT.search(texte_verif):
-            log.info("   ✗ écartée (terrain seul sans bâti) : %s", url)
-            return None
+    # EXCLUSION ABSOLUE DES TERRAINS ET DES TERRAINS AGRICOLES
+    texte_verif = f"{titre} {h1} {urlparse(url).path}"
+    texte_intro = f"{titre} {h1} {contenu[:1200]}"
+    
+    # 1. Écartement immédiat de tout bien agricole (terre, vigne, forêt, zone agricole)
+    if RE_AGRICOLE.search(texte_intro) or RE_AGRICOLE.search(urlparse(url).path):
+        log.info("   ✗ écartée (bien ou terrain agricole exclu pour MDB) : %s", url)
+        return None
+
+    # 2. Écartement de tout terrain nu ou parcelle (sans bâti exploitable)
+    if RE_TERRAIN_PUR.search(texte_verif) and not RE_BATI_PRESENT.search(texte_verif):
+        log.info("   ✗ écartée (terrain sans bâti) : %s", url)
+        return None
 
     base = contenu if len(contenu) >= 200 else texte
     # Priorité 1 : Balise méta ou sélecteur de prix dédié (aucun risque de capturer des honoraires)
@@ -619,10 +631,10 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     m_terrain = RE_TERRAIN.search(base)
     terrain = float(m_terrain.group(1).replace(",", ".")) if m_terrain else None
 
-    # Double vérification : si 0 surface habitable et mention terrain prédominante
-    if EXCLURE_TERRAINS_SEULS and surface is None:
-        if re.search(r"\bterrain\b|\bparcelle\b", f"{titre} {h1}", re.I) and not RE_BATI_PRESENT.search(f"{titre} {h1}"):
-            log.info("   ✗ écartée (terrain sans surface habitable) : %s", url)
+    # Double vérification : si surface habitable absente ou infime et dominante foncière
+    if surface is None or surface < 25:
+        if re.search(r"\b(?:terrain|parcelle|foncier|agricole)\b", f"{titre} {h1}", re.I) and not RE_BATI_PRESENT.search(f"{titre} {h1}"):
+            log.info("   ✗ écartée (absence de surface habitable suffisante) : %s", url)
             return None
     dpe = extraire_dpe(base, page.content())
 
