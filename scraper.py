@@ -1154,11 +1154,30 @@ TEMPLATE_HTML = """<!DOCTYPE html>
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-900/60 transition';
         tr.innerHTML = 
-          '<td class="py-2 pr-2"><input type="text" value="' + lot.nom + '" onchange="updateLot(' + idx + ', \'nom\', this.value)" class="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-slate-200 text-xs focus:border-amber-500" /></td>' +
-          '<td class="py-2 pr-2"><input type="number" value="' + lot.surface + '" oninput="updateLot(' + idx + ', \'surface\', parseFloat(this.value)||0)" class="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-white text-xs" /></td>' +
-          '<td class="py-2 pr-2"><input type="number" value="' + lot.travaux + '" oninput="updateLot(' + idx + ', \'travaux\', parseFloat(this.value)||0)" class="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-amber-300 text-xs" /></td>' +
-          '<td class="py-2 pr-2"><input type="number" value="' + lot.revente + '" oninput="updateLot(' + idx + ', \'revente\', parseFloat(this.value)||0)" class="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-emerald-400 font-bold text-xs" /></td>' +
-          '<td class="py-2 text-center"><button onclick="supprimerLot(' + idx + ')" class="text-slate-600 hover:text-rose-400 text-xs cursor-pointer">✕</button></td>';
+          '<td class="py-2 pr-2"><input type="text" class="lot-nom-input w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-slate-200 text-xs focus:border-amber-500" /></td>' +
+          '<td class="py-2 pr-2"><input type="number" class="lot-surf-input w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-white text-xs" /></td>' +
+          '<td class="py-2 pr-2"><input type="number" class="lot-trav-input w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-amber-300 text-xs" /></td>' +
+          '<td class="py-2 pr-2"><input type="number" class="lot-rev-input w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-emerald-400 font-bold text-xs" /></td>' +
+          '<td class="py-2 text-center"><button class="btn-suppr-lot text-slate-600 hover:text-rose-400 text-xs cursor-pointer">✕</button></td>';
+
+        const inpNom = tr.querySelector('.lot-nom-input');
+        inpNom.value = lot.nom || '';
+        inpNom.onchange = function() { updateLot(idx, 'nom', this.value); };
+
+        const inpSurf = tr.querySelector('.lot-surf-input');
+        inpSurf.value = lot.surface || 0;
+        inpSurf.oninput = function() { updateLot(idx, 'surface', parseFloat(this.value)||0); };
+
+        const inpTrav = tr.querySelector('.lot-trav-input');
+        inpTrav.value = lot.travaux || 0;
+        inpTrav.oninput = function() { updateLot(idx, 'travaux', parseFloat(this.value)||0); };
+
+        const inpRev = tr.querySelector('.lot-rev-input');
+        inpRev.value = lot.revente || 0;
+        inpRev.oninput = function() { updateLot(idx, 'revente', parseFloat(this.value)||0); };
+
+        tr.querySelector('.btn-suppr-lot').onclick = function() { supprimerLot(idx); };
+
         tbody.appendChild(tr);
       });
 
@@ -1419,8 +1438,6 @@ TEMPLATE_HTML = """<!DOCTYPE html>
 
           const card = document.createElement('div');
           card.className = 'bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 flex flex-col justify-between hover:border-slate-700 transition shadow-sm';
-          const titreEscaped = (a.titre || '').replace(/'/g, "\'");
-          const agenceEscaped = (a.agence || '').replace(/'/g, "\'");
           const dpeVal = a.dpe || '?';
 
           card.innerHTML = 
@@ -1428,7 +1445,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
               '<div class="flex items-center justify-between gap-2 mb-2">' +
                 '<div class="flex items-center gap-1.5 flex-wrap">' +
                   '<span class="px-2 py-0.5 rounded text-[11px] font-bold ' + dpeClass + '">DPE ' + dpeVal + '</span>' +
-                  '<button onclick="afficherModalScoring(' + DATA.indexOf(a) + ')" class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 transition cursor-pointer" title="Cliquer pour voir les 4 piliers de scoring">⚡ Score V3: ' + scoreVal + '</button>' +
+                  '<button class="btn-score-card px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 transition cursor-pointer" title="Cliquer pour voir les 4 piliers de scoring">⚡ Score V3: ' + scoreVal + '</button>' +
                   (a.baisse_prix_pct > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">📉 -' + a.baisse_prix_pct + '%</span>' : '') +
                   (a.marge_estimee_montant > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">💰 ' + margeMontant + ' ' + margePct + '</span>' : '') +
                 '</div>' +
@@ -1445,10 +1462,16 @@ TEMPLATE_HTML = """<!DOCTYPE html>
             '<div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">' +
               '<div class="flex items-center gap-2">' +
                 '<a href="' + a.url + '" target="_blank" class="text-xs text-slate-400 hover:text-white underline">Fiche ↗</a>' +
-                '<button onclick="afficherModalScoring(' + DATA.indexOf(a) + ')" class="text-xs text-amber-400 hover:text-amber-300 underline font-medium cursor-pointer">Piliers & Détail</button>' +
+                '<button class="btn-detail-card text-xs text-amber-400 hover:text-amber-300 underline font-medium cursor-pointer">Piliers & Détail</button>' +
               '</div>' +
-              '<button onclick="simulerDeal(' + (a.prix || 0) + ',' + (a.surface || 0) + ',\'' + titreEscaped + '\',\'' + dpeVal + '\',\'' + agenceEscaped + '\')" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer transition">🧮 Simuler ce bien</button>' +
+              '<button class="btn-simu-card px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer transition">🧮 Simuler ce bien</button>' +
             '</div>';
+
+          const itemIndex = DATA.indexOf(a);
+          card.querySelector('.btn-score-card').onclick = function() { afficherModalScoring(itemIndex); };
+          card.querySelector('.btn-detail-card').onclick = function() { afficherModalScoring(itemIndex); };
+          card.querySelector('.btn-simu-card').onclick = function() { simulerDeal(a.prix || 0, a.surface || 0, a.titre || '', a.dpe || '?', a.agence || ''); };
+
           grid.appendChild(card);
         } catch (e) {
           console.warn('Erreur affichage carte:', e);
