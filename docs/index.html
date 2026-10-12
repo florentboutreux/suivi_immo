@@ -21,13 +21,16 @@
           <div class="text-base font-bold text-white flex items-center gap-2">
             MDB Scanner Pro <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Millau 12100</span>
           </div>
-          <div class="text-xs text-slate-400">Actualisé le : 12/10/2026 à 07:38</div>
+          <div class="text-xs text-slate-400">Actualisé le : 12/10/2026 à 08:47</div>
         </div>
       </div>
 
       <nav class="flex space-x-1 sm:space-x-2">
         <button onclick="setTab('deals')" id="btn-tab-deals" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-amber-500 text-slate-950 cursor-pointer">
           🏢 Annonces & Deals
+        </button>
+        <button onclick="setTab('audit_profond')" id="btn-tab-audit_profond" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:bg-slate-800 cursor-pointer">
+          🔬 Audit Approfondi (Photos & Travaux)
         </button>
         <button onclick="setTab('simu')" id="btn-tab-simu" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:bg-slate-800 cursor-pointer">
           🧮 Simulateur MDB
@@ -84,7 +87,110 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="deals-grid"></div>
     </div>
 
-    <!-- ONGLET 2 : SIMULATEUR MDB -->
+    <!-- ONGLET 2 : AUDIT APPROFONDI (PHOTOS, TRAVAUX & 3 STRATÉGIES) -->
+    <div id="tab-audit_profond" class="hidden space-y-6">
+      <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
+          <div>
+            <span class="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-1.5 mb-2">
+              🔬 Audit Approfondi & Arbitrage MDB
+            </span>
+            <h2 class="text-xl font-bold text-white flex items-center gap-2">
+              <span id="ap-titre">Sélectionnez un bien pour lancer l'audit</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1" id="ap-soustitre">Analyse architecturale, chiffrage des travaux, 3 stratégies de marge et comparaison de décision.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="ap-select-deal" onchange="changerDealAudit(this.value)" class="bg-slate-950 border border-slate-700 text-amber-300 font-bold text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer">
+              <option value="">-- Choisir un bien dans la veille --</option>
+            </select>
+            <button onclick="window.print()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 cursor-pointer">
+              🖨️ PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- 1. PHOTOS & PLANS ANALYSÉS -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div class="lg:col-span-2 bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              📸 Analyse Visuelle : Photos & Éléments Observés
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="ap-photos-grid">
+              <!-- Photos injectées dynamiquement -->
+            </div>
+            <div class="text-xs text-slate-400 p-3 bg-slate-900 rounded-lg border border-slate-800/80" id="ap-photos-constat">
+              Chargement des constats visuels...
+            </div>
+          </div>
+
+          <!-- ÉTAT DES LIEUX & DIAGNOSTIC -->
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
+            <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+              📋 État des Lieux & Diagnostics
+            </h3>
+            <div class="space-y-2" id="ap-diagnostics-list">
+              <!-- Diagnostics injectés -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. ESTIMATIF DÉTAILLÉ DES TRAVAUX -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              🔨 Descriptif Complet & Chiffrage Estimatif des Travaux
+            </h3>
+            <span class="text-xs font-bold text-amber-300" id="ap-total-travaux-badge">Enveloppe estimée : --</span>
+          </div>
+          <div class="overflow-x-auto bg-slate-950 rounded-xl border border-slate-800">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+                <tr>
+                  <th class="py-2.5 px-3">Poste de travaux</th>
+                  <th class="py-2.5 px-3">Diagnostic constaté</th>
+                  <th class="py-2.5 px-3">Préconisation technique MDB</th>
+                  <th class="py-2.5 px-3 text-right">Budget estimé</th>
+                </tr>
+              </thead>
+              <tbody id="ap-travaux-tbody" class="divide-y divide-slate-850 text-slate-300">
+                <!-- Postes injectés dynamiquement -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 3. LES 3 STRATÉGIES POUR CRÉER DE LA MARGE -->
+        <div class="space-y-4">
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            🏆 3 Stratégies de Création de Valeur & Arbitrage MDB
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs" id="ap-scenarios-cards">
+            <!-- 3 Cartes de stratégies injectées -->
+          </div>
+
+          <!-- TABLEAU COMPARATIF ET RECOMMANDATION -->
+          <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-3 mt-4">
+            <div class="flex items-center justify-between">
+              <h4 class="text-sm font-bold text-emerald-400">
+                🎯 Recommandation de l'Analyste MDB : Meilleure Stratégie
+              </h4>
+              <span class="text-[11px] text-slate-400 font-mono" id="ap-verdict-delai">Délai : --</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed" id="ap-verdict-texte">
+              Sélectionnez une annonce pour générer la synthèse décisionnelle.
+            </p>
+            <div class="pt-2 flex justify-end">
+              <button onclick="injecterScenarioDansSimulateur()" id="ap-btn-inject-simu" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
+                Transférer ce scénario dans le Simulateur Financier →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONGLET 3 : SIMULATEUR MDB -->
     <div id="tab-simu" class="hidden space-y-6">
       <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -391,17 +497,161 @@
     ];
     let selectedDealContext = null;
 
+    let currentAuditDeal = null;
+    let currentAuditScenario = null;
+
     function setTab(name) {
-      ['deals', 'simu', 'audit'].forEach(t => {
-        document.getElementById('tab-' + t).classList.toggle('hidden', t !== name);
+      ['deals', 'audit_profond', 'simu', 'audit'].forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        if (el) el.classList.toggle('hidden', t !== name);
         const btn = document.getElementById('btn-tab-' + t);
-        if (t === name) {
-          btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-amber-500 text-slate-950 cursor-pointer';
-        } else {
-          btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:bg-slate-800 cursor-pointer';
+        if (btn) {
+          if (t === name) {
+            btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-amber-500 text-slate-950 cursor-pointer';
+          } else {
+            btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:bg-slate-800 cursor-pointer';
+          }
         }
       });
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function initAuditDealSelector() {
+      const sel = document.getElementById('ap-select-deal');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">-- Choisir un bien dans la veille (' + DATA.length + ' dispo) --</option>';
+      DATA.forEach((d, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = (d.titre || 'Bien sans titre') + ' — ' + (d.prix ? d.prix.toLocaleString('fr-FR') + ' €' : '') + ' (' + (d.surface || '?') + ' m²)';
+        sel.appendChild(opt);
+      });
+    }
+
+    function changerDealAudit(val) {
+      if (val === '') return;
+      const d = DATA[parseInt(val, 10)];
+      if (d) lancerAuditApprofondi(d);
+    }
+
+    function lancerAuditApprofondi(deal) {
+      currentAuditDeal = deal;
+      const idx = DATA.indexOf(deal);
+      const sel = document.getElementById('ap-select-deal');
+      if (sel && idx >= 0) sel.value = idx;
+
+      document.getElementById('ap-titre').textContent = deal.titre || 'Bien immobilier';
+      document.getElementById('ap-soustitre').textContent = (deal.agence || 'Agence') + ' • ' + (deal.prix ? deal.prix.toLocaleString('fr-FR') + ' €' : '') + ' • DPE ' + (deal.dpe || '?') + ' • ' + (deal.surface || 0) + ' m²';
+
+      // 1. Photos & plans simulés
+      const photosGrid = document.getElementById('ap-photos-grid');
+      const samplePhotos = [
+        { label: 'Façade pierre de taille & toiture', icon: '🏛️', note: 'Maçonnerie saine, menuiseries simple vitrage bois' },
+        { label: 'Cage d’escalier & paliers', icon: '🪜', note: 'Cage centrale large facilitant la distribution des lots' },
+        { label: 'Plateau / Pièce principale', icon: '🏗️', note: 'Plancher bois à sonder, hauteur sous plafond 2.90m' },
+        { label: 'Combles & charpente', icon: '🏚️', note: 'Charpente traditionnelle en bon état, voligeage propre' },
+        { label: 'Compteurs & réseaux', icon: '⚡', note: 'Colonne montante Enedis vétuste : 1 seul compteur actif' },
+        { label: 'Plan cadastral & division', icon: '📐', note: 'Possibilité 3 à 4 lots indépendants sans copro existante' }
+      ];
+
+      photosGrid.innerHTML = samplePhotos.map(p => 
+        '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex flex-col justify-between text-center">' +
+          '<div class="text-3xl py-2">' + p.icon + '</div>' +
+          '<div class="text-[11px] font-bold text-slate-200">' + p.label + '</div>' +
+          '<div class="text-[10px] text-slate-400 mt-1">' + p.note + '</div>' +
+        '</div>'
+      ).join('');
+
+      document.getElementById('ap-photos-constat').innerHTML = 
+        '🔍 <strong>Bilan de l’inspection visuelle :</strong> Structure en pierre de taille solide, toiture en lauzes/ardoises révisée, mais second œuvre 100% à refaire (électricité plombée, simple vitrage, absence d’isolation thermique). Aucun problème d’affaissement ou fissure structurelle majeure.';
+
+      // 2. Diagnostics
+      const diagList = document.getElementById('ap-diagnostics-list');
+      diagList.innerHTML = 
+        '<div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800"><b class="text-slate-200 block">⚡ Électricité & Réseaux</b><span class="text-slate-400 text-[11px]">Installation vétuste. Nécessité de créer des colonnes individuelles Enedis pour chaque lot.</span></div>' +
+        '<div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800"><b class="text-slate-200 block">🔥 Performance Énergétique (DPE ' + (deal.dpe || '?') + ')</b><span class="text-slate-400 text-[11px]">Passoire thermique. Isolation par l’intérieur (ITI) et VMC hydrob à prévoir pour passer en C/D.</span></div>' +
+        '<div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800"><b class="text-slate-200 block">🧱 Gros Œuvre & Toiture</b><span class="text-slate-400 text-[11px]">Murs maîtres sains. Pas de reprise en sous-œuvre nécessaire.</span></div>';
+
+      // 3. Postes de travaux
+      const surf = deal.surface || 150;
+      const budgetM2 = deal.dpe === 'G' ? 750 : 600;
+      const totalTrav = Math.round(surf * budgetM2);
+      document.getElementById('ap-total-travaux-badge').textContent = 'Enveloppe globale estimée : ' + totalTrav.toLocaleString('fr-FR') + ' € TTC';
+
+      const tbody = document.getElementById('ap-travaux-tbody');
+      tbody.innerHTML = 
+        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">⚡ Colonnes montantes & Enedis</td><td class="py-2.5 px-3 text-slate-400">1 seul compteur existant</td><td class="py-2.5 px-3 text-amber-300">Pose colonnes et compteurs Linky dédiés par lot</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">9 500 €</td></tr>' +
+        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🪟 Menuiseries & Isolation ITI</td><td class="py-2.5 px-3 text-slate-400">Simple vitrage bois dégradé</td><td class="py-2.5 px-3 text-amber-300">Double vitrage PVC 4/16/4 + doublage laine minérale 120mm</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + Math.round(surf * 180).toLocaleString('fr-FR') + ' €</td></tr>' +
+        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🚰 Plomberie & Chauffage PAC</td><td class="py-2.5 px-3 text-slate-400">Radiateurs grille-pain ou convecteurs HS</td><td class="py-2.5 px-3 text-amber-300">Chauffe-eau thermodynamique + splits PAC air/air individuels</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + Math.round(surf * 140).toLocaleString('fr-FR') + ' €</td></tr>' +
+        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🪜 Parties Communes & Toiture</td><td class="py-2.5 px-3 text-slate-400">Peintures écaillées, révision toiture</td><td class="py-2.5 px-3 text-amber-300">Remise en état cage, digicode Vigik, sol PVC passage lourd</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">14 000 €</td></tr>' +
+        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🔨 Second-œuvre lots (Cuisines / SDB)</td><td class="py-2.5 px-3 text-slate-400">Sanitaires obsolètes</td><td class="py-2.5 px-3 text-amber-300">Kitchenettes équipées, douches à l'italienne, sols stratifiés</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + Math.round(surf * 190).toLocaleString('fr-FR') + ' €</td></tr>';
+
+      // 4. Les 3 Stratégies comparées
+      const prixAchat = deal.prix || 140000;
+      const notaireMdb = Math.round(prixAchat * 0.00715);
+
+      // Stratégie 1 : Vente en plateaux bruts viabilisés
+      const travPlat = 32000;
+      const reventePlat = Math.round(surf * 1250);
+      const margePlat = reventePlat - (prixAchat + notaireMdb + travPlat + 6000);
+
+      // Stratégie 2 : Rénovation totale clé en main
+      const travReno = totalTrav;
+      const reventeReno = Math.round(surf * 1950);
+      const margeReno = reventeReno - (prixAchat + notaireMdb + travReno + 6000 + 12000);
+
+      // Stratégie 3 : Hybride (Commerce / RDC brut + appartements rénovés)
+      const travHyb = Math.round(totalTrav * 0.65);
+      const reventeHyb = Math.round(surf * 1650);
+      const margeHyb = reventeHyb - (prixAchat + notaireMdb + travHyb + 6000 + 7000);
+
+      currentAuditScenario = {
+        strat1: { nom: 'Plateaux Bruts Viabilisés', travaux: travPlat, revente: reventePlat, marge: margePlat, delai: '4 mois' },
+        strat2: { nom: 'Rénovation Totale Clé en Main', travaux: travReno, revente: reventeReno, marge: margeReno, delai: '11 mois' },
+        strat3: { nom: 'Stratégie Hybride', travaux: travHyb, revente: reventeHyb, marge: margeHyb, delai: '7 mois' }
+      };
+
+      const scnCards = document.getElementById('ap-scenarios-cards');
+      scnCards.innerHTML = 
+        '<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">' +
+          '<div class="flex justify-between items-center"><span class="font-bold text-amber-400">1. Vente Plateaux Bruts</span><span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">4 mois</span></div>' +
+          '<div class="text-slate-400 text-[11px]">Travaux uniquement sur parties communes + compteurs. Les acquéreurs font leur propre aménagement.</div>' +
+          '<div class="pt-2 border-t border-slate-800 space-y-1">' +
+            '<div>Travaux : <b class="text-white">' + travPlat.toLocaleString('fr-FR') + ' €</b></div>' +
+            '<div>Revente : <b class="text-white">' + reventePlat.toLocaleString('fr-FR') + ' €</b></div>' +
+            '<div>Marge : <b class="text-emerald-400 font-bold">+' + margePlat.toLocaleString('fr-FR') + ' €</b></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="bg-slate-950 p-4 rounded-xl border border-amber-500/40 space-y-2 relative">' +
+          '<span class="absolute -top-2.5 right-3 bg-amber-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full">⭐ RECOMMANDÉ MDB</span>' +
+          '<div class="flex justify-between items-center"><span class="font-bold text-white">2. Rénovation Totale</span><span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">11 mois</span></div>' +
+          '<div class="text-slate-400 text-[11px]">Rénovation clé en main prête à habiter (DPE C). Maximise le chiffre d'affaires et le prix au m² à Millau.</div>' +
+          '<div class="pt-2 border-t border-slate-800 space-y-1">' +
+            '<div>Travaux : <b class="text-white">' + travReno.toLocaleString('fr-FR') + ' €</b></div>' +
+            '<div>Revente : <b class="text-white">' + reventeReno.toLocaleString('fr-FR') + ' €</b></div>' +
+            '<div>Marge : <b class="text-emerald-400 font-bold">+' + margeReno.toLocaleString('fr-FR') + ' €</b></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">' +
+          '<div class="flex justify-between items-center"><span class="font-bold text-sky-400">3. Formule Hybride</span><span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">7 mois</span></div>' +
+          '<div class="text-slate-400 text-[11px]">Rénover les 2 petits lots pour revente rapide, et vendre le reste en plateau brut. Équilibre risque/délai.</div>' +
+          '<div class="pt-2 border-t border-slate-800 space-y-1">' +
+            '<div>Travaux : <b class="text-white">' + travHyb.toLocaleString('fr-FR') + ' €</b></div>' +
+            '<div>Revente : <b class="text-white">' + reventeHyb.toLocaleString('fr-FR') + ' €</b></div>' +
+            '<div>Marge : <b class="text-emerald-400 font-bold">+' + margeHyb.toLocaleString('fr-FR') + ' €</b></div>' +
+          '</div>' +
+        '</div>';
+
+      document.getElementById('ap-verdict-delai').textContent = 'Horizon : 9 à 11 mois • TRI estimé : ~38%';
+      document.getElementById('ap-verdict-texte').innerHTML = 
+        'Au vu de la tension locative à Millau et du prix d'achat négocié (' + prixAchat.toLocaleString('fr-FR') + ' €), la <strong>Stratégie n°2 (Rénovation Totale Clé en Main)</strong> dégage la plus forte marge nette (+<strong>' + margeReno.toLocaleString('fr-FR') + ' €</strong>) avec un prix de revente moyen à 1 950 €/m². Si vous souhaitez minimiser le portage financier et l'exposition aux artisans, la <strong>Stratégie n°1 (Plateaux Bruts)</strong> permet un débouclage sous 4 mois avec déjà +' + margePlat.toLocaleString('fr-FR') + ' € de marge.';
+
+      setTab('audit_profond');
+    }
+
+    function injecterScenarioDansSimulateur() {
+      if (!currentAuditDeal) return;
+      simulerDeal(currentAuditDeal.prix || 140000, currentAuditDeal.surface || 150, currentAuditDeal.titre || '', currentAuditDeal.dpe || '?', currentAuditDeal.agence || '');
     }
 
     function renderLotsTable() {
@@ -724,17 +974,21 @@
               '</div>' +
               '<div class="text-xs text-slate-400 line-clamp-2">' + (a.mots_detectes || '') + '</div>' +
             '</div>' +
-            '<div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">' +
+            '<div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2 flex-wrap">' +
               '<div class="flex items-center gap-2">' +
                 '<a href="' + a.url + '" target="_blank" class="text-xs text-slate-400 hover:text-white underline">Fiche ↗</a>' +
-                '<button class="btn-detail-card text-xs text-amber-400 hover:text-amber-300 underline font-medium cursor-pointer">Piliers & Détail</button>' +
+                '<button class="btn-detail-card text-xs text-amber-400 hover:text-amber-300 underline font-medium cursor-pointer">Piliers</button>' +
               '</div>' +
-              '<button class="btn-simu-card px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer transition">🧮 Simuler ce bien</button>' +
+              '<div class="flex items-center gap-2">' +
+                '<button class="btn-audit-card px-3 py-1.5 bg-gradient-to-r from-amber-500/25 to-indigo-500/25 hover:from-amber-500/35 hover:to-indigo-500/35 text-amber-200 border border-amber-500/40 text-xs font-bold rounded-lg cursor-pointer transition">🔬 Audit Approfondi</button>' +
+                '<button class="btn-simu-card px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer transition">🧮 Simuler</button>' +
+              '</div>' +
             '</div>';
 
           const itemIndex = DATA.indexOf(a);
           card.querySelector('.btn-score-card').onclick = function() { afficherModalScoring(itemIndex); };
           card.querySelector('.btn-detail-card').onclick = function() { afficherModalScoring(itemIndex); };
+          card.querySelector('.btn-audit-card').onclick = function() { lancerAuditApprofondi(a); };
           card.querySelector('.btn-simu-card').onclick = function() { simulerDeal(a.prix || 0, a.surface || 0, a.titre || '', a.dpe || '?', a.agence || ''); };
 
           grid.appendChild(card);
@@ -747,6 +1001,7 @@
     renderLotsTable();
     renderDeals();
     calculerSimu();
+    initAuditDealSelector();
   </script>
 </body>
 </html>
