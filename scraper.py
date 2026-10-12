@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 =============================================================================
-VEILLE IMMOBILIÈRE SPÉCIALE MARCHAND DE BIENS (MDB) – MILLAU (12100) v2.0
+VEILLE IMMOBILIÈRE SPÉCIALE MARCHAND DE BIENS (MDB) – MILLAU (12100) v2.1
 =============================================================================
 Pipeline complet :
   1. Collecte des liens sur les agences de Millau (Roques, SGA, JMB, Notaires, Mesnard, iad, Expertimo, AP)
@@ -10,6 +10,21 @@ Pipeline complet :
   4. Scoring MDB : Division / Découpe, Passoires thermiques F & G (Loi Climat), Décote
   5. Alertes Push : Telegram ou Discord en direct sur smartphone
   6. Export : CSV + JSON d'état + Rapport HTML dans docs/index.html (GitHub Pages)
+
+CORRECTIONS v2.1 (les annonces ne s'affichaient pas) :
+  - Le template HTML contenait des apostrophes non échappées dans des chaînes JS
+    (« l'italienne », « d'affaires », « d'achat », « l'exposition ») => erreur de syntaxe
+    JavaScript => TOUT le script de la page plantait => aucune annonce affichée.
+  - Template HTML en chaîne brute (raw string) : plus de regex JS cassées (/[^d]/ -> /[^\\d]/).
+  - Balise </main> en double supprimée.
+  - Filtre « agricole » beaucoup trop agressif (écartait les maisons qui mentionnent
+    « vignes », « champs », « forêt »... dans leur description) : il ne s'applique plus
+    qu'au titre / à l'URL, avec une liste de termes plus ciblée.
+  - Filtre de localisation moins agressif (Montpellier, Rodez... n'écartent plus une annonce Millau).
+  - Extraction du prix canonique corrigée (input.value, prix décimaux, boucle sur les balises).
+  - Export robuste : les anciennes entrées de l'état JSON ne font plus planter Annonce(**d).
+  - VERSION_PARSEUR incrémentée : les fiches écartées à tort par l'ancien parseur sont réanalysées.
+  - Raisons de rejet loguées pour comprendre pourquoi une fiche est écartée.
 """
 
 import csv
@@ -21,8 +36,8 @@ import re
 import sys
 import unicodedata
 import urllib.request
-from collections import deque
-from dataclasses import dataclass, asdict, field
+from collections import Counter, deque
+from dataclasses import dataclass, asdict, field, fields
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import urldefrag, urlparse
@@ -42,6 +57,10 @@ DEBUG_DIR = Path("debug")
 VILLES_AUTORISEES = ("millau",)
 LOCALISATION_STRICTE = True
 
+# Communes voisines : si l'annonce parle d'une de ces communes SANS que le titre/URL
+# ne mentionne Millau, on la considère comme hors secteur.
+# (Retiré : montpellier, rodez, lodeve, florac, "les vignes" -> trop fréquents dans
+#  les descriptions de biens situés à Millau : "à 1h de Montpellier", etc.)
 COMMUNES_VOISINES = [
     "verrieres", "le rozier", "rozier", "la cavalerie", "cavalerie", "nant", "saint georges de luzencon",
     "creissels", "compeyre", "aguessac", "paulhe", "compregnac", "peyreleau", "veyreau", "mostuejouls",
@@ -50,8 +69,8 @@ COMMUNES_VOISINES = [
     "candas", "massegros", "meyrueis", "riviere sur tarn", "boyne", "la cresse", "saint leons", "salles curan",
     "lanuejols", "campestre", "le caylar", "saint jean du bruel", "saint laurent de levezou", "la bastide pradines",
     "saint paul des fonts", "saint martin de lenne", "sainte eulalie de cernon", "castelnau pegayrols",
-    "saint germain", "montpellier", "rodez", "lodeve", "saint jean et saint paul", "balsac", "lavernhe",
-    "saint georges", "saint sernin", "belmont sur rance", "sauclieres", "le clapier", "les vignes", "florac",
+    "saint germain", "saint jean et saint paul", "balsac", "lavernhe",
+    "saint georges", "saint sernin", "belmont sur rance", "sauclieres", "le clapier",
 ]
 
 PRIX_MAX = 290_000          # Budget acquisition cible MDB
@@ -60,7 +79,7 @@ SCORE_MINIMUM_ALERTE = 4    # Seuil pour déclencher une notification Telegram/D
 EXCLURE_TERRAINS_SEULS = True  # Écarte automatiquement les annonces qui concernent uniquement des terrains nus
 MAX_PAGES_PAR_AGENCE = 5
 MAX_FICHES_PAR_RUN = 200
-VERSION_PARSEUR = 9
+VERSION_PARSEUR = 10        # Incrémentée : force la réanalyse des fiches écartées à tort (v9)
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
@@ -141,9 +160,15 @@ MOTS_REDHIBITOIRES = re.compile(
     r"\b(viager|vendu|vendue|sous compromis|compromis sign[ée]|sous offre|offre accept[ée]e)\b", re.I
 )
 
-# EXCLUSION ABSOLUE DES TERRAINS ET DES TERRAINS AGRICOLES (Priorité MDB Bâti uniquement)
+# EXCLUSION DES TERRAINS AGRICOLES (Priorité MDB Bâti uniquement)
+# CORRECTION : appliqué UNIQUEMENT au titre / h1 / URL (plus à la description), et sans
+# les mots courants (prés, champs, vignes, boisé, forêt...) qui apparaissent dans la
+# description de très nombreuses maisons et faisaient disparaître les annonces.
 RE_AGRICOLE = re.compile(
-    r"\b(?:agricole|agricoles|agronomie|agropastoral|viticole|bois[ée]|for[êe]t|inconstructible|zone\s*a\b|zone\s*n\b|terre\s+agricole|parcelle\s+agricole|terrain\s+agricole|pr[ée]s?|champs?|vignes?)\b",
+    r"\b(?:terres?\s+agricoles?|parcelles?\s+agricoles?|terrains?\s+agricoles?|"
+    r"terrains?\s+viticoles?|parcelles?\s+viticoles?|vignes?\s+(?:a|à)\s+vendre|"
+    r"bois\s+(?:et|à)\s+forêt|for[êe]ts?\s+(?:a|à)\s+vendre|parcelles?\s+de\s+bois|"
+    r"prairies?|inconstructibles?|zone\s+agricole|zone\s+naturelle)\b",
     re.I
 )
 
@@ -154,12 +179,15 @@ RE_TERRAIN_PUR = re.compile(
 )
 # Présence d'un bâtiment (qui justifie de garder le bien même s'il a du terrain)
 RE_BATI_PRESENT = re.compile(
-    r"\b(?:maison|immeuble|bâtisse|grange|hangar|atelier|remise|villa|appartement|corps de ferme|propriété|ruine|mazet|garage|local|plateau|chalet)\b",
+    r"\b(?:maison|immeuble|bâtisse|batisse|grange|hangar|atelier|remise|villa|appartement|corps de ferme|propriété|ruine|mazet|garage|local|plateau|chalet)\b",
     re.I
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("scraper_mdb")
+
+# Compteur des raisons de rejet (affiché en fin de run pour le diagnostic)
+REJETS: Counter = Counter()
 
 # --------------------------------------------------------------------------- #
 # MODÈLE DE DONNÉES ENRICHI
@@ -188,6 +216,8 @@ class Annonce:
     localisation: str = "Millau"
     v: int = VERSION_PARSEUR
 
+CHAMPS_ANNONCE = {f.name for f in fields(Annonce)}
+
 # --------------------------------------------------------------------------- #
 # NOTIFICATIONS TELEGRAM & DISCORD
 # --------------------------------------------------------------------------- #
@@ -200,7 +230,7 @@ def envoyer_alerte_push(annonce: Annonce, motif: str = "PÉPITE DÉTECTÉE"):
     )
     if annonce.marge_estimee_montant > 0:
         texte += f"📈 Marge Prévisionnelle : <b>+{annonce.marge_estimee_montant:,} € ({annonce.marge_estimee_pct:.1f}%)</b> | Score V3 : <b>{annonce.score_v3}/10</b>\n"
-    if annonce.baisse_prix_pct > 0:
+    if annonce.baisse_prix_pct > 0 and annonce.prix_initial:
         texte += f"📉 Baisse constatée : <b>-{annonce.baisse_prix_pct:.1f}%</b> (ancien : {annonce.prix_initial:,} €)\n"
     texte += f"🏷 Signaux : {annonce.mots_detectes}\n🔗 {annonce.url}"
 
@@ -251,12 +281,13 @@ def accepter_cookies(page) -> None:
     except Exception:
         pass
 
-JS_NB_PAR_PAGE = """() => {
+# NB : chaînes brutes (r"""...""") -> les antislashs JS (\s, \d, \u00a0) sont transmis tels quels.
+JS_NB_PAR_PAGE = r"""() => {
   document.querySelectorAll('select').forEach(sel => {
     const opts = [...sel.options];
-    const tous = opts.find(o => /^\\s*(tous|tout|all)\\s*$/i.test(o.text));
+    const tous = opts.find(o => /^\s*(tous|tout|all)\s*$/i.test(o.text));
     const autres = opts.filter(o => o !== tous);
-    if (tous && autres.length && autres.every(o => /^\\s*\\d+\\s*$/.test(o.text)) && sel.value !== tous.value) {
+    if (tous && autres.length && autres.every(o => /^\s*\d+\s*$/.test(o.text)) && sel.value !== tous.value) {
       sel.value = tous.value;
       sel.dispatchEvent(new Event('change', {bubbles: true}));
     }
@@ -305,14 +336,14 @@ def scroller_jusqu_au_bout(page, max_tours: int = 6) -> None:
         page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
         page.wait_for_timeout(800)
 
-JS_CARTES_PRIX = """() => {
+JS_CARTES_PRIX = r"""() => {
   const out = new Set();
   document.querySelectorAll('a[href]').forEach(a => {
     let el = a;
     for (let i = 0; i < 5 && el; i++, el = el.parentElement) {
       const t = el.innerText || '';
       if (t.length > 1500) break;
-      if (/\\d[\\d\\s.\\u00a0\\u202f]*(€|euros?)/i.test(t)) { out.add(a.href); break; }
+      if (/\d[\d\s.\u00a0\u202f]*(€|euros?)/i.test(t)) { out.add(a.href); break; }
     }
   });
   return [...out];
@@ -424,6 +455,7 @@ def get_liens_agences_locales(context) -> dict[str, str]:
 
         prep = agence.get("preparation")
         if prep and not PREPARATIONS[prep](page, agence.get("ville", "Millau")):
+            log.warning("   ✗ préparation '%s' impossible pour %s (agence ignorée)", prep, nom)
             continue
 
         for num_page in range(1, MAX_PAGES_PAR_AGENCE + 1):
@@ -450,36 +482,48 @@ def get_liens_agences_locales(context) -> dict[str, str]:
     return resultats
 
 # --------------------------------------------------------------------------- #
-# EXTRACTION FICHE AVEC DPE & PRIX
-# --------------------------------------------------------------------------- #
-# --------------------------------------------------------------------------- #
 # EXTRACTION DU PRIX CANONIQUE & PROTECTION ANTI-FAUX-POSITIFS
 # --------------------------------------------------------------------------- #
-# JS pour extraire le prix OFFICIEL depuis les balises structurées (évite 100% des pièges de texte)
-JS_PRIX_CANONIQUE = """() => {
-  // 1. Balises méta canoniques (les plus fiables, insensibles au texte de l'annonce)
-  const metaPrice = document.querySelector('meta[property="og:price:amount"], meta[property="product:price:amount"], meta[itemprop="price"], input[name*="prix" i]');
-  if (metaPrice && metaPrice.content) {
-    const val = parseInt(metaPrice.content.replace(/\D/g, ''), 10);
-    if (val >= 15000 && val <= 5000000) return val;
+# JS pour extraire le prix OFFICIEL depuis les balises structurées.
+# CORRECTIONS : boucle sur toutes les balises meta (l'ancien code s'arrêtait sur un <input>
+# sans .content), gestion des prix décimaux ("149000.00"), lecture de .value.
+JS_PRIX_CANONIQUE = r"""() => {
+  const bon = v => Number.isFinite(v) && v >= 15000 && v <= 5000000;
+  const toNum = s => {
+    const t = String(s).replace(/[\s\u00a0\u202f]/g, '').replace(',', '.');
+    const f = parseFloat(t);
+    return Number.isFinite(f) ? Math.round(f) : NaN;
+  };
+
+  // 1. Balises méta canoniques
+  for (const el of document.querySelectorAll('meta[property="og:price:amount"], meta[property="product:price:amount"], meta[itemprop="price"]')) {
+    const val = toNum(el.content || '');
+    if (bon(val)) return val;
   }
 
   // 2. JSON-LD structuré
   for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
     try {
       const data = JSON.parse(script.textContent);
-      const items = Array.isArray(data) ? data : [data, data.offers, data['@graph']].flat().filter(Boolean);
+      const items = [data, data && data.offers, data && data['@graph']].flat().filter(Boolean);
       for (const item of items) {
-        const p = item.price || (item.offers && item.offers.price);
+        const offers = Array.isArray(item.offers) ? item.offers[0] : item.offers;
+        const p = item.price || (offers && offers.price);
         if (p) {
-          const val = parseInt(String(p).replace(/\D/g, ''), 10);
-          if (val >= 15000 && val <= 5000000) return val;
+          const val = toNum(p);
+          if (bon(val)) return val;
         }
       }
     } catch (e) {}
   }
 
-  // 3. Sélecteurs CSS dédiés au bloc prix principal (en-tête de fiche)
+  // 3. Champs cachés de prix
+  for (const el of document.querySelectorAll('input[name*="prix" i], input[id*="prix" i]')) {
+    const val = toNum(el.value || '');
+    if (bon(val)) return val;
+  }
+
+  // 4. Sélecteurs CSS dédiés au bloc prix principal (en-tête de fiche)
   const sels = [
     '.fiche-prix', '.prix-bien', '.detail-prix', '.price-val', '.bien-prix',
     '.price', '[class*="price" i]', '[class*="prix" i]'
@@ -492,7 +536,7 @@ JS_PRIX_CANONIQUE = """() => {
       const m = t.match(/(\d[\d\s.\u00a0\u202f]*)\s*(?:€|euros?)/i);
       if (m) {
         const val = parseInt(m[1].replace(/\D/g, ''), 10);
-        if (val >= 15000 && val <= 5000000) return val;
+        if (bon(val)) return val;
       }
     }
   }
@@ -551,7 +595,7 @@ class PageListe(Exception):
 class FicheInjoignable(Exception):
     pass
 
-JS_CONTENU = """() => {
+JS_CONTENU = r"""() => {
   const cands = [...document.querySelectorAll('main, article, #content, .content')];
   const root = cands.sort((a, b) => b.textContent.length - a.textContent.length)[0] || document.body;
   const c = root.cloneNode(true);
@@ -570,6 +614,10 @@ RE_COMMUNES_VOISINES = re.compile(r"\b(" + "|".join(sorted(map(re.escape, COMMUN
 def evaluer_localisation(url: str, h1: str, contenu: str) -> str:
     path = urlparse(url).path
     if re.search(r"/\d+-millau/|-millau-", path, re.I):
+        return "oui"
+    # Titre explicite : "Maison à Millau" -> on fait confiance au titre
+    h1n = RE_PROXIMITE.sub(" ", _norm(h1))
+    if "millau" in h1n and not RE_COMMUNES_VOISINES.search(h1n):
         return "oui"
     t = RE_PROXIMITE.sub(" ", _norm(f"{h1} {contenu[:2500]}"))
     if "millau" in t and not RE_COMMUNES_VOISINES.search(t):
@@ -595,25 +643,30 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     texte = page.inner_text("body")
     contenu = page.evaluate(JS_CONTENU)
 
-    m_exclu = MOTS_REDHIBITOIRES.search(f"{h1} {contenu[:1500]}")
+    m_exclu = MOTS_REDHIBITOIRES.search(f"{h1} {contenu[:1000]}")
     if m_exclu:
+        REJETS["rédhibitoire (vendu/compromis/viager)"] += 1
+        log.info("   ✗ écartée (%s) : %s", m_exclu.group(0), url)
         return None
 
     statut = evaluer_localisation(url, h1, contenu)
     if statut == "non" or (statut == "incertain" and LOCALISATION_STRICTE):
+        REJETS[f"localisation {statut}"] += 1
+        log.info("   ✗ écartée (localisation %s) : %s", statut, url)
         return None
 
-    # EXCLUSION ABSOLUE DES TERRAINS ET DES TERRAINS AGRICOLES
+    # EXCLUSION DES TERRAINS ET DES TERRAINS AGRICOLES
     texte_verif = f"{titre} {h1} {urlparse(url).path}"
-    texte_intro = f"{titre} {h1} {contenu[:1200]}"
-    
-    # 1. Écartement immédiat de tout bien agricole (terre, vigne, forêt, zone agricole)
-    if RE_AGRICOLE.search(texte_intro) or RE_AGRICOLE.search(urlparse(url).path):
+
+    # 1. Bien agricole : on ne regarde QUE le titre/h1/URL (pas la description)
+    if RE_AGRICOLE.search(texte_verif) and not RE_BATI_PRESENT.search(texte_verif):
+        REJETS["agricole"] += 1
         log.info("   ✗ écartée (bien ou terrain agricole exclu pour MDB) : %s", url)
         return None
 
     # 2. Écartement de tout terrain nu ou parcelle (sans bâti exploitable)
     if RE_TERRAIN_PUR.search(texte_verif) and not RE_BATI_PRESENT.search(texte_verif):
+        REJETS["terrain sans bâti"] += 1
         log.info("   ✗ écartée (terrain sans bâti) : %s", url)
         return None
 
@@ -624,6 +677,8 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     if prix is None:
         prix = extraire_prix_fallback(base)
     if prix is None:
+        REJETS["prix introuvable"] += 1
+        log.info("   ✗ écartée (prix introuvable) : %s", url)
         return None
 
     surfaces = [float(s.replace(",", ".")) for s in RE_SURFACE.findall(base)]
@@ -634,6 +689,7 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     # Double vérification : si surface habitable absente ou infime et dominante foncière
     if surface is None or surface < 25:
         if re.search(r"\b(?:terrain|parcelle|foncier|agricole)\b", f"{titre} {h1}", re.I) and not RE_BATI_PRESENT.search(f"{titre} {h1}"):
+            REJETS["sans surface habitable"] += 1
             log.info("   ✗ écartée (absence de surface habitable suffisante) : %s", url)
             return None
     dpe = extraire_dpe(base, page.content())
@@ -659,8 +715,8 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
             ancien_prix = anc.get("prix")
 
             # VERROUILLAGE ANTI-FAUX POSITIFS :
-            # Une baisse réelle doit être >= 3.0% ET >= 3 000 € d'écart (élimine les arrondis FAI / Net Vendeur)
-            # Et elle ne doit PAS dépasser 35% (au-delà, c'est une erreur de capture de loyer ou charges)
+            # Une baisse réelle doit être >= 3.0% ET >= 3 000 € d'écart
+            # Et elle ne doit PAS dépasser 35% (au-delà, c'est une erreur de capture)
             if ancien_prix and prix < ancien_prix:
                 delta_euros = ancien_prix - prix
                 delta_pct = ((ancien_prix - prix) / ancien_prix) * 100
@@ -704,7 +760,7 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
         detectes.append(f"Prix canon {prix_m2} €/m²")
 
     # ----------------------------------------------------------------------- #
-    # NOUVEAU : CALCUL DE LA MARGE POTENTIELLE ESTIMÉE & SCORING V3 (4 PILIERS)
+    # CALCUL DE LA MARGE POTENTIELLE ESTIMÉE & SCORING V3 (4 PILIERS)
     # ----------------------------------------------------------------------- #
     marge_estimee_montant = 0
     marge_estimee_pct = 0.0
@@ -745,7 +801,9 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
 # --------------------------------------------------------------------------- #
 # EXPORT HTML MULTI-ONGLETS & SIMULATEUR EMBARQUÉ (GITHUB PAGES)
 # --------------------------------------------------------------------------- #
-TEMPLATE_HTML = """<!DOCTYPE html>
+# IMPORTANT : chaîne BRUTE (r""") + AUCUNE apostrophe simple non échappée dans les
+# chaînes JS délimitées par des apostrophes (utiliser l’ typographique).
+TEMPLATE_HTML = r"""<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -798,7 +856,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       <!-- FILTRES ET TRIS -->
       <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex flex-wrap gap-3 items-center justify-between">
         <input type="text" id="q" oninput="renderDeals()" placeholder="Rechercher par rue, mot-clé (ex: 'rue droite', 'immeuble')..." class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 flex-1 min-w-[200px] focus:outline-none focus:border-amber-500" />
-        
+
         <select id="f-type" onchange="renderDeals()" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-amber-500">
           <option value="all">Tous types de biens</option>
           <option value="immeuble">🏢 Immeubles</option>
@@ -843,7 +901,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
               🔬 Audit Approfondi & Arbitrage MDB
             </span>
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
-              <span id="ap-titre">Sélectionnez un bien pour lancer l'audit</span>
+              <span id="ap-titre">Sélectionnez un bien pour lancer l’audit</span>
             </h2>
             <p class="text-xs text-slate-400 mt-1" id="ap-soustitre">Analyse architecturale, chiffrage des travaux, 3 stratégies de marge et comparaison de décision.</p>
           </div>
@@ -920,7 +978,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
           <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-3 mt-4">
             <div class="flex items-center justify-between">
               <h4 class="text-sm font-bold text-emerald-400">
-                🎯 Recommandation de l'Analyste MDB : Meilleure Stratégie
+                🎯 Recommandation de l’Analyste MDB : Meilleure Stratégie
               </h4>
               <span class="text-[11px] text-slate-400 font-mono" id="ap-verdict-delai">Délai : --</span>
             </div>
@@ -943,7 +1001,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div>
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
-              <span>🧮</span> Simulateur Financier d'Opération & Découpe MDB
+              <span>🧮</span> Simulateur Financier d’Opération & Découpe MDB
             </h2>
             <p class="text-xs text-slate-400">Business plan complet marchand de biens : acquisition 0,715%, découpe multi-lots, travaux, portage, TVA sur marge et Impôt Société (IS).</p>
           </div>
@@ -962,7 +1020,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
             <!-- 1. ACQUISITION -->
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
               <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                <span>1. Acquisition & Frais d'acte</span>
+                <span>1. Acquisition & Frais d’acte</span>
               </h3>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 <div>
@@ -1073,7 +1131,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
 
               <!-- Décomposition Ligne à Ligne -->
               <div class="text-xs space-y-1.5 text-slate-300 font-mono border-t border-slate-800 pt-3">
-                <div class="flex justify-between"><span>Prix d'achat net :</span><span id="res-achat" class="text-white font-semibold">135 000 €</span></div>
+                <div class="flex justify-between"><span>Prix d’achat net :</span><span id="res-achat" class="text-white font-semibold">135 000 €</span></div>
                 <div class="flex justify-between"><span>Frais notaire (MDB 0,715%) :</span><span id="res-notaire" class="text-white">965 €</span></div>
                 <div class="flex justify-between"><span>Travaux de rénovation :</span><span id="res-travaux" class="text-amber-300">85 000 €</span></div>
                 <div class="flex justify-between"><span>Géomètre & Division :</span><span id="res-geometre" class="text-white">3 200 €</span></div>
@@ -1082,7 +1140,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
                   <span>Coût de revient total :</span><span id="res-revient" class="text-white">228 765 €</span>
                 </div>
                 <div class="flex justify-between font-bold text-emerald-400">
-                  <span>Chiffre d'Affaires total :</span><span id="res-revente">310 000 €</span>
+                  <span>Chiffre d’Affaires total :</span><span id="res-revente">310 000 €</span>
                 </div>
                 <div class="flex justify-between text-slate-400 pt-1 text-[11px]">
                   <span>Impôt Sociétés (IS estimé 15%/25%) :</span><span id="res-is" class="text-rose-400">-15 375 €</span>
@@ -1092,10 +1150,10 @@ TEMPLATE_HTML = """<!DOCTYPE html>
 
             <div class="space-y-2 pt-3">
               <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px] text-slate-400">
-                💡 <strong>Gain statut Marchand de Biens :</strong> économie de <span id="res-gain-notaire" class="text-emerald-400 font-bold">+9 565 €</span> de droits d'enregistrement par rapport à un particulier (art. 1115 du CGI).
+                💡 <strong>Gain statut Marchand de Biens :</strong> économie de <span id="res-gain-notaire" class="text-emerald-400 font-bold">+9 565 €</span> de droits d’enregistrement par rapport à un particulier (art. 1115 du CGI).
               </div>
               <button onclick="genererAnalyseIA()" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-                🎯 Lancer l'Analyse Stratégique & Décisionnelle
+                🎯 Lancer l’Analyse Stratégique & Décisionnelle
               </button>
             </div>
           </div>
@@ -1105,7 +1163,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
         <div id="bloc-analyse-strategique" class="mt-6 pt-6 border-t border-slate-800 space-y-4">
           <div class="flex items-center justify-between">
             <h3 class="text-base font-bold text-white flex items-center gap-2">
-              <span class="text-amber-400">✨</span> Rapport d'Analyse Stratégique & Validation Bancaire
+              <span class="text-amber-400">✨</span> Rapport d’Analyse Stratégique & Validation Bancaire
             </h3>
             <span class="text-xs text-slate-400 font-mono" id="analyse-timestamp">Prêt pour audit</span>
           </div>
@@ -1114,10 +1172,10 @@ TEMPLATE_HTML = """<!DOCTYPE html>
             <!-- Stratégie de découpe -->
             <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
               <strong class="text-amber-400 text-sm block flex items-center gap-1.5">
-                🏢 Stratégie d'Arbitrage Conseillée
+                🏢 Stratégie d’Arbitrage Conseillée
               </strong>
               <p class="text-slate-300 leading-relaxed" id="strat-arbitrage">
-                Achat en bloc d'un ensemble complet à Millau. Revente immédiate par lot à la découpe avec création de règlement de copropriété. Cible de revente privilégiée : primo-accédants et investisseurs locatifs défiscalisant en déficit foncier.
+                Achat en bloc d’un ensemble complet à Millau. Revente immédiate par lot à la découpe avec création de règlement de copropriété. Cible de revente privilégiée : primo-accédants et investisseurs locatifs défiscalisant en déficit foncier.
               </p>
               <div class="pt-2 border-t border-slate-800/80 text-[11px] text-slate-400" id="strat-lots-detail">
                 Typologie optimale : petits T2 / T3 rénovés (1 750 € à 1 950 €/m²).
@@ -1130,7 +1188,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
                 📐 Explication Précise du Calcul de Marge
               </strong>
               <div class="text-slate-300 space-y-1.5 leading-relaxed text-[11px]" id="strat-calcul-explication">
-                <div>• <strong>Prix d'achat net</strong> = Prix négocié direct vendeur.</div>
+                <div>• <strong>Prix d’achat net</strong> = Prix négocié direct vendeur.</div>
                 <div>• <strong>Notaire réduit (0.715%)</strong> : engagement de revente sous 5 ans (art. 1115 CGI).</div>
                 <div>• <strong>Travaux budgétés</strong> : postes gros oeuvre, électricité, plomberie et compteurs divisionnaires.</div>
                 <div>• <strong>Marge Brute</strong> = Total Revente Lots - (Prix + Acte + Travaux + Géomètre + Portage).</div>
@@ -1154,7 +1212,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       </div>
     </div>
 
-    <!-- ONGLET 3 : STRATEGIE MDB -->
+    <!-- ONGLET 4 : STRATEGIE MDB -->
     <div id="tab-audit" class="hidden space-y-6">
       <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
         <h2 class="text-xl font-bold text-white">Les 4 Piliers Rentables du Marchand de Biens à Millau</h2>
@@ -1169,7 +1227,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
           </div>
           <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
             <strong class="text-emerald-400 text-sm block mb-1">3. Découpe de parcelles & Granges (Faubourgs)</strong>
-            <p class="text-slate-400 leading-relaxed">Détachement d'un terrain constructible viabilisé pour amortir immédiatement l'acquisition, et rénovation du bâtiment restant.</p>
+            <p class="text-slate-400 leading-relaxed">Détachement d’un terrain constructible viabilisé pour amortir immédiatement l’acquisition, et rénovation du bâtiment restant.</p>
           </div>
           <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
             <strong class="text-sky-400 text-sm block mb-1">4. Prix de Revente Cible Millau</strong>
@@ -1180,59 +1238,58 @@ TEMPLATE_HTML = """<!DOCTYPE html>
     </div>
   </main>
 
-    <!-- MODAL DETAIL SCORING V3 -->
-    <div id="modal-scoring" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-        <button onclick="fermerModalScoring()" class="absolute right-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition cursor-pointer">✕</button>
-        <div class="flex items-center gap-2 mb-2">
-          <span id="modal-badge-qualite" class="px-2.5 py-0.5 rounded text-xs font-black border bg-emerald-500/20 text-emerald-300 border-emerald-500/40">Excellente opportunité</span>
-          <span class="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Scoring V3 Millau</span>
-        </div>
-        <h3 id="modal-titre" class="text-lg font-bold text-white mb-1">Détail du bien</h3>
-        <p id="modal-sous-titre" class="text-xs text-slate-400 mb-5">Agence • Millau</p>
+  <!-- MODAL DETAIL SCORING V3 -->
+  <div id="modal-scoring" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      <button onclick="fermerModalScoring()" class="absolute right-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition cursor-pointer">✕</button>
+      <div class="flex items-center gap-2 mb-2">
+        <span id="modal-badge-qualite" class="px-2.5 py-0.5 rounded text-xs font-black border bg-emerald-500/20 text-emerald-300 border-emerald-500/40">Excellente opportunité</span>
+        <span class="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Scoring V3 Millau</span>
+      </div>
+      <h3 id="modal-titre" class="text-lg font-bold text-white mb-1">Détail du bien</h3>
+      <p id="modal-sous-titre" class="text-xs text-slate-400 mb-5">Agence • Millau</p>
 
-        <!-- 4 Piliers -->
-        <div class="space-y-3 text-xs mb-5">
-          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-            <div class="flex justify-between font-bold text-white mb-1">
-              <span class="text-emerald-400">1. Marge Potentielle Prévisionnelle (35%)</span>
-              <span id="modal-pts-marge" class="text-emerald-400">-- / 35 pts</span>
-            </div>
-            <p id="modal-desc-marge" class="text-slate-400 text-[11px] leading-relaxed">Calculé sur CA Revente - Travaux - Frais MDB.</p>
+      <!-- 4 Piliers -->
+      <div class="space-y-3 text-xs mb-5">
+        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+          <div class="flex justify-between font-bold text-white mb-1">
+            <span class="text-emerald-400">1. Marge Potentielle Prévisionnelle (35%)</span>
+            <span id="modal-pts-marge" class="text-emerald-400">-- / 35 pts</span>
           </div>
-
-          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-            <div class="flex justify-between font-bold text-white mb-1">
-              <span class="text-indigo-400">2. Découpe & Création de Valeur (25%)</span>
-              <span id="modal-pts-decoupe" class="text-indigo-400">-- / 25 pts</span>
-            </div>
-            <p id="modal-desc-decoupe" class="text-slate-400 text-[11px] leading-relaxed">Monopropriété sans syndic, plateaux ou division en plusieurs lots.</p>
-          </div>
-
-          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-            <div class="flex justify-between font-bold text-white mb-1">
-              <span class="text-amber-400">3. Levier de Négociation & Décote (20%)</span>
-              <span id="modal-pts-negoc" class="text-amber-400">-- / 20 pts</span>
-            </div>
-            <p id="modal-desc-negoc" class="text-slate-400 text-[11px] leading-relaxed">Passoire thermique F/G, historique de baisses de prix constatées et prix/m² bas.</p>
-          </div>
-
-          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-            <div class="flex justify-between font-bold text-white mb-1">
-              <span class="text-sky-400">4. Sécurité & Risque d'Exécution (20%)</span>
-              <span id="modal-pts-securite" class="text-sky-400">-- / 20 pts</span>
-            </div>
-            <p id="modal-desc-securite" class="text-slate-400 text-[11px] leading-relaxed">Ticket d'achat liquide et absence de copropriété bloquante.</p>
-          </div>
+          <p id="modal-desc-marge" class="text-slate-400 text-[11px] leading-relaxed">Calculé sur CA Revente - Travaux - Frais MDB.</p>
         </div>
 
-        <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
-          <button onclick="fermerModalScoring()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl">Fermer</button>
-          <button id="modal-btn-simu" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl shadow-md">🧮 Simuler ce bien</button>
+        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+          <div class="flex justify-between font-bold text-white mb-1">
+            <span class="text-indigo-400">2. Découpe & Création de Valeur (25%)</span>
+            <span id="modal-pts-decoupe" class="text-indigo-400">-- / 25 pts</span>
+          </div>
+          <p id="modal-desc-decoupe" class="text-slate-400 text-[11px] leading-relaxed">Monopropriété sans syndic, plateaux ou division en plusieurs lots.</p>
+        </div>
+
+        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+          <div class="flex justify-between font-bold text-white mb-1">
+            <span class="text-amber-400">3. Levier de Négociation & Décote (20%)</span>
+            <span id="modal-pts-negoc" class="text-amber-400">-- / 20 pts</span>
+          </div>
+          <p id="modal-desc-negoc" class="text-slate-400 text-[11px] leading-relaxed">Passoire thermique F/G, historique de baisses de prix constatées et prix/m² bas.</p>
+        </div>
+
+        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+          <div class="flex justify-between font-bold text-white mb-1">
+            <span class="text-sky-400">4. Sécurité & Risque d’Exécution (20%)</span>
+            <span id="modal-pts-securite" class="text-sky-400">-- / 20 pts</span>
+          </div>
+          <p id="modal-desc-securite" class="text-slate-400 text-[11px] leading-relaxed">Ticket d’achat liquide et absence de copropriété bloquante.</p>
         </div>
       </div>
+
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
+        <button onclick="fermerModalScoring()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl">Fermer</button>
+        <button id="modal-btn-simu" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl shadow-md">🧮 Simuler ce bien</button>
+      </div>
     </div>
-  </main>
+  </div>
 
   <script>
     const DATA = __DATA__;
@@ -1246,6 +1303,10 @@ TEMPLATE_HTML = """<!DOCTYPE html>
 
     let currentAuditDeal = null;
     let currentAuditScenario = null;
+
+    function fmt(n) {
+      return (Number(n) || 0).toLocaleString('fr-FR');
+    }
 
     function setTab(name) {
       ['deals', 'audit_profond', 'simu', 'audit'].forEach(t => {
@@ -1270,7 +1331,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       DATA.forEach((d, idx) => {
         const opt = document.createElement('option');
         opt.value = idx;
-        opt.textContent = (d.titre || 'Bien sans titre') + ' — ' + (d.prix ? d.prix.toLocaleString('fr-FR') + ' €' : '') + ' (' + (d.surface || '?') + ' m²)';
+        opt.textContent = (d.titre || 'Bien sans titre') + ' — ' + (d.prix ? fmt(d.prix) + ' €' : '') + ' (' + (d.surface || '?') + ' m²)';
         sel.appendChild(opt);
       });
     }
@@ -1288,9 +1349,9 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       if (sel && idx >= 0) sel.value = idx;
 
       document.getElementById('ap-titre').textContent = deal.titre || 'Bien immobilier';
-      document.getElementById('ap-soustitre').textContent = (deal.agence || 'Agence') + ' • ' + (deal.prix ? deal.prix.toLocaleString('fr-FR') + ' €' : '') + ' • DPE ' + (deal.dpe || '?') + ' • ' + (deal.surface || 0) + ' m²';
+      document.getElementById('ap-soustitre').textContent = (deal.agence || 'Agence') + ' • ' + (deal.prix ? fmt(deal.prix) + ' €' : '') + ' • DPE ' + (deal.dpe || '?') + ' • ' + (deal.surface || 0) + ' m²';
 
-      // 1. Photos & plans simulés
+      // 1. Photos & plans (illustratifs, génériques)
       const photosGrid = document.getElementById('ap-photos-grid');
       const samplePhotos = [
         { label: 'Façade pierre de taille & toiture', icon: '🏛️', note: 'Maçonnerie saine, menuiseries simple vitrage bois' },
@@ -1301,7 +1362,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
         { label: 'Plan cadastral & division', icon: '📐', note: 'Possibilité 3 à 4 lots indépendants sans copro existante' }
       ];
 
-      photosGrid.innerHTML = samplePhotos.map(p => 
+      photosGrid.innerHTML = samplePhotos.map(p =>
         '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex flex-col justify-between text-center">' +
           '<div class="text-3xl py-2">' + p.icon + '</div>' +
           '<div class="text-[11px] font-bold text-slate-200">' + p.label + '</div>' +
@@ -1309,12 +1370,12 @@ TEMPLATE_HTML = """<!DOCTYPE html>
         '</div>'
       ).join('');
 
-      document.getElementById('ap-photos-constat').innerHTML = 
-        '🔍 <strong>Bilan de l’inspection visuelle :</strong> Structure en pierre de taille solide, toiture en lauzes/ardoises révisée, mais second œuvre 100% à refaire (électricité plombée, simple vitrage, absence d’isolation thermique). Aucun problème d’affaissement ou fissure structurelle majeure.';
+      document.getElementById('ap-photos-constat').innerHTML =
+        '🔍 <strong>Bilan de l’inspection visuelle (modèle indicatif, à confirmer en visite) :</strong> Structure en pierre de taille solide, toiture en lauzes/ardoises révisée, mais second œuvre 100% à refaire (électricité plombée, simple vitrage, absence d’isolation thermique). Aucun problème d’affaissement ou fissure structurelle majeure.';
 
       // 2. Diagnostics
       const diagList = document.getElementById('ap-diagnostics-list');
-      diagList.innerHTML = 
+      diagList.innerHTML =
         '<div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800"><b class="text-slate-200 block">⚡ Électricité & Réseaux</b><span class="text-slate-400 text-[11px]">Installation vétuste. Nécessité de créer des colonnes individuelles Enedis pour chaque lot.</span></div>' +
         '<div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800"><b class="text-slate-200 block">🔥 Performance Énergétique (DPE ' + (deal.dpe || '?') + ')</b><span class="text-slate-400 text-[11px]">Passoire thermique. Isolation par l’intérieur (ITI) et VMC hydrob à prévoir pour passer en C/D.</span></div>' +
         '<div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800"><b class="text-slate-200 block">🧱 Gros Œuvre & Toiture</b><span class="text-slate-400 text-[11px]">Murs maîtres sains. Pas de reprise en sous-œuvre nécessaire.</span></div>';
@@ -1323,15 +1384,15 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       const surf = deal.surface || 150;
       const budgetM2 = deal.dpe === 'G' ? 750 : 600;
       const totalTrav = Math.round(surf * budgetM2);
-      document.getElementById('ap-total-travaux-badge').textContent = 'Enveloppe globale estimée : ' + totalTrav.toLocaleString('fr-FR') + ' € TTC';
+      document.getElementById('ap-total-travaux-badge').textContent = 'Enveloppe globale estimée : ' + fmt(totalTrav) + ' € TTC';
 
       const tbody = document.getElementById('ap-travaux-tbody');
-      tbody.innerHTML = 
+      tbody.innerHTML =
         '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">⚡ Colonnes montantes & Enedis</td><td class="py-2.5 px-3 text-slate-400">1 seul compteur existant</td><td class="py-2.5 px-3 text-amber-300">Pose colonnes et compteurs Linky dédiés par lot</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">9 500 €</td></tr>' +
-        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🪟 Menuiseries & Isolation ITI</td><td class="py-2.5 px-3 text-slate-400">Simple vitrage bois dégradé</td><td class="py-2.5 px-3 text-amber-300">Double vitrage PVC 4/16/4 + doublage laine minérale 120mm</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + Math.round(surf * 180).toLocaleString('fr-FR') + ' €</td></tr>' +
-        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🚰 Plomberie & Chauffage PAC</td><td class="py-2.5 px-3 text-slate-400">Radiateurs grille-pain ou convecteurs HS</td><td class="py-2.5 px-3 text-amber-300">Chauffe-eau thermodynamique + splits PAC air/air individuels</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + Math.round(surf * 140).toLocaleString('fr-FR') + ' €</td></tr>' +
+        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🪟 Menuiseries & Isolation ITI</td><td class="py-2.5 px-3 text-slate-400">Simple vitrage bois dégradé</td><td class="py-2.5 px-3 text-amber-300">Double vitrage PVC 4/16/4 + doublage laine minérale 120mm</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + fmt(Math.round(surf * 180)) + ' €</td></tr>' +
+        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🚰 Plomberie & Chauffage PAC</td><td class="py-2.5 px-3 text-slate-400">Radiateurs grille-pain ou convecteurs HS</td><td class="py-2.5 px-3 text-amber-300">Chauffe-eau thermodynamique + splits PAC air/air individuels</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + fmt(Math.round(surf * 140)) + ' €</td></tr>' +
         '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🪜 Parties Communes & Toiture</td><td class="py-2.5 px-3 text-slate-400">Peintures écaillées, révision toiture</td><td class="py-2.5 px-3 text-amber-300">Remise en état cage, digicode Vigik, sol PVC passage lourd</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">14 000 €</td></tr>' +
-        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🔨 Second-œuvre lots (Cuisines / SDB)</td><td class="py-2.5 px-3 text-slate-400">Sanitaires obsolètes</td><td class="py-2.5 px-3 text-amber-300">Kitchenettes équipées, douches à l'italienne, sols stratifiés</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + Math.round(surf * 190).toLocaleString('fr-FR') + ' €</td></tr>';
+        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🔨 Second-œuvre lots (Cuisines / SDB)</td><td class="py-2.5 px-3 text-slate-400">Sanitaires obsolètes</td><td class="py-2.5 px-3 text-amber-300">Kitchenettes équipées, douches à l’italienne, sols stratifiés</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + fmt(Math.round(surf * 190)) + ' €</td></tr>';
 
       // 4. Les 3 Stratégies comparées
       const prixAchat = deal.prix || 140000;
@@ -1358,40 +1419,41 @@ TEMPLATE_HTML = """<!DOCTYPE html>
         strat3: { nom: 'Stratégie Hybride', travaux: travHyb, revente: reventeHyb, marge: margeHyb, delai: '7 mois' }
       };
 
+      const signe = n => (n >= 0 ? '+' : '') + fmt(n) + ' €';
       const scnCards = document.getElementById('ap-scenarios-cards');
-      scnCards.innerHTML = 
+      scnCards.innerHTML =
         '<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">' +
           '<div class="flex justify-between items-center"><span class="font-bold text-amber-400">1. Vente Plateaux Bruts</span><span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">4 mois</span></div>' +
           '<div class="text-slate-400 text-[11px]">Travaux uniquement sur parties communes + compteurs. Les acquéreurs font leur propre aménagement.</div>' +
           '<div class="pt-2 border-t border-slate-800 space-y-1">' +
-            '<div>Travaux : <b class="text-white">' + travPlat.toLocaleString('fr-FR') + ' €</b></div>' +
-            '<div>Revente : <b class="text-white">' + reventePlat.toLocaleString('fr-FR') + ' €</b></div>' +
-            '<div>Marge : <b class="text-emerald-400 font-bold">+' + margePlat.toLocaleString('fr-FR') + ' €</b></div>' +
+            '<div>Travaux : <b class="text-white">' + fmt(travPlat) + ' €</b></div>' +
+            '<div>Revente : <b class="text-white">' + fmt(reventePlat) + ' €</b></div>' +
+            '<div>Marge : <b class="text-emerald-400 font-bold">' + signe(margePlat) + '</b></div>' +
           '</div>' +
         '</div>' +
         '<div class="bg-slate-950 p-4 rounded-xl border border-amber-500/40 space-y-2 relative">' +
           '<span class="absolute -top-2.5 right-3 bg-amber-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full">⭐ RECOMMANDÉ MDB</span>' +
           '<div class="flex justify-between items-center"><span class="font-bold text-white">2. Rénovation Totale</span><span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">11 mois</span></div>' +
-          '<div class="text-slate-400 text-[11px]">Rénovation clé en main prête à habiter (DPE C). Maximise le chiffre d'affaires et le prix au m² à Millau.</div>' +
+          '<div class="text-slate-400 text-[11px]">Rénovation clé en main prête à habiter (DPE C). Maximise le chiffre d’affaires et le prix au m² à Millau.</div>' +
           '<div class="pt-2 border-t border-slate-800 space-y-1">' +
-            '<div>Travaux : <b class="text-white">' + travReno.toLocaleString('fr-FR') + ' €</b></div>' +
-            '<div>Revente : <b class="text-white">' + reventeReno.toLocaleString('fr-FR') + ' €</b></div>' +
-            '<div>Marge : <b class="text-emerald-400 font-bold">+' + margeReno.toLocaleString('fr-FR') + ' €</b></div>' +
+            '<div>Travaux : <b class="text-white">' + fmt(travReno) + ' €</b></div>' +
+            '<div>Revente : <b class="text-white">' + fmt(reventeReno) + ' €</b></div>' +
+            '<div>Marge : <b class="text-emerald-400 font-bold">' + signe(margeReno) + '</b></div>' +
           '</div>' +
         '</div>' +
         '<div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">' +
           '<div class="flex justify-between items-center"><span class="font-bold text-sky-400">3. Formule Hybride</span><span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">7 mois</span></div>' +
           '<div class="text-slate-400 text-[11px]">Rénover les 2 petits lots pour revente rapide, et vendre le reste en plateau brut. Équilibre risque/délai.</div>' +
           '<div class="pt-2 border-t border-slate-800 space-y-1">' +
-            '<div>Travaux : <b class="text-white">' + travHyb.toLocaleString('fr-FR') + ' €</b></div>' +
-            '<div>Revente : <b class="text-white">' + reventeHyb.toLocaleString('fr-FR') + ' €</b></div>' +
-            '<div>Marge : <b class="text-emerald-400 font-bold">+' + margeHyb.toLocaleString('fr-FR') + ' €</b></div>' +
+            '<div>Travaux : <b class="text-white">' + fmt(travHyb) + ' €</b></div>' +
+            '<div>Revente : <b class="text-white">' + fmt(reventeHyb) + ' €</b></div>' +
+            '<div>Marge : <b class="text-emerald-400 font-bold">' + signe(margeHyb) + '</b></div>' +
           '</div>' +
         '</div>';
 
       document.getElementById('ap-verdict-delai').textContent = 'Horizon : 9 à 11 mois • TRI estimé : ~38%';
-      document.getElementById('ap-verdict-texte').innerHTML = 
-        'Au vu de la tension locative à Millau et du prix d'achat négocié (' + prixAchat.toLocaleString('fr-FR') + ' €), la <strong>Stratégie n°2 (Rénovation Totale Clé en Main)</strong> dégage la plus forte marge nette (+<strong>' + margeReno.toLocaleString('fr-FR') + ' €</strong>) avec un prix de revente moyen à 1 950 €/m². Si vous souhaitez minimiser le portage financier et l'exposition aux artisans, la <strong>Stratégie n°1 (Plateaux Bruts)</strong> permet un débouclage sous 4 mois avec déjà +' + margePlat.toLocaleString('fr-FR') + ' € de marge.';
+      document.getElementById('ap-verdict-texte').innerHTML =
+        'Au vu de la tension locative à Millau et du prix d’achat négocié (' + fmt(prixAchat) + ' €), la <strong>Stratégie n°2 (Rénovation Totale Clé en Main)</strong> dégage la marge estimée la plus forte (<strong>' + signe(margeReno) + '</strong>) avec un prix de revente moyen à 1 950 €/m². Si vous souhaitez minimiser le portage financier et l’exposition aux artisans, la <strong>Stratégie n°1 (Plateaux Bruts)</strong> permet un débouclage sous 4 mois avec une marge de ' + signe(margePlat) + '.';
 
       setTab('audit_profond');
     }
@@ -1401,21 +1463,28 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       simulerDeal(currentAuditDeal.prix || 140000, currentAuditDeal.surface || 150, currentAuditDeal.titre || '', currentAuditDeal.dpe || '?', currentAuditDeal.agence || '');
     }
 
-    function renderLotsTable() {
-      const tbody = document.getElementById('lots-table-body');
-      tbody.innerHTML = '';
-      let totalSurf = 0;
-      let totalTrav = 0;
-      let totalRev = 0;
-
-      currentLots.forEach((lot, idx) => {
+    // Met à jour uniquement les totaux (sans reconstruire le tableau => les champs gardent le focus)
+    function majTotauxLots() {
+      let totalSurf = 0, totalTrav = 0, totalRev = 0;
+      currentLots.forEach(lot => {
         totalSurf += lot.surface || 0;
         totalTrav += lot.travaux || 0;
         totalRev += lot.revente || 0;
+      });
+      document.getElementById('total-surf').textContent = totalSurf + ' m²';
+      document.getElementById('total-travaux-lots').textContent = fmt(totalTrav) + ' €';
+      document.getElementById('total-revente-lots').textContent = fmt(totalRev) + ' €';
+      calculerSimu();
+    }
 
+    function renderLotsTable() {
+      const tbody = document.getElementById('lots-table-body');
+      tbody.innerHTML = '';
+
+      currentLots.forEach((lot, idx) => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-900/60 transition';
-        tr.innerHTML = 
+        tr.innerHTML =
           '<td class="py-2 pr-2"><input type="text" class="lot-nom-input w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-slate-200 text-xs focus:border-amber-500" /></td>' +
           '<td class="py-2 pr-2"><input type="number" class="lot-surf-input w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-white text-xs" /></td>' +
           '<td class="py-2 pr-2"><input type="number" class="lot-trav-input w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-amber-300 text-xs" /></td>' +
@@ -1424,30 +1493,26 @@ TEMPLATE_HTML = """<!DOCTYPE html>
 
         const inpNom = tr.querySelector('.lot-nom-input');
         inpNom.value = lot.nom || '';
-        inpNom.onchange = function() { updateLot(idx, 'nom', this.value); };
+        inpNom.oninput = function() { currentLots[idx].nom = this.value; };
 
         const inpSurf = tr.querySelector('.lot-surf-input');
         inpSurf.value = lot.surface || 0;
-        inpSurf.oninput = function() { updateLot(idx, 'surface', parseFloat(this.value)||0); };
+        inpSurf.oninput = function() { updateLot(idx, 'surface', parseFloat(this.value) || 0); };
 
         const inpTrav = tr.querySelector('.lot-trav-input');
         inpTrav.value = lot.travaux || 0;
-        inpTrav.oninput = function() { updateLot(idx, 'travaux', parseFloat(this.value)||0); };
+        inpTrav.oninput = function() { updateLot(idx, 'travaux', parseFloat(this.value) || 0); };
 
         const inpRev = tr.querySelector('.lot-rev-input');
         inpRev.value = lot.revente || 0;
-        inpRev.oninput = function() { updateLot(idx, 'revente', parseFloat(this.value)||0); };
+        inpRev.oninput = function() { updateLot(idx, 'revente', parseFloat(this.value) || 0); };
 
         tr.querySelector('.btn-suppr-lot').onclick = function() { supprimerLot(idx); };
 
         tbody.appendChild(tr);
       });
 
-      document.getElementById('total-surf').textContent = totalSurf + ' m²';
-      document.getElementById('total-travaux-lots').textContent = totalTrav.toLocaleString('fr-FR') + ' €';
-      document.getElementById('total-revente-lots').textContent = totalRev.toLocaleString('fr-FR') + ' €';
-
-      calculerSimu();
+      majTotauxLots();
     }
 
     function ajouterLot() {
@@ -1471,7 +1536,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
     function updateLot(idx, field, val) {
       if (currentLots[idx]) {
         currentLots[idx][field] = val;
-        renderLotsTable();
+        majTotauxLots();
       }
     }
 
@@ -1514,7 +1579,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       const geometre = parseFloat(document.getElementById('sim-geometre').value) || 0;
       const dureeMois = parseFloat(document.getElementById('sim-mois').value) || 8;
       const tauxCredit = parseFloat(document.getElementById('sim-taux').value) || 3.8;
-      const apport = parseFloat(document.getElementById('sim-apport').value) || 35000;
+      const apport = parseFloat(document.getElementById('sim-apport').value) || 0;
 
       const totalTravaux = currentLots.reduce((sum, l) => sum + (l.travaux || 0), 0);
       const reventeTotale = currentLots.reduce((sum, l) => sum + (l.revente || 0), 0);
@@ -1533,33 +1598,37 @@ TEMPLATE_HTML = """<!DOCTYPE html>
         if (margeBrute <= 42500) isEstime = Math.round(margeBrute * 0.15);
         else isEstime = Math.round((42500 * 0.15) + ((margeBrute - 42500) * 0.25));
       }
-      const margeNette = Math.max(0, margeBrute - isEstime);
+      const margeNette = margeBrute - isEstime;
       const roi = apport > 0 ? Math.round((margeNette / apport) * 100) : 0;
       const gainNotaire = Math.round(prixNet * (0.078 - 0.00715));
 
-      document.getElementById('res-achat').textContent = prixNet.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-notaire').textContent = notaire.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-travaux').textContent = totalTravaux.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-geometre').textContent = geometre.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-portage').textContent = portage.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-revient').textContent = revient.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-revente').textContent = reventeTotale.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-is').textContent = (isEstime > 0 ? '-' : '') + isEstime.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res-marge-brute').textContent = (margeBrute >= 0 ? '+' : '') + margeBrute.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-achat').textContent = fmt(prixNet) + ' €';
+      document.getElementById('res-notaire').textContent = fmt(notaire) + ' €';
+      document.getElementById('res-travaux').textContent = fmt(totalTravaux) + ' €';
+      document.getElementById('res-geometre').textContent = fmt(geometre) + ' €';
+      document.getElementById('res-portage').textContent = fmt(portage) + ' €';
+      document.getElementById('res-revient').textContent = fmt(revient) + ' €';
+      document.getElementById('res-revente').textContent = fmt(reventeTotale) + ' €';
+      document.getElementById('res-is').textContent = (isEstime > 0 ? '-' : '') + fmt(isEstime) + ' €';
+      document.getElementById('res-marge-brute').textContent = (margeBrute >= 0 ? '+' : '') + fmt(margeBrute) + ' €';
       document.getElementById('res-marge-pct').textContent = pctBrute + '% du CA de revente';
-      document.getElementById('res-marge-nette').textContent = (margeNette >= 0 ? '+' : '') + margeNette.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-marge-nette').textContent = (margeNette >= 0 ? '+' : '') + fmt(margeNette) + ' €';
       document.getElementById('res-roi').textContent = roi + '%';
-      document.getElementById('res-gain-notaire').textContent = '+' + gainNotaire.toLocaleString('fr-FR') + ' €';
+      document.getElementById('res-gain-notaire').textContent = '+' + fmt(gainNotaire) + ' €';
+
+      // Mémorise le coût de revient pour l’analyse stratégique
+      window.__revientSimu = revient;
     }
 
     function genererAnalyseIA() {
       const prix = parseFloat(document.getElementById('sim-prix').value) || 140000;
-      const nego = parseFloat(document.getElementById('sim-nego').value) || 14000;
+      const nego = parseFloat(document.getElementById('sim-nego').value) || 0;
       const prixNet = prix - nego;
       const nbLots = currentLots.length;
       const revente = currentLots.reduce((s, l) => s + (l.revente || 0), 0);
       const travaux = currentLots.reduce((s, l) => s + (l.travaux || 0), 0);
-      const revient = parseFloat(document.getElementById('res-revient').textContent.replace(/[^d]/g, '')) || 220000;
+      // CORRECTION : l’ancien code utilisait /[^d]/g (qui ne garde que la lettre « d »).
+      const revient = window.__revientSimu || parseFloat(document.getElementById('res-revient').textContent.replace(/[^\d]/g, '')) || 0;
       const marge = revente - revient;
       const margePct = revente > 0 ? ((marge / revente) * 100).toFixed(1) : 0;
 
@@ -1583,20 +1652,20 @@ TEMPLATE_HTML = """<!DOCTYPE html>
 
       // Explication calcul
       document.getElementById('strat-calcul-explication').innerHTML =
-        '<div>• <strong>Prix achat net négocié :</strong> ' + prixNet.toLocaleString('fr-FR') + ' € (-' + nego.toLocaleString('fr-FR') + ' € d’offre).</div>' +
-        '<div>• <strong>Budget travaux global :</strong> ' + travaux.toLocaleString('fr-FR') + ' € (compteurs Enedis individuels, réfection totale).</div>' +
-        '<div>• <strong>Coût de revient total :</strong> ' + revient.toLocaleString('fr-FR') + ' € (frais MDB + géomètre + portage inclus).</div>' +
-        '<div>• <strong>Chiffre d’Affaires :</strong> ' + revente.toLocaleString('fr-FR') + ' € sur ' + nbLots + ' lots.</div>' +
-        '<div>• <strong>Marge Brute dégagée :</strong> <span class="text-emerald-400 font-bold">+' + marge.toLocaleString('fr-FR') + ' € (' + margePct + '%)</span>.</div>';
+        '<div>• <strong>Prix achat net négocié :</strong> ' + fmt(prixNet) + ' € (-' + fmt(nego) + ' € d’offre).</div>' +
+        '<div>• <strong>Budget travaux global :</strong> ' + fmt(travaux) + ' € (compteurs Enedis individuels, réfection totale).</div>' +
+        '<div>• <strong>Coût de revient total :</strong> ' + fmt(revient) + ' € (frais MDB + géomètre + portage inclus).</div>' +
+        '<div>• <strong>Chiffre d’Affaires :</strong> ' + fmt(revente) + ' € sur ' + nbLots + ' lots.</div>' +
+        '<div>• <strong>Marge Brute dégagée :</strong> <span class="text-emerald-400 font-bold">' + (marge >= 0 ? '+' : '') + fmt(marge) + ' € (' + margePct + '%)</span>.</div>';
 
       // Pitch agence
       document.getElementById('strat-pitch').textContent =
-        '« Bonjour, suite à notre visite du bien "' + titre.substring(0, 50) + '...", nous vous transmettons notre offre ferme à ' + prixNet.toLocaleString('fr-FR') + ' € net vendeur. Notre dossier est sans condition suspensive de prêt (financement pro MDB disponible). Nous prenons le bien en l’état avec l’audit énergétique et nous nous engageons sur une signature sous 30 jours. »';
+        '« Bonjour, suite à notre visite du bien "' + titre.substring(0, 50) + '...", nous vous transmettons notre offre ferme à ' + fmt(prixNet) + ' € net vendeur. Notre dossier est sans condition suspensive de prêt (financement pro MDB disponible). Nous prenons le bien en l’état avec l’audit énergétique et nous nous engageons sur une signature sous 30 jours. »';
     }
 
     function copierPitch() {
       const text = document.getElementById('strat-pitch').textContent;
-      navigator.clipboard.writeText(text);
+      try { navigator.clipboard.writeText(text); } catch (e) {}
       const btn = document.getElementById('btn-copy-pitch');
       btn.textContent = '✅ Argumentaire copié !';
       setTimeout(() => { btn.textContent = '📋 Copier le pitch de négociation'; }, 2000);
@@ -1606,12 +1675,12 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       const a = DATA[idx];
       if (!a) return;
       document.getElementById('modal-titre').textContent = a.titre || 'Bien immobilier';
-      document.getElementById('modal-sous-titre').textContent = (a.agence || '') + ' • Millau • ' + (a.prix ? a.prix.toLocaleString('fr-FR') + ' €' : '') + ' (' + (a.prix_m2 || '') + ' €/m²)';
+      document.getElementById('modal-sous-titre').textContent = (a.agence || '') + ' • Millau • ' + (a.prix ? fmt(a.prix) + ' €' : '') + ' (' + (a.prix_m2 || '?') + ' €/m²)';
 
       const marge = a.marge_estimee_montant || 0;
       const margePct = a.marge_estimee_pct || 0;
       document.getElementById('modal-pts-marge').textContent = (margePct >= 18 ? '30' : (margePct >= 12 ? '20' : '10')) + ' / 35 pts';
-      document.getElementById('modal-desc-marge').textContent = 'Marge brute estimée : +' + marge.toLocaleString('fr-FR') + ' € (' + margePct + '% du CA). Standard MDB de sécurité financière.';
+      document.getElementById('modal-desc-marge').textContent = 'Marge brute estimée : ' + (marge >= 0 ? '+' : '') + fmt(marge) + ' € (' + margePct + '% du CA). Standard MDB de sécurité financière.';
 
       document.getElementById('modal-pts-decoupe').textContent = (a.surface > 150 ? '25' : (a.surface > 80 ? '18' : '10')) + ' / 25 pts';
       document.getElementById('modal-desc-decoupe').textContent = 'Surface ' + (a.surface || 0) + ' m². Potentiel de division en ' + (a.surface > 150 ? '3 à 4 lots' : '2 lots') + ' indépendants.';
@@ -1644,11 +1713,11 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       const fdrops = document.getElementById('f-drops').checked;
 
       let filtered = DATA.filter(a => {
-        const fullText = (a.titre + ' ' + (a.mots_detectes || '') + ' ' + (a.agence || '')).toLowerCase();
+        const fullText = ((a.titre || '') + ' ' + (a.mots_detectes || '') + ' ' + (a.agence || '')).toLowerCase();
         const matchesQ = !q || fullText.includes(q);
         const matchesDpe = fdpe === 'all' || (fdpe === 'passoires' && (a.dpe === 'F' || a.dpe === 'G')) || a.dpe === fdpe;
         const matchesDrops = !fdrops || (a.baisse_prix_pct > 0);
-        
+
         let matchesType = true;
         if (ftype === 'immeuble') matchesType = fullText.includes('immeuble') || fullText.includes('monopropri') || fullText.includes('bâtisse');
         else if (ftype === 'maison') matchesType = fullText.includes('maison') || fullText.includes('villa');
@@ -1684,7 +1753,11 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       const grid = document.getElementById('deals-grid');
       grid.innerHTML = '';
       if (!filtered.length) {
-        grid.innerHTML = '<div class="col-span-2 text-center py-12 text-slate-500">Aucun bien ne correspond aux filtres sélectionnés.</div>';
+        grid.innerHTML = '<div class="col-span-2 text-center py-12 text-slate-500">' +
+          (total === 0
+            ? 'Aucune annonce collectée pour le moment. Consultez les logs du scraper (raisons de rejet affichées en fin de run).'
+            : 'Aucun bien ne correspond aux filtres sélectionnés.') +
+          '</div>';
         return;
       }
 
@@ -1693,16 +1766,16 @@ TEMPLATE_HTML = """<!DOCTYPE html>
           const dpeClass = a.dpe === 'G' ? 'bg-purple-900 text-purple-100 ring-1 ring-purple-400' :
                            a.dpe === 'F' ? 'bg-rose-900 text-rose-100' :
                            a.dpe === 'E' ? 'bg-amber-900 text-amber-100' : 'bg-slate-800 text-slate-300';
-          
-          const scoreVal = a.score_v3 ? a.score_v3.toFixed(1) : (a.score ? a.score + '/10' : '–');
-          const margeMontant = a.marge_estimee_montant ? '+' + a.marge_estimee_montant.toLocaleString('fr-FR') + ' €' : '–';
+
+          const scoreVal = a.score_v3 ? Number(a.score_v3).toFixed(1) : (a.score ? a.score + '/10' : '–');
+          const margeMontant = a.marge_estimee_montant ? '+' + fmt(a.marge_estimee_montant) + ' €' : '–';
           const margePct = a.marge_estimee_pct ? '(' + a.marge_estimee_pct + '%)' : '';
 
           const card = document.createElement('div');
           card.className = 'bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 flex flex-col justify-between hover:border-slate-700 transition shadow-sm';
           const dpeVal = a.dpe || '?';
 
-          card.innerHTML = 
+          card.innerHTML =
             '<div>' +
               '<div class="flex items-center justify-between gap-2 mb-2">' +
                 '<div class="flex items-center gap-1.5 flex-wrap">' +
@@ -1713,9 +1786,9 @@ TEMPLATE_HTML = """<!DOCTYPE html>
                 '</div>' +
                 '<span class="text-[11px] text-slate-500 font-medium">' + (a.agence || '') + '</span>' +
               '</div>' +
-              '<h3 class="text-base font-bold text-white leading-snug"><a href="' + a.url + '" target="_blank" class="hover:text-amber-400 transition">' + (a.titre || a.url) + '</a></h3>' +
+              '<h3 class="text-base font-bold text-white leading-snug"><a href="' + a.url + '" target="_blank" rel="noopener" class="hover:text-amber-400 transition">' + (a.titre || a.url) + '</a></h3>' +
               '<div class="grid grid-cols-3 gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 my-3 text-center">' +
-                '<div><span class="text-[9px] uppercase text-slate-500 block">Prix FAI</span><b class="text-sm font-bold text-white">' + (a.prix ? a.prix.toLocaleString('fr-FR') + ' €' : '–') + '</b></div>' +
+                '<div><span class="text-[9px] uppercase text-slate-500 block">Prix FAI</span><b class="text-sm font-bold text-white">' + (a.prix ? fmt(a.prix) + ' €' : '–') + '</b></div>' +
                 '<div><span class="text-[9px] uppercase text-slate-500 block">Surface</span><b class="text-sm font-bold text-slate-300">' + (a.surface ? a.surface + ' m²' : '–') + '</b></div>' +
                 '<div><span class="text-[9px] uppercase text-slate-500 block">Prix au m²</span><b class="text-sm font-bold text-amber-300">' + (a.prix_m2 ? a.prix_m2 + ' €' : '–') + '</b></div>' +
               '</div>' +
@@ -1723,7 +1796,7 @@ TEMPLATE_HTML = """<!DOCTYPE html>
             '</div>' +
             '<div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2 flex-wrap">' +
               '<div class="flex items-center gap-2">' +
-                '<a href="' + a.url + '" target="_blank" class="text-xs text-slate-400 hover:text-white underline">Fiche ↗</a>' +
+                '<a href="' + a.url + '" target="_blank" rel="noopener" class="text-xs text-slate-400 hover:text-white underline">Fiche ↗</a>' +
                 '<button class="btn-detail-card text-xs text-amber-400 hover:text-amber-300 underline font-medium cursor-pointer">Piliers</button>' +
               '</div>' +
               '<div class="flex items-center gap-2">' +
@@ -1745,21 +1818,23 @@ TEMPLATE_HTML = """<!DOCTYPE html>
       });
     }
 
-    renderLotsTable();
-    renderDeals();
-    calculerSimu();
-    initAuditDealSelector();
+    // Chaque init est isolée : une erreur dans le simulateur ne doit jamais empêcher l’affichage des annonces.
+    try { renderDeals(); } catch (e) { console.error('renderDeals', e); }
+    try { initAuditDealSelector(); } catch (e) { console.error('initAuditDealSelector', e); }
+    try { renderLotsTable(); } catch (e) { console.error('renderLotsTable', e); }
   </script>
 </body>
 </html>"""
 
 def exporter_html(annonces: list[Annonce]):
     DOSSIER_DOCS.mkdir(exist_ok=True)
-    donnees = json.dumps([asdict(a) for a in annonces], ensure_ascii=False).replace("</", "<\\/")
+    donnees = json.dumps([asdict(a) for a in annonces], ensure_ascii=False)
+    # Protège contre </script> et séparateurs de ligne Unicode dans le JSON embarqué
+    donnees = donnees.replace("</", "<\\/").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
     html = TEMPLATE_HTML.replace("__DATA__", donnees).replace("__DATE__", datetime.now().strftime("%d/%m/%Y à %H:%M"))
     FICHIER_HTML.write_text(html, encoding="utf-8")
     (DOSSIER_DOCS / ".nojekyll").touch()
-    log.info("📄 Rapport HTML généré : %s", FICHIER_HTML)
+    log.info("📄 Rapport HTML généré : %s (%d annonces)", FICHIER_HTML, len(annonces))
 
 def exporter_csv(annonces: list[Annonce]):
     DATA_DIR.mkdir(exist_ok=True)
@@ -1801,21 +1876,20 @@ def main():
             inconnues = [(u, a) for u, a in liens.items() if u not in etat]
             obsoletes = [(u, a) for u, a in liens.items() if u in etat and etat[u].get("v") != VERSION_PARSEUR]
             a_traiter = (inconnues + obsoletes)[:MAX_FICHES_PAR_RUN]
-            log.info("🆕 %d fiches à analyser...", len(a_traiter))
+            log.info("🆕 %d fiches à analyser (%d nouvelles, %d à réanalyser)...", len(a_traiter), len(inconnues), len(obsoletes))
 
             page = context.new_page()
             file = deque(a_traiter)
-            traitees = set()
 
             while file:
                 url, agence = file.popleft()
-                traitees.add(url)
                 deja_connue = url in etat
 
                 try:
                     annonce = analyser_fiche(page, url, agence, etat)
                 except Exception as e:
                     log.warning("Erreur analyse %s : %s", url, e)
+                    REJETS["erreur technique"] += 1
                     continue
 
                 if annonce:
@@ -1835,6 +1909,10 @@ def main():
     # Sauvegarde de l'état
     FICHIER_ETAT.write_text(json.dumps(etat, ensure_ascii=False, indent=1), encoding="utf-8")
 
+    # Diagnostic : pourquoi des fiches sont écartées
+    if REJETS:
+        log.info("🔎 Raisons de rejet ce run : %s", dict(REJETS))
+
     # Export des annonces valides (avec filtre anti-terrains nus renforcé)
     annonces = []
     for d in etat.values():
@@ -1852,17 +1930,21 @@ def main():
             if est_terrain_nu:
                 continue
 
-        annonces.append(Annonce(**d))
+        try:
+            # Ne garde que les champs connus : une ancienne entrée d'état ne fait plus planter l'export
+            annonces.append(Annonce(**{k: v for k, v in d.items() if k in CHAMPS_ANNONCE}))
+        except Exception as e:
+            log.warning("Entrée d'état illisible ignorée (%s) : %s", d.get("url"), e)
 
     if PRIX_MAX:
         annonces = [a for a in annonces if a.prix is None or a.prix <= PRIX_MAX]
-    annonces.sort(key=lambda a: (a.score or 0), reverse=True)
+    annonces.sort(key=lambda a: (a.score_v3 or 0, a.score or 0), reverse=True)
 
     exporter_csv(annonces)
     exporter_html(annonces)
 
     interessantes = [a for a in annonces if a.score >= SCORE_MINIMUM]
-    log.info("🎯 Scan terminé avec succès ! %d annonces publiées (%d à fort potentiel MDB).", len(annonces), len(interessantes))
+    log.info("🎯 Scan terminé ! %d annonces publiées (%d à fort potentiel MDB).", len(annonces), len(interessantes))
     print(f"\n✅ Terminé : {len(annonces)} annonces publiées dans docs/index.html")
 
 if __name__ == "__main__":
