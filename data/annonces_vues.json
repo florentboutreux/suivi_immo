@@ -3317,35 +3317,41 @@
  "https://mesnard-immobilier.com/property/local-de-100-m2-avec-parking-la-cavalerie-12-occitanie": {
   "url": "https://mesnard-immobilier.com/property/local-de-100-m2-avec-parking-la-cavalerie-12-occitanie",
   "ignoree": true,
-  "v": 9
+  "v": 10
  },
  "https://mesnard-immobilier.com/property/containers-de-stockage-a-louer-ideal-pour-garde-meubles-millau-12-occitanie": {
   "url": "https://mesnard-immobilier.com/property/containers-de-stockage-a-louer-ideal-pour-garde-meubles-millau-12-occitanie",
   "agence": "Mesnard maisons",
   "titre": "CONTAINERS DE STOCKAGE A LOUER. IDEAL POUR GARDE MEUBLES. MILLAU (12) OCCITANIE",
-  "prix": 450000,
-  "prix_initial": 450000,
+  "prix": 50000,
+  "prix_initial": 50000,
   "baisse_prix_pct": 0.0,
   "historique_prix": [
    {
-    "date": "10/10/2026",
-    "prix": 450000
+    "date": "13/10/2026",
+    "prix": 50000
    }
   ],
-  "surface": 120.0,
+  "surface": 45.0,
   "terrain": null,
-  "prix_m2": 3750,
+  "prix_m2": 1111,
   "dpe": "INCONNU",
-  "score": 3,
-  "score_v3": 2.1,
-  "marge_estimee_montant": -328650,
-  "marge_estimee_pct": -148.0,
-  "mots_detectes": "a rénover",
-  "nouvelle": true,
+  "score": 0,
+  "score_v3": 2.4,
+  "marge_estimee_montant": 400,
+  "marge_estimee_pct": 0.5,
+  "mots_detectes": "",
+  "nouvelle": false,
   "a_baisse": false,
-  "date_collecte": "2026-10-10 11:59",
+  "date_collecte": "2026-10-13 13:38",
   "localisation": "Millau",
-  "v": 9
+  "v": 10,
+  "photos": [
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_5589_3.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_5492_2.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_5490_1.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_5591_5.jpg?compress=true&quality=80&w=1080&dpr=1"
+  ]
  },
  "https://mesnard-immobilier.com/property/exceptionnel-vente-de-la-nue-propriete-du-moulin-de-corp-gorges-de-la-dourbie-millau-12-occitanie": {
   "url": "https://mesnard-immobilier.com/property/exceptionnel-vente-de-la-nue-propriete-du-moulin-de-corp-gorges-de-la-dourbie-millau-12-occitanie",
@@ -3446,5 +3452,10 @@
    "https://images.iadfrance.fr/property/broadcast/2026/09/21/01a0c421c863a59122747ea31957388f.jpg?format=auto&width=390",
    "https://images.iadfrance.fr/property/broadcast/2026/09/21/01a0c445feb2e3d48a945744c91275f4.jpg?format=auto&width=390"
   ]
+ },
+ "https://mesnard-immobilier.com/property/pavillon-type-5-sur-393-m2-creissels-245000-euro-a-debattre-occitanie-12": {
+  "url": "https://mesnard-immobilier.com/property/pavillon-type-5-sur-393-m2-creissels-245000-euro-a-debattre-occitanie-12",
+  "ignoree": true,
+  "v": 10
  }
 }
