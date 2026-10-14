@@ -2143,31 +2143,8 @@
  },
  "https://mesnard-immobilier.com/property/deux-parkings-residence-condatomag-rue-condatomag-millau-12": {
   "url": "https://mesnard-immobilier.com/property/deux-parkings-residence-condatomag-rue-condatomag-millau-12",
-  "agence": "Mesnard apparts",
-  "titre": "DEUX PARKINGS RESIDENCE CONDATOMAG. RUE CONDATOMAG MILLAU (12)",
-  "prix": 133000,
-  "prix_initial": 133000,
-  "baisse_prix_pct": 0.0,
-  "historique_prix": [
-   {
-    "date": "09/10/2026",
-    "prix": 133000
-   }
-  ],
-  "surface": 1400.0,
-  "terrain": null,
-  "prix_m2": 95,
-  "dpe": "INCONNU",
-  "score": 3,
-  "score_v3": 6.3,
-  "marge_estimee_montant": 1606419,
-  "marge_estimee_pct": 62.0,
-  "mots_detectes": "Prix canon 95 €/m²",
-  "nouvelle": true,
-  "a_baisse": false,
-  "date_collecte": "2026-10-09 14:21",
-  "localisation": "Millau",
-  "v": 9
+  "ignoree": true,
+  "v": 10
  },
  "https://mesnard-immobilier.com/property/rue-du-pont-de-fer-type-a-renover-1-er-etage-avec-terrasse-60000-euro-millau-12-occitanie": {
   "url": "https://mesnard-immobilier.com/property/rue-du-pont-de-fer-type-a-renover-1-er-etage-avec-terrasse-60000-euro-millau-12-occitanie",
@@ -3457,5 +3434,112 @@
   "url": "https://mesnard-immobilier.com/property/pavillon-type-5-sur-393-m2-creissels-245000-euro-a-debattre-occitanie-12",
   "ignoree": true,
   "v": 10
+ },
+ "https://mesnard-immobilier.com/property/terrain-de-6048-m2-constructible-plein-centre-la-cavalerie-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/terrain-de-6048-m2-constructible-plein-centre-la-cavalerie-12-occitanie",
+  "ignoree": true,
+  "v": 10
+ },
+ "https://mesnard-immobilier.com/property/local-professionnel-plein-centre-ville-sur-artere-principale-avec-deux-parkings-prives-millau-12-ocitanie": {
+  "url": "https://mesnard-immobilier.com/property/local-professionnel-plein-centre-ville-sur-artere-principale-avec-deux-parkings-prives-millau-12-ocitanie",
+  "agence": "Mesnard maisons",
+  "titre": "LOCAL PROFESSIONNEL PLEIN CENTRE VILLE SUR ARTERE PRINCIPALE AVEC DEUX PARKINGS PRIVES MILLAU 12 ( Ocitanie).",
+  "prix": 215000,
+  "prix_initial": 215000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "14/10/2026",
+    "prix": 215000
+   }
+  ],
+  "surface": 130.0,
+  "terrain": null,
+  "prix_m2": 1653,
+  "dpe": "INCONNU",
+  "score": 3,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -67755,
+  "marge_estimee_pct": -28.2,
+  "mots_detectes": "a renover",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-14 11:15",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_8422_23.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_8421_22.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_8420_21.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_8419_20.jpg?compress=true&quality=80&w=1080&dpr=1"
+  ]
+ },
+ "https://mesnard-immobilier.com/property/grands-garages-le-monna-affaire-tres-rare-dans-ce-village-de-la-dourbie-millau-12-occitanie": {
+  "url": "https://mesnard-immobilier.com/property/grands-garages-le-monna-affaire-tres-rare-dans-ce-village-de-la-dourbie-millau-12-occitanie",
+  "agence": "Mesnard maisons",
+  "titre": "GRANDS GARAGES LE MONNA; AFFAIRE TRES RARE DANS CE VILLAGE DE LA DOURBIE; MILLAU (12) Occitanie.",
+  "prix": 50000,
+  "prix_initial": 50000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "14/10/2026",
+    "prix": 50000
+   }
+  ],
+  "surface": 130.0,
+  "terrain": null,
+  "prix_m2": 384,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 6.3,
+  "marge_estimee_montant": 106650,
+  "marge_estimee_pct": 44.3,
+  "mots_detectes": "a renover, Prix canon 384 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-14 11:15",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_6222_10.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_6221_9.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_6219_7.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_6214_2.jpg?compress=true&quality=80&w=1080&dpr=1"
+  ]
+ },
+ "https://www.iadfrance.fr/annonce/immeuble-vente-millau-145m2/r2129342": {
+  "url": "https://www.iadfrance.fr/annonce/immeuble-vente-millau-145m2/r2129342",
+  "agence": "iad",
+  "titre": "Immeuble à vendre 145 m² Millau",
+  "prix": 185000,
+  "prix_initial": 185000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "14/10/2026",
+    "prix": 185000
+   }
+  ],
+  "surface": 145.0,
+  "terrain": null,
+  "prix_m2": 1275,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -17295,
+  "marge_estimee_pct": -6.4,
+  "mots_detectes": "immeuble, opportunité, à rafraîchir",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-14 11:15",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10a9cfbd1d73519f033f087dc887c.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10a8f1ff9f9e2db2b7933f8197dee.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10a9cfbd1d73519f033f087dc887c.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10a8f1ff9f9e2db2b7933f8197dee.jpg?format=auto&width=390"
+  ]
  }
 }
