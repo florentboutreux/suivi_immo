@@ -3541,5 +3541,44 @@
    "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10a9cfbd1d73519f033f087dc887c.jpg?format=auto&width=390",
    "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10a8f1ff9f9e2db2b7933f8197dee.jpg?format=auto&width=390"
   ]
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-4pieces-millau-TAPP100096": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-4pieces-millau-TAPP100096",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 169000,
+  "prix_initial": 169000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "15/10/2026",
+    "prix": 169000
+   }
+  ],
+  "surface": 72.0,
+  "terrain": null,
+  "prix_m2": 2347,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -91633,
+  "marge_estimee_pct": -68.8,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-15 10:55",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://www.jmb-immobilier.com/photobox/ftb_JMB_jun/transaction/photo/90-IMG_6008-14936828299474822810.jpg",
+   "https://www.jmb-immobilier.com/photobox/ftb_JMB_jun/transaction/photo/IMG_6011-16112272762454761645.jpg",
+   "https://www.jmb-immobilier.com/photobox/ftb_JMB_jun/transaction/photo/IMG_6030-4064046320727615623.jpg",
+   "https://www.jmb-immobilier.com/photobox/ftb_JMB_jun/transaction/photo/90-IMG_6022-2786318390558764392.jpg"
+  ]
+ },
+ "https://mesnard-immobilier.com/property/superbe-terrain-constructible-de-plus-de-1800-m2-vue-imprenable-expo-top-mostuejouls-gorges-du-tarn-occitanie-12": {
+  "url": "https://mesnard-immobilier.com/property/superbe-terrain-constructible-de-plus-de-1800-m2-vue-imprenable-expo-top-mostuejouls-gorges-du-tarn-occitanie-12",
+  "ignoree": true,
+  "v": 10
  }
 }
