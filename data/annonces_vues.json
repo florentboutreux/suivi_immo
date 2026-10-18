@@ -3580,5 +3580,44 @@
   "url": "https://mesnard-immobilier.com/property/superbe-terrain-constructible-de-plus-de-1800-m2-vue-imprenable-expo-top-mostuejouls-gorges-du-tarn-occitanie-12",
   "ignoree": true,
   "v": 10
+ },
+ "https://mesnard-immobilier.com/property/execptionnel-aguessac-villa-t5-sur-2400-m2-avec-deux-terrains-constructibles-de-1500-et-1900-m2-occitanie-12": {
+  "url": "https://mesnard-immobilier.com/property/execptionnel-aguessac-villa-t5-sur-2400-m2-avec-deux-terrains-constructibles-de-1500-et-1900-m2-occitanie-12",
+  "ignoree": true,
+  "v": 10
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-8-pieces-millau-163m2/r2138697": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-8-pieces-millau-163m2/r2138697",
+  "agence": "iad",
+  "titre": "Maison à vendre 8 pièces 162,5 m² Millau",
+  "prix": 310000,
+  "prix_initial": 310000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "18/10/2026",
+    "prix": 310000
+   }
+  ],
+  "surface": 162.5,
+  "terrain": null,
+  "prix_m2": 1907,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -127545,
+  "marge_estimee_pct": -42.4,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-18 10:27",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/10/18/01a14c3ffb51785207fd03bc9ec58bc5.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/18/01a14c40321354a8c9e2c3b01c4dd2aa.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/18/01a14c477ee6b3d6dd6124ceca9f6fa3.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/18/01a14c3ffb51785207fd03bc9ec58bc5.jpg?format=auto&width=390"
+  ]
  }
 }
