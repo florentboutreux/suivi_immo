@@ -2148,31 +2148,37 @@
  },
  "https://mesnard-immobilier.com/property/rue-du-pont-de-fer-type-a-renover-1-er-etage-avec-terrasse-60000-euro-millau-12-occitanie": {
   "url": "https://mesnard-immobilier.com/property/rue-du-pont-de-fer-type-a-renover-1-er-etage-avec-terrasse-60000-euro-millau-12-occitanie",
-  "agence": "Mesnard apparts",
+  "agence": "Mesnard maisons",
   "titre": "RUE DU PONT DE FER IMMEUBLE COMPRENANT 3 APPARTEMENTS 229000 €URO MILLAU 12 (Occitanie).",
   "prix": 229000,
   "prix_initial": 229000,
   "baisse_prix_pct": 0.0,
   "historique_prix": [
    {
-    "date": "09/10/2026",
+    "date": "19/10/2026",
     "prix": 229000
    }
   ],
-  "surface": 350.0,
+  "surface": 80.0,
   "terrain": null,
-  "prix_m2": 654,
+  "prix_m2": 2862,
   "dpe": "INCONNU",
-  "score": 13,
-  "score_v3": 7.9,
-  "marge_estimee_montant": 192447,
-  "marge_estimee_pct": 29.7,
-  "mots_detectes": "immeuble, opportunité, a rénover, Prix canon 654 €/m²",
-  "nouvelle": true,
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -145053,
+  "marge_estimee_pct": -98.0,
+  "mots_detectes": "immeuble",
+  "nouvelle": false,
   "a_baisse": false,
-  "date_collecte": "2026-10-09 14:21",
+  "date_collecte": "2026-10-19 12:13",
   "localisation": "Millau",
-  "v": 9
+  "v": 10,
+  "photos": [
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2025/07/IMG_5543_34-1.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2025/07/IMG_5531_23-1.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2025/07/IMG_5526_18-1.jpg?compress=true&quality=80&w=1080&dpr=1",
+   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2025/07/IMG_5522_14-1.jpg?compress=true&quality=80&w=1080&dpr=1"
+  ]
  },
  "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-127m2/r1998308": {
   "url": "https://www.iadfrance.fr/annonce/appartement-vente-5-pieces-millau-127m2/r1998308",
