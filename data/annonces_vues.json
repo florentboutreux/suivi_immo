@@ -3625,5 +3625,141 @@
    "https://images.iadfrance.fr/property/broadcast/2026/10/18/01a14c477ee6b3d6dd6124ceca9f6fa3.jpg?format=auto&width=390",
    "https://images.iadfrance.fr/property/broadcast/2026/10/18/01a14c3ffb51785207fd03bc9ec58bc5.jpg?format=auto&width=390"
   ]
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/10679-appartement-t2-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/10679-appartement-t2-a-millau",
+  "agence": "Roques",
+  "titre": "Appartement 3 pièce(s) 1 chambre(s) 78 m²",
+  "prix": 113000,
+  "prix_initial": 113000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "20/10/2026",
+    "prix": 113000
+   }
+  ],
+  "surface": 78.0,
+  "terrain": null,
+  "prix_m2": 1448,
+  "dpe": "A",
+  "score": 0,
+  "score_v3": 2.4,
+  "marge_estimee_montant": -24941,
+  "marge_estimee_pct": -17.3,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-20 11:00",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/ec0d1fe745a595417cf5797680be0a2f/photo_89042cd3a0998470c751bd6fdedf31f7.jpg",
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/ec0d1fe745a595417cf5797680be0a2f/photo_3520057585861b163a9584ff7ccb227b.jpg",
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/ec0d1fe745a595417cf5797680be0a2f/photo_89042cd3a0998470c751bd6fdedf31f7.jpg",
+   "https://roquesimmobilie.staticlbi.com/160xauto/images/biens/3/ec0d1fe745a595417cf5797680be0a2f/photo_89042cd3a0998470c751bd6fdedf31f7.jpg"
+  ]
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10708-villa-t5-avec-vue-panoramique-sur-millau-et-son-viaduc": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10708-villa-t5-avec-vue-panoramique-sur-millau-et-son-viaduc",
+  "agence": "Roques",
+  "titre": "Maison 5 pièce(s) 4 chambre(s) 151 m²",
+  "prix": 465000,
+  "prix_initial": 465000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "20/10/2026",
+    "prix": 465000
+   }
+  ],
+  "surface": 151.0,
+  "terrain": 400.0,
+  "prix_m2": 3079,
+  "dpe": "A",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -305755,
+  "marge_estimee_pct": -109.5,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-20 11:00",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/ac355f56e76141a7a0d5c6e23bf3482d/photo_0e3ad3e40c9af96d4931fd4c2e8d2ad1_Inc_0.png",
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/ac355f56e76141a7a0d5c6e23bf3482d/photo_0521a2f6f4c071f278b226c6228caa09_Inc_0.jpg",
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/ac355f56e76141a7a0d5c6e23bf3482d/photo_0e3ad3e40c9af96d4931fd4c2e8d2ad1_Inc_0.png",
+   "https://roquesimmobilie.staticlbi.com/160xauto/images/biens/3/ac355f56e76141a7a0d5c6e23bf3482d/photo_0e3ad3e40c9af96d4931fd4c2e8d2ad1_Inc_0.png"
+  ]
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/appartement/9481-a-vendre-appartement-t2-a-renover-avec-terrasse-et-cave-a-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/appartement/9481-a-vendre-appartement-t2-a-renover-avec-terrasse-et-cave-a-millau",
+  "agence": "Roques",
+  "titre": "Appartement 3 pièce(s) 1 chambre(s) 44 m²",
+  "prix": 46600,
+  "prix_initial": 46600,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "20/10/2026",
+    "prix": 46600
+   }
+  ],
+  "surface": 44.0,
+  "terrain": null,
+  "prix_m2": 1059,
+  "dpe": "A",
+  "score": 10,
+  "score_v3": 4.3,
+  "marge_estimee_montant": 2744,
+  "marge_estimee_pct": 3.4,
+  "mots_detectes": "immeuble, à rénover, Prix canon 1059 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-20 11:00",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/664cabb9c732b31aa5a2d1f8a0061b19/photo_43d0ef79aaf570028ffa6e50b4fe8825.jpg",
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/664cabb9c732b31aa5a2d1f8a0061b19/photo_2b38f2feea64f5d9a1be30755af6532e.jpg",
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/664cabb9c732b31aa5a2d1f8a0061b19/photo_43d0ef79aaf570028ffa6e50b4fe8825.jpg",
+   "https://roquesimmobilie.staticlbi.com/160xauto/images/biens/3/664cabb9c732b31aa5a2d1f8a0061b19/photo_43d0ef79aaf570028ffa6e50b4fe8825.jpg"
+  ]
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033798.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033798.html",
+  "agence": "SGA",
+  "titre": "Maison 4 pièces, 65m²\nen vente à Millau\n168 000 € *",
+  "prix": 168000,
+  "prix_initial": 168000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "20/10/2026",
+    "prix": 168000
+   }
+  ],
+  "surface": 65.0,
+  "terrain": null,
+  "prix_m2": 2584,
+  "dpe": "E",
+  "score": 4,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -99326,
+  "marge_estimee_pct": -82.6,
+  "mots_detectes": "atelier, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-20 11:00",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://assets.adaptimmo.com/photos-biens/12003/120033798_1.jpg?fit=crop&h=950&q=90&w=1400&s=47adfab551474bf1ba49fc0bc709b32d",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033798_2.jpg?fit=crop&h=950&q=90&w=1400&s=f79e08022c95f08c8e145f731475d772",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033798_3.jpg?fit=crop&h=950&q=90&w=1400&s=e30594dc75d8a521ba7c95516c861b03",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033798_4.jpg?fit=crop&h=950&q=90&w=1400&s=13e69a1c826685ad763ad41bc4771de2"
+  ]
  }
 }
