@@ -3829,5 +3829,39 @@
    "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2026/03/P1040223_221.jpg?compress=true&quality=80&w=1080&dpr=1",
    "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2026/03/P1040216_214.jpg?compress=true&quality=80&w=1080&dpr=1"
   ]
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-5-pieces-millau-92m2/r2142576": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-5-pieces-millau-92m2/r2142576",
+  "agence": "iad",
+  "titre": "Maison à vendre 5 pièces 92 m² Millau",
+  "prix": 272000,
+  "prix_initial": 272000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "22/10/2026",
+    "prix": 272000
+   }
+  ],
+  "surface": 92.0,
+  "terrain": 627.0,
+  "prix_m2": 2956,
+  "dpe": "E",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -175504,
+  "marge_estimee_pct": -103.1,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-22 11:23",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/10/21/01a15d2fcc8ac4169da732af051ee49a.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/21/01a15d2fe42e8c720ed1a4f07ea7b48c.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/09/21/01a0c421c863a59122747ea31957388f.jpg?format=auto&width=300",
+   "https://images.iadfrance.fr/property/broadcast/2026/03/27/019d314ebbd79542f85ae2c89909ff73.jpg?format=auto&width=300"
+  ]
  }
 }
