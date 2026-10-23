@@ -3863,5 +3863,39 @@
    "https://images.iadfrance.fr/property/broadcast/2026/09/21/01a0c421c863a59122747ea31957388f.jpg?format=auto&width=300",
    "https://images.iadfrance.fr/property/broadcast/2026/03/27/019d314ebbd79542f85ae2c89909ff73.jpg?format=auto&width=300"
   ]
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10590-maison-t5-avec-logement-independant": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10590-maison-t5-avec-logement-independant",
+  "agence": "Roques",
+  "titre": "Maison 8 pièce(s) 5 chambre(s) 114.3 m²",
+  "prix": 189000,
+  "prix_initial": 189000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "23/10/2026",
+    "prix": 189000
+   }
+  ],
+  "surface": 114.3,
+  "terrain": 390.0,
+  "prix_m2": 1653,
+  "dpe": "E",
+  "score": 5,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -59898,
+  "marge_estimee_pct": -28.3,
+  "mots_detectes": "grenier, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-23 11:16",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/2dc5ec1dbdcd3e80abf812b2675763ee/photo_00dab1d4a63ea73ee246f873ff3dc51c.jpg",
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/2dc5ec1dbdcd3e80abf812b2675763ee/photo_cae9323dff78af39212494ddb00e9a4b.jpg",
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/2dc5ec1dbdcd3e80abf812b2675763ee/photo_00dab1d4a63ea73ee246f873ff3dc51c.jpg",
+   "https://roquesimmobilie.staticlbi.com/160xauto/images/biens/3/2dc5ec1dbdcd3e80abf812b2675763ee/photo_00dab1d4a63ea73ee246f873ff3dc51c.jpg"
+  ]
  }
 }
