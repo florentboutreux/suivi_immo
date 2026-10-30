@@ -3942,5 +3942,73 @@
   "url": "https://mesnard-immobilier.com/property/superbe-type-3-de-83-m2-terrasse-de-50-m2-les-jardins-d-aragon-avenue-charles-de-gaulle-millau-12",
   "ignoree": true,
   "v": 10
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-immeuble-de-rapport-millau-p-r7-120033797.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-immeuble-de-rapport-millau-p-r7-120033797.html",
+  "agence": "SGA",
+  "titre": "Immeuble de rapport , 260m²\nen vente à Millau\n283 500 € *",
+  "prix": 283500,
+  "prix_initial": 283500,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "30/10/2026",
+    "prix": 283500
+   }
+  ],
+  "surface": 260.0,
+  "terrain": null,
+  "prix_m2": 1090,
+  "dpe": "INCONNU",
+  "score": 10,
+  "score_v3": 4.0,
+  "marge_estimee_montant": 22341,
+  "marge_estimee_pct": 4.6,
+  "mots_detectes": "immeuble de rapport, opportunité, Prix canon 1090 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-30 12:12",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://assets.adaptimmo.com/photos-biens/12003/120033797_5.jpg?fit=crop&h=950&q=90&w=1400&s=34a3d2220ebed81c801099db9d54fc34",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033797_4.jpg?fit=crop&h=950&q=90&w=1400&s=d39099c39a8b25136190c776781468ee",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033797_9.jpg?fit=crop&h=950&q=90&w=1400&s=ecf15e747b7096547a710bdab566c8c3",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033797_13.jpg?fit=crop&h=950&q=90&w=1400&s=3c933f6892d9d8189322020db3d9b2ab"
+  ]
+ },
+ "https://www.iadfrance.fr/annonce/immeuble-vente-millau-500m2/r2147382": {
+  "url": "https://www.iadfrance.fr/annonce/immeuble-vente-millau-500m2/r2147382",
+  "agence": "iad",
+  "titre": "Immeuble à vendre 500 m² Millau",
+  "prix": 390000,
+  "prix_initial": 390000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "30/10/2026",
+    "prix": 390000
+   }
+  ],
+  "surface": 500.0,
+  "terrain": null,
+  "prix_m2": 780,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 7.9,
+  "marge_estimee_montant": 209770,
+  "marge_estimee_pct": 22.7,
+  "mots_detectes": "immeuble, travaux, Prix canon 780 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-10-30 12:12",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10adc86e51a6abb7ce8703dd33499.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10aeb7b20a6381898136a36c4ac03.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10ade7ce2980d62f2bd499ab315cd.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10a9cfbd1d73519f033f087dc887c.jpg?format=auto&width=300"
+  ]
  }
 }
