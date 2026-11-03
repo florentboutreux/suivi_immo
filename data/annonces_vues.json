@@ -4010,5 +4010,39 @@
    "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10ade7ce2980d62f2bd499ab315cd.jpg?format=auto&width=260",
    "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10a9cfbd1d73519f033f087dc887c.jpg?format=auto&width=300"
   ]
+ },
+ "https://www.roques-immobilier.com/vente/435-millau/maison/10711-maison-de-156m-et-possibilite-de-deux-logements-independants-millau": {
+  "url": "https://www.roques-immobilier.com/vente/435-millau/maison/10711-maison-de-156m-et-possibilite-de-deux-logements-independants-millau",
+  "agence": "Roques",
+  "titre": "Maison 7 pièce(s) 6 chambre(s) 156 m²",
+  "prix": 235000,
+  "prix_initial": 235000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "03/11/2026",
+    "prix": 235000
+   }
+  ],
+  "surface": 156.0,
+  "terrain": 435.0,
+  "prix_m2": 1506,
+  "dpe": "A",
+  "score": 5,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -56395,
+  "marge_estimee_pct": -19.5,
+  "mots_detectes": "opportunité, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-03 13:41",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/0df2044474118878f3eceaf4375c9bbd/photo_f2c844416f5e6d55bb1a933f4f3cd72b.jpg",
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/0df2044474118878f3eceaf4375c9bbd/photo_1f91ee76c3211cde8b8914cdf8669d8e.jpg",
+   "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/0df2044474118878f3eceaf4375c9bbd/photo_f2c844416f5e6d55bb1a933f4f3cd72b.jpg",
+   "https://roquesimmobilie.staticlbi.com/160xauto/images/biens/3/0df2044474118878f3eceaf4375c9bbd/photo_f2c844416f5e6d55bb1a933f4f3cd72b.jpg"
+  ]
  }
 }
