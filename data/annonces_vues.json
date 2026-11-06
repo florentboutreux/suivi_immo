@@ -4044,5 +4044,72 @@
    "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/0df2044474118878f3eceaf4375c9bbd/photo_f2c844416f5e6d55bb1a933f4f3cd72b.jpg",
    "https://roquesimmobilie.staticlbi.com/160xauto/images/biens/3/0df2044474118878f3eceaf4375c9bbd/photo_f2c844416f5e6d55bb1a933f4f3cd72b.jpg"
   ]
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-5-pieces-millau-120m2/r2001486": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-5-pieces-millau-120m2/r2001486",
+  "agence": "iad",
+  "titre": "Maison à vendre 5 pièces 120 m² Millau",
+  "prix": 250000,
+  "prix_initial": 250000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "06/11/2026",
+    "prix": 250000
+   }
+  ],
+  "surface": 120.0,
+  "terrain": null,
+  "prix_m2": 2083,
+  "dpe": "INCONNU",
+  "score": 12,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -117250,
+  "marge_estimee_pct": -52.8,
+  "mots_detectes": "immeuble, plateau, à rénover, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-06 13:47",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/04/21/019daeb01573f405091adb63f8e48ab8.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/04/21/019daeab7031e5eddfcaa49409416f3e.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/04/21/019daeaffedd8b7f3c0f522ca2363d03.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/21/01a15d2fcc8ac4169da732af051ee49a.jpg?format=auto&width=300"
+  ]
+ },
+ "https://www.iadfrance.fr/annonce/appartement-vente-2-pieces-millau-52m2/r1942447": {
+  "url": "https://www.iadfrance.fr/annonce/appartement-vente-2-pieces-millau-52m2/r1942447",
+  "agence": "iad",
+  "titre": "Appartement à vendre 2 pièces 52 m² Millau",
+  "prix": 98000,
+  "prix_initial": 98000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "06/11/2026",
+    "prix": 98000
+   }
+  ],
+  "surface": 52.0,
+  "terrain": null,
+  "prix_m2": 1884,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.3,
+  "marge_estimee_montant": -41586,
+  "marge_estimee_pct": -43.2,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-06 13:47",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/02/15/019c60702f46cf0c6e92a6826064f03a.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/02/06/019c329731904ed51c9c0faa66d95330.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/02/06/019c329726935c5d84d7928a5aefc062.jpg?format=auto&width=260"
+  ]
  }
 }
