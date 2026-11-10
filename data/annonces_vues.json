@@ -4145,5 +4145,39 @@
    "https://images.iadfrance.fr/property/broadcast/2026/11/06/01a1b0e2ea5df22109ebaec0f75033c7.jpg?format=auto&width=260",
    "https://images.iadfrance.fr/property/broadcast/2026/03/15/019ceecb551e39421e0622f5ae50a42a.jpg?format=auto&width=300"
   ]
+ },
+ "https://www.iadfrance.fr/annonce/immeuble-vente-millau-140m2/r2156521": {
+  "url": "https://www.iadfrance.fr/annonce/immeuble-vente-millau-140m2/r2156521",
+  "agence": "iad",
+  "titre": "Immeuble à vendre 140 m² Millau",
+  "prix": 228000,
+  "prix_initial": 228000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "10/11/2026",
+    "prix": 228000
+   }
+  ],
+  "surface": 140.0,
+  "terrain": null,
+  "prix_m2": 1628,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -68996,
+  "marge_estimee_pct": -26.6,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-10 14:26",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/11/10/01a1c46bbbb7fa33e7dcc4a45a9dd963.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/10/01a1c46bc0806f9efc5c7f865fa14dc5.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/10/01a1c46bc405b01ceed7e94824b5220d.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/10/05/01a10adc86e51a6abb7ce8703dd33499.jpg?format=auto&width=300"
+  ]
  }
 }
