@@ -4247,5 +4247,39 @@
    "https://roquesimmobilie.staticlbi.com/1600xauto/images/biens/3/6a4d5952d4c018a1c1af9fa590a10dda/24dc9b2eb4272d1368379d5160bef142.jpg",
    "https://roquesimmobilie.staticlbi.com/160xauto/images/biens/3/6a4d5952d4c018a1c1af9fa590a10dda/24dc9b2eb4272d1368379d5160bef142.jpg"
   ]
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-84m2/r2159640": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-84m2/r2159640",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 84 m² Millau",
+  "prix": 287000,
+  "prix_initial": 287000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "15/11/2026",
+    "prix": 287000
+   }
+  ],
+  "surface": 84.0,
+  "terrain": 444.0,
+  "prix_m2": 3416,
+  "dpe": "INCONNU",
+  "score": 8,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -201359,
+  "marge_estimee_pct": -129.6,
+  "mots_detectes": "immeuble, remise, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-15 13:29",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/11/14/01a1db22755af4a116652e28d1f017f2.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/14/01a1db2274f51db767ea8991341646b3.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/14/01a1db2274cc361f95bc95af69949843.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/07/02/019f222e996130fad25c398afb7f5026.jpg?format=auto&width=300"
+  ]
  }
 }
