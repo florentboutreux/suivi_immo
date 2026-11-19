@@ -4281,5 +4281,39 @@
    "https://images.iadfrance.fr/property/broadcast/2026/11/14/01a1db2274cc361f95bc95af69949843.jpg?format=auto&width=260",
    "https://images.iadfrance.fr/property/broadcast/2026/07/02/019f222e996130fad25c398afb7f5026.jpg?format=auto&width=300"
   ]
+ },
+ "https://www.jmb-immobilier.com/vente-appartement-3pieces-millau-TAPP100097": {
+  "url": "https://www.jmb-immobilier.com/vente-appartement-3pieces-millau-TAPP100097",
+  "agence": "JMB",
+  "titre": "",
+  "prix": 252000,
+  "prix_initial": 252000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "19/11/2026",
+    "prix": 252000
+   }
+  ],
+  "surface": 82.0,
+  "terrain": null,
+  "prix_m2": 3073,
+  "dpe": "INCONNU",
+  "score": 2,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -166864,
+  "marge_estimee_pct": -110.0,
+  "mots_detectes": "travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-19 15:18",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://www.jmb-immobilier.com/photobox/ftb_JMB_jun/transaction/photo/Balcon_lumineux_avec_vue_sur_les_collines-4538364550534021421.jpg",
+   "https://www.jmb-immobilier.com/photobox/ftb_JMB_jun/transaction/photo/Salon_m_diterran_en_baign_de_lumi_re-10293545374359965411.jpg",
+   "https://www.jmb-immobilier.com/photobox/ftb_JMB_jun/transaction/photo/Cuisine_moderne_lumineuse_et_chaleureuse-9038166450082912332.jpg",
+   "https://www.jmb-immobilier.com/photobox/ftb_JMB_jun/transaction/photo/Chambre_vide_lumineuse_et_pur_e-5507849121954302587.jpg"
+  ]
  }
 }
