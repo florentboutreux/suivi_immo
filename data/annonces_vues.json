@@ -4315,5 +4315,39 @@
    "https://www.jmb-immobilier.com/photobox/ftb_JMB_jun/transaction/photo/Cuisine_moderne_lumineuse_et_chaleureuse-9038166450082912332.jpg",
    "https://www.jmb-immobilier.com/photobox/ftb_JMB_jun/transaction/photo/Chambre_vide_lumineuse_et_pur_e-5507849121954302587.jpg"
   ]
+ },
+ "https://www.iadfrance.fr/annonce/immeuble-vente-millau-446m2/r2162645": {
+  "url": "https://www.iadfrance.fr/annonce/immeuble-vente-millau-446m2/r2162645",
+  "agence": "iad",
+  "titre": "Immeuble à vendre 446 m² Millau",
+  "prix": 345000,
+  "prix_initial": 345000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "20/11/2026",
+    "prix": 345000
+   }
+  ],
+  "surface": 446.0,
+  "terrain": null,
+  "prix_m2": 773,
+  "dpe": "INCONNU",
+  "score": 14,
+  "score_v3": 7.9,
+  "marge_estimee_montant": 189835,
+  "marge_estimee_pct": 23.0,
+  "mots_detectes": "immeuble, remise, opportunité, travaux, Prix canon 773 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-20 15:04",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/11/18/01a1efc8dc78094c89c85af6148d1b04.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/18/01a1efc8fad436a3bc3135fe8bfe7018.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/18/01a1efc8d78fa01af6fb6e7a7b80300c.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/20/01a1f66a498f876a80d737d5ff24192a.jpg?format=auto&width=300"
+  ]
  }
 }
