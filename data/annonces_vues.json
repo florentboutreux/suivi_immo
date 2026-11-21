@@ -4349,5 +4349,39 @@
    "https://images.iadfrance.fr/property/broadcast/2026/11/18/01a1efc8d78fa01af6fb6e7a7b80300c.jpg?format=auto&width=260",
    "https://images.iadfrance.fr/property/broadcast/2026/11/20/01a1f66a498f876a80d737d5ff24192a.jpg?format=auto&width=300"
   ]
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033799.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033799.html",
+  "agence": "SGA",
+  "titre": "Appartement 5 pièces, 109m²\nen vente à Millau\n164 300 € *",
+  "prix": 164300,
+  "prix_initial": 164300,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "21/11/2026",
+    "prix": 164300
+   }
+  ],
+  "surface": 109.0,
+  "terrain": null,
+  "prix_m2": 1507,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.1,
+  "marge_estimee_montant": -40415,
+  "marge_estimee_pct": -20.0,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-21 14:16",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://assets.adaptimmo.com/photos-biens/12003/120033799_1.jpg?fit=crop&h=950&q=90&w=1400&s=9971bd81edf0952db51cbc055cf30cb3",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033799_7.jpg?fit=crop&h=950&q=90&w=1400&s=01ea488497b3fc6377d1531fa79ee4ec",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033799_2.jpg?fit=crop&h=950&q=90&w=1400&s=a5423121d9b3db532cbcf4f95d8f1f8d",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033799_5.jpg?fit=crop&h=950&q=90&w=1400&s=c18d4e3f93a2845c805d6b06ee0a7b74"
+  ]
  }
 }
