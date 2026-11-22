@@ -4383,5 +4383,73 @@
    "https://assets.adaptimmo.com/photos-biens/12003/120033799_2.jpg?fit=crop&h=950&q=90&w=1400&s=a5423121d9b3db532cbcf4f95d8f1f8d",
    "https://assets.adaptimmo.com/photos-biens/12003/120033799_5.jpg?fit=crop&h=950&q=90&w=1400&s=c18d4e3f93a2845c805d6b06ee0a7b74"
   ]
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-122m2/r2164385": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-122m2/r2164385",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 122 m² Millau",
+  "prix": 480000,
+  "prix_initial": 480000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "22/11/2026",
+    "prix": 480000
+   }
+  ],
+  "surface": 122.0,
+  "terrain": 875.0,
+  "prix_m2": 3934,
+  "dpe": "INCONNU",
+  "score": 6,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -357860,
+  "marge_estimee_pct": -158.6,
+  "mots_detectes": "immeuble, travaux",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-22 14:06",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/11/21/01a1ff5dc5534a17f9eb8eec75b5b4ba.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/21/01a1ff5dc47538f55b25ce83fc7cb877.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/21/01a1ff5dc3db70442932b2a690bb45e7.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/14/01a1db22755af4a116652e28d1f017f2.jpg?format=auto&width=300"
+  ]
+ },
+ "https://www.iadfrance.fr/annonce/immeuble-vente-millau-150m2/r2164151": {
+  "url": "https://www.iadfrance.fr/annonce/immeuble-vente-millau-150m2/r2164151",
+  "agence": "iad",
+  "titre": "Immeuble à vendre 150 m² Millau",
+  "prix": 58000,
+  "prix_initial": 58000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "22/11/2026",
+    "prix": 58000
+   }
+  ],
+  "surface": 150.0,
+  "terrain": null,
+  "prix_m2": 386,
+  "dpe": "INCONNU",
+  "score": 15,
+  "score_v3": 8.2,
+  "marge_estimee_montant": 123194,
+  "marge_estimee_pct": 44.4,
+  "mots_detectes": "immeuble, opportunité, à rénover, travaux, Prix canon 386 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-22 14:06",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/11/20/01a1f91defdd1d3f0ca7e73d13a8d7e4.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/20/01a1f91afd2e5e58c4a37ea2f3874442.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/20/01a1f91af6d22e34a5e25701c5e813d8.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/18/01a1efc8dc78094c89c85af6148d1b04.jpg?format=auto&width=300"
+  ]
  }
 }
