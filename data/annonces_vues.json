@@ -4451,5 +4451,73 @@
    "https://images.iadfrance.fr/property/broadcast/2026/11/20/01a1f91af6d22e34a5e25701c5e813d8.jpg?format=auto&width=260",
    "https://images.iadfrance.fr/property/broadcast/2026/11/18/01a1efc8dc78094c89c85af6148d1b04.jpg?format=auto&width=300"
   ]
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-130m2/r2160821": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-4-pieces-millau-130m2/r2160821",
+  "agence": "iad",
+  "titre": "Maison à vendre 4 pièces 130 m² Millau",
+  "prix": 344000,
+  "prix_initial": 344000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "23/11/2026",
+    "prix": 344000
+   }
+  ],
+  "surface": 130.0,
+  "terrain": 759.0,
+  "prix_m2": 2646,
+  "dpe": "INCONNU",
+  "score": 4,
+  "score_v3": 4.0,
+  "marge_estimee_montant": -204108,
+  "marge_estimee_pct": -84.9,
+  "mots_detectes": "immeuble",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-23 17:28",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/11/22/01a203ec22f2d90150f8f54eb5c2ab45.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/22/01a203ec239b3a7c3abddbd35a500ce6.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/22/01a203ec04e72ac0673a90204592155b.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/04/10/019d76898dcd82be82151ffd73124b15.jpg?format=auto&width=300"
+  ]
+ },
+ "https://www.iadfrance.fr/annonce/maison-vente-3-pieces-millau-80m2/r2160065": {
+  "url": "https://www.iadfrance.fr/annonce/maison-vente-3-pieces-millau-80m2/r2160065",
+  "agence": "iad",
+  "titre": "Maison à vendre 3 pièces 80 m² Millau",
+  "prix": 34500,
+  "prix_initial": 34500,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "23/11/2026",
+    "prix": 34500
+   }
+  ],
+  "surface": 80.0,
+  "terrain": null,
+  "prix_m2": 431,
+  "dpe": "INCONNU",
+  "score": 14,
+  "score_v3": 8.2,
+  "marge_estimee_montant": 60534,
+  "marge_estimee_pct": 40.9,
+  "mots_detectes": "immeuble, atelier, à rénover, à restaurer, Prix canon 431 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-23 17:28",
+  "localisation": "Millau",
+  "v": 10,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/11/22/01a204a79bb98d47d63a147ff73cf53c.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/22/01a204a79a81321d8598005c7976d112.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/22/01a204a79aa138e25813b08121be9c55.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/09/28/01a0e747f11806c804123cdd34d96834.jpg?format=auto&width=300"
+  ]
  }
 }
