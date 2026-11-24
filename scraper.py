@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 =============================================================================
-VEILLE IMMOBILIÈRE SPÉCIALE MARCHAND DE BIENS (MDB) – MILLAU (12100) v2.2
+VEILLE IMMOBILIÈRE SPÉCIALE MARCHAND DE BIENS (MDB) – MILLAU (12100) v3.0
 =============================================================================
 """
 
@@ -11,7 +11,6 @@ import logging
 import os
 import random
 import re
-import sys
 import unicodedata
 import urllib.request
 from collections import Counter, deque
@@ -50,10 +49,10 @@ COMMUNES_VOISINES = [
 PRIX_MAX = 290_000          # Budget acquisition cible MDB
 SCORE_MINIMUM = 2           # Seuil pour retenir le bien
 SCORE_MINIMUM_ALERTE = 4    # Seuil pour déclencher une notification Telegram/Discord immédiate
-EXCLURE_TERRAINS_SEULS = True  # Écarte automatiquement les annonces qui concernent uniquement des terrains nus
+EXCLURE_TERRAINS_SEULS = True
 MAX_PAGES_PAR_AGENCE = 5
 MAX_FICHES_PAR_RUN = 200
-VERSION_PARSEUR = 10        # Incrémentée : force la réanalyse des fiches écartées à tort (v9)
+VERSION_PARSEUR = 11        # Incrémentée pour v3.0 (secteur + type_bien + scoring calibré)
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
@@ -175,10 +174,34 @@ class Annonce:
     a_baisse: bool = False
     date_collecte: str = ""
     localisation: str = "Millau"
+    secteur: str = "Périphérie Millau"
+    type_bien: str = "maison"
     v: int = VERSION_PARSEUR
     photos: list = field(default_factory=list)
 
 CHAMPS_ANNONCE = {f.name for f in fields(Annonce)}
+
+def inferer_secteur(texte: str) -> str:
+    t = texte.lower()
+    if any(k in t for k in ("droite", "halles", "centre ancien", "capelle", "foch")):
+        return "Centre Ancien"
+    if any(k in t for k in ("mandarous", "jaurès", "jaures", "république", "bonald")):
+        return "Mandarous / Jaurès"
+    if any(k in t for k in ("tarn", "faubourg", "viaduc", "cureplat", "pouncho", "paulhe")):
+        return "Faubourgs / Tarn"
+    if any(k in t for k in ("gare", "malhourtet", "beauregard")):
+        return "Gare / Malhourtet"
+    return "Périphérie Millau"
+
+def inferer_type_bien(texte: str) -> str:
+    t = texte.lower()
+    if any(k in t for k in ("immeuble", "monopropri", "bâtisse")):
+        return "immeuble"
+    if any(k in t for k in ("grange", "plateau", "remise", "atelier")):
+        return "grange"
+    if any(k in t for k in ("appartement", "t2", "t3", "t4", "studio")):
+        return "appartement"
+    return "maison"
 
 # --------------------------------------------------------------------------- #
 # NOTIFICATIONS TELEGRAM & DISCORD
@@ -187,7 +210,7 @@ def envoyer_alerte_push(annonce: Annonce, motif: str = "PÉPITE DÉTECTÉE"):
     texte = (
         f"🚨 <b>MILLAU MDB : {motif} !</b>\n"
         f"🏢 <b>{annonce.titre}</b>\n"
-        f"📍 {annonce.agence} | DPE : <b>{annonce.dpe}</b>\n"
+        f"📍 {annonce.agence} ({annonce.secteur}) | DPE : <b>{annonce.dpe}</b>\n"
         f"💰 Prix : <b>{annonce.prix:,} €</b> ({annonce.prix_m2 or '?'} €/m²)\n"
     )
     if annonce.marge_estimee_montant > 0:
@@ -533,11 +556,6 @@ def extraire_prix_fallback(texte: str) -> int | None:
         return max(candidats)[2]
     return None
 
-class PageListe(Exception):
-    def __init__(self, liens=()):
-        super().__init__("page liste")
-        self.liens = set(liens)
-
 class FicheInjoignable(Exception):
     pass
 
@@ -644,8 +662,6 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
         if anc.get("v") != VERSION_PARSEUR:
             prix_initial = prix
             historique = [{"date": now_str, "prix": prix}]
-            a_baisse = False
-            baisse_prix_pct = 0.0
         else:
             prix_initial = anc.get("prix_initial") or anc.get("prix") or prix
             historique = anc.get("historique_prix", [])
@@ -654,13 +670,10 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
             if ancien_prix and prix < ancien_prix:
                 delta_euros = ancien_prix - prix
                 delta_pct = ((ancien_prix - prix) / ancien_prix) * 100
-
                 if delta_euros >= 3000 and 3.0 <= delta_pct <= 35.0:
                     a_baisse = True
                     baisse_prix_pct = round(((prix_initial - prix) / prix_initial) * 100, 1)
-                    log.info("📉 VRAIE BAISSE DE PRIX VALIDÉE (-%.1f%%) sur %s : %d € -> %d € (-%d €)", baisse_prix_pct, url, ancien_prix, prix, delta_euros)
-                else:
-                    log.warning("⚠️ Écart de prix ignoré (faux positif évité) sur %s : %d € vs %d € (delta: %d € / %.1f%%)", url, ancien_prix, prix, delta_euros, delta_pct)
+                    log.info("📉 BAISSE VALIDÉE (-%.1f%%) sur %s : %d € -> %d €", baisse_prix_pct, url, ancien_prix, prix)
 
     if not historique or historique[-1].get("prix") != prix:
         historique.append({"date": now_str, "prix": prix})
@@ -695,21 +708,22 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     score_v3 = float(score)
 
     if surface and surface > 20 and prix:
-        ca_estime = int(surface * 1850)
-        cout_travaux_m2 = 900 if dpe == "G" else (750 if dpe == "F" else 600)
+        ca_estime = int(surface * 1900)
+        cout_travaux_m2 = 780 if dpe == "G" else (680 if dpe == "F" else 550)
         total_travaux = int(surface * cout_travaux_m2)
-        frais_mdb = int((prix * 0.022) + 3000 + (prix * 0.035))
+        frais_mdb = int((prix * 0.022) + 3000 + (prix * 0.03))
         cout_revient = prix + total_travaux + frais_mdb
         marge_estimee_montant = ca_estime - cout_revient
         marge_estimee_pct = round((marge_estimee_montant / ca_estime) * 100, 1) if ca_estime > 0 else 0.0
 
         pts_marge = 35 if marge_estimee_pct >= 22 else (30 if marge_estimee_pct >= 18 else (20 if marge_estimee_pct >= 14 else (10 if marge_estimee_pct >= 10 else 0)))
-        pts_decoupe = 25 if "immeuble" in texte_bas or "monopropri" in texte_bas else (18 if "divisible" in texte_bas or "plateau" in texte_bas else 10)
-        pts_negoc = (8 if dpe in ("F", "G") else 0) + (8 if baisse_prix_pct >= 10 else (4 if baisse_prix_pct >= 5 else 0)) + (4 if prix_m2 and prix_m2 < 800 else 0)
-        pts_securite = (8 if "immeuble" in texte_bas else 4) + (6 if prix <= 150000 else 3) + 4
+        est_monopro = "immeuble" in texte_bas or "monopropri" in texte_bas
+        est_divisible = "divisible" in texte_bas or "plateau" in texte_bas or surface >= 140
+        pts_decoupe = 25 if est_monopro else (18 if est_divisible else 10)
+        pts_negoc = min(20, (8 if dpe == "G" else (6 if dpe == "F" else 0)) + (8 if baisse_prix_pct >= 10 else (5 if baisse_prix_pct >= 5 else (3 if baisse_prix_pct > 0 else 0))) + (4 if prix_m2 and prix_m2 < 850 else (2 if prix_m2 and prix_m2 < 1050 else 0)))
+        pts_securite = min(20, (8 if est_monopro else 5) + (8 if prix <= 150000 else (6 if prix <= 210000 else 3)) + 4)
         score_v3 = round(min(10.0, (pts_marge + pts_decoupe + pts_negoc + pts_securite) / 10.0), 1)
 
-    # EXTRACTION DES PHOTOS DE L'ANNONCE
     try:
         photos = page.evaluate("""() => {
             return [...document.querySelectorAll('img')]
@@ -721,6 +735,7 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
     except Exception:
         photos = []
 
+    texte_complet = f"{titre} {' '.join(detectes)} {base[:1200]}"
     return Annonce(
         url=url, agence=agence, titre=titre[:140], prix=prix,
         prix_initial=prix_initial, baisse_prix_pct=baisse_prix_pct,
@@ -731,1015 +746,901 @@ def analyser_fiche(page, url: str, agence: str, etat_existant: dict) -> Annonce 
         mots_detectes=", ".join(dict.fromkeys(detectes)),
         date_collecte=datetime.now().strftime("%Y-%m-%d %H:%M"),
         localisation="Millau",
+        secteur=inferer_secteur(texte_complet),
+        type_bien=inferer_type_bien(texte_complet),
         photos=photos
     )
 
 # --------------------------------------------------------------------------- #
-# EXPORT HTML MULTI-ONGLETS & SIMULATEUR EMBARQUÉ (GITHUB PAGES)
+# EXPORT HTML ARCHITECTURAL MULTI-VUES (GITHUB PAGES)
 # --------------------------------------------------------------------------- #
 TEMPLATE_HTML = r"""<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MDB Scanner Pro – Millau (12100)</title>
+<title>Millau Foncier — Veille &amp; Arbitrage MDB (12100)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+          sans: ['Public Sans', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace']
+        }
+      }
+    }
+  };
+</script>
 <style>
-  :root { color-scheme: dark; }
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+  @media print { aside, header, .no-print { display: none !important; } }
 </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans pb-16">
-  <!-- HEADER -->
-  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-30 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="h-10 w-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 font-black text-lg shadow-md shadow-amber-500/20">
-          MDB
+<body class="bg-stone-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen font-sans antialiased">
+<div class="min-h-screen flex">
+  <!-- SIDEBAR DESKTOP -->
+  <aside class="hidden lg:flex lg:flex-col lg:w-64 lg:shrink-0 border-r border-stone-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 h-screen">
+    <div class="px-6 py-5 border-b border-stone-200 dark:border-slate-800">
+      <div class="font-display text-lg font-bold tracking-tight text-slate-900 dark:text-white">Millau Foncier</div>
+      <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Analyse &amp; Arbitrage MDB · 12100</div>
+    </div>
+    <nav class="flex-1 px-3 py-5 space-y-1">
+      <button onclick="setTab('deals')" id="nav-deals" class="w-full text-left px-3.5 py-2.5 rounded-lg cursor-pointer">
+        <span class="block text-sm font-semibold">Marché &amp; Opportunités</span>
+        <span class="block text-xs opacity-75">Veille agences Millau</span>
+      </button>
+      <button onclick="setTab('audit')" id="nav-audit" class="w-full text-left px-3.5 py-2.5 rounded-lg cursor-pointer">
+        <span class="block text-sm font-semibold">Audit Technique</span>
+        <span class="block text-xs opacity-75">Travaux &amp; stratégies</span>
+      </button>
+      <button onclick="setTab('simu')" id="nav-simu" class="w-full text-left px-3.5 py-2.5 rounded-lg cursor-pointer">
+        <span class="block text-sm font-semibold">Simulateur MDB</span>
+        <span class="block text-xs opacity-75">Découpe, TVA &amp; IS</span>
+      </button>
+      <button onclick="setTab('strategie')" id="nav-strategie" class="w-full text-left px-3.5 py-2.5 rounded-lg cursor-pointer">
+        <span class="block text-sm font-semibold">Stratégie &amp; Secteur</span>
+        <span class="block text-xs opacity-75">Micro-marchés 12100</span>
+      </button>
+    </nav>
+    <div class="px-5 py-4 border-t border-stone-200 dark:border-slate-800 space-y-2 text-xs">
+      <div class="font-semibold text-slate-500 dark:text-slate-400">Pipeline d'acquisition (<span id="pipe-total">0</span>)</div>
+      <div class="flex justify-between"><span class="text-slate-600 dark:text-slate-400">À étudier</span><span id="pipe-etude" class="font-mono font-semibold">0</span></div>
+      <div class="flex justify-between"><span class="text-slate-600 dark:text-slate-400">Visites planifiées</span><span id="pipe-visite" class="font-mono font-semibold text-amber-700 dark:text-amber-400">0</span></div>
+      <div class="flex justify-between"><span class="text-slate-600 dark:text-slate-400">Offres transmises</span><span id="pipe-offre" class="font-mono font-semibold text-emerald-700 dark:text-emerald-400">0</span></div>
+      <div class="pt-2 text-[11px] text-slate-400">Mise à jour : __DATE__</div>
+    </div>
+  </aside>
+
+  <div class="flex-1 min-w-0 flex flex-col">
+    <!-- TOP BAR -->
+    <header class="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-stone-200 dark:border-slate-800">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-2 text-xs min-w-0">
+          <span class="font-display font-bold text-slate-900 dark:text-white lg:hidden whitespace-nowrap">Millau Foncier</span>
+          <span class="hidden lg:inline text-slate-500 dark:text-slate-400">Millau 12100</span>
+          <span class="hidden lg:inline text-slate-400">/</span>
+          <h1 id="top-title" class="hidden lg:block font-display text-sm font-bold text-slate-900 dark:text-white truncate">Marché &amp; Opportunités</h1>
         </div>
-        <div>
-          <div class="text-base font-bold text-white flex items-center gap-2">
-            MDB Scanner Pro <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">Millau 12100</span>
-          </div>
-          <div class="text-xs text-slate-400">Actualisé le : __DATE__</div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button onclick="toggleTheme()" id="btn-theme" class="px-3 py-1.5 rounded-lg border border-stone-200 dark:border-slate-700 text-xs font-medium hover:bg-stone-100 dark:hover:bg-slate-800 cursor-pointer whitespace-nowrap">Thème sombre</button>
+          <button onclick="exporterCsv()" class="px-3.5 py-1.5 rounded-lg bg-slate-900 dark:bg-amber-500 text-white dark:text-slate-950 text-xs font-semibold hover:opacity-90 cursor-pointer whitespace-nowrap">Exporter CSV</button>
         </div>
       </div>
-
-      <nav class="flex space-x-1 sm:space-x-2">
-        <button onclick="setTab('deals')" id="btn-tab-deals" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-amber-500 text-slate-950 cursor-pointer">
-          🏢 Annonces & Deals
-        </button>
-        <button onclick="setTab('audit_profond')" id="btn-tab-audit_profond" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:bg-slate-800 cursor-pointer">
-          🔬 Audit Approfondi
-        </button>
-        <button onclick="setTab('simu')" id="btn-tab-simu" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:bg-slate-800 cursor-pointer">
-          🧮 Simulateur MDB
-        </button>
-        <button onclick="setTab('audit')" id="btn-tab-audit" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:bg-slate-800 cursor-pointer">
-          🎯 Stratégie MDB
-        </button>
+      <nav class="lg:hidden border-t border-stone-200 dark:border-slate-800 px-3 py-1.5 flex items-center gap-1 overflow-x-auto">
+        <button onclick="setTab('deals')" id="mnav-deals" class="px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap cursor-pointer">Marché</button>
+        <button onclick="setTab('audit')" id="mnav-audit" class="px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap cursor-pointer">Audit</button>
+        <button onclick="setTab('simu')" id="mnav-simu" class="px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap cursor-pointer">Simulateur</button>
+        <button onclick="setTab('strategie')" id="mnav-strategie" class="px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap cursor-pointer">Secteur</button>
       </nav>
-    </div>
-  </header>
+    </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6">
-    <!-- ONGLET 1 : ANNONCES & DEALS -->
-    <div id="tab-deals" class="space-y-6">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="kpi-cards"></div>
-      <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex flex-wrap gap-3 items-center justify-between">
-        <input type="text" id="q" oninput="renderDeals()" placeholder="Rechercher par rue, mot-clé (ex: 'rue droite', 'immeuble')..." class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 flex-1 min-w-[200px] focus:outline-none focus:border-amber-500" />
-        <select id="f-type" onchange="renderDeals()" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-amber-500">
-          <option value="all">Tous types de biens</option>
-          <option value="immeuble">🏢 Immeubles</option>
-          <option value="maison">🏡 Maisons</option>
-          <option value="appartement">🏢 Appartements</option>
-          <option value="grange">🏚️ Granges / Plateaux</option>
-        </select>
-        <select id="f-sort" onchange="renderDeals()" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-amber-300 font-semibold focus:outline-none focus:border-amber-500">
-          <option value="score_desc">⚡ Score MDB V3 décroissant</option>
-          <option value="marge_desc">💰 Marge potentielle décroissante</option>
-          <option value="prix_asc">💶 Prix croissant</option>
-          <option value="prix_desc">💶 Prix décroissant</option>
-          <option value="m2_asc">📐 Prix / m² croissant</option>
-          <option value="m2_desc">📐 Prix / m² décroissant</option>
-          <option value="surface_desc">📏 Surface décroissante</option>
-        </select>
-        <select id="f-dpe" onchange="renderDeals()" class="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-amber-500">
-          <option value="all">Tous DPE</option>
-          <option value="passoires">🔥 Passoires F & G</option>
-          <option value="G">DPE G uniquement</option>
-          <option value="F">DPE F uniquement</option>
-        </select>
-        <label class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer select-none">
-          <input type="checkbox" id="f-drops" onchange="renderDeals()" class="rounded bg-slate-800 border-slate-700 text-amber-500" />
-          <span>Baisses de prix uniquement</span>
-        </label>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="deals-grid"></div>
-    </div>
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6">
+      <!-- VUE 1 : MARCHÉ & OPPORTUNITÉS -->
+      <div id="tab-deals" class="space-y-6">
+        <section id="kpi-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></section>
 
-    <!-- ONGLET 2 : AUDIT APPROFONDI -->
-    <div id="tab-audit_profond" class="hidden space-y-6">
-      <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
-          <div>
-            <span class="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-1.5 mb-2">
-              🔬 Audit Approfondi & Arbitrage MDB
-            </span>
-            <h2 class="text-xl font-bold text-white flex items-center gap-2">
-              <span id="ap-titre">Sélectionnez un bien pour lancer l’audit</span>
-            </h2>
-            <p class="text-xs text-slate-400 mt-1" id="ap-soustitre">Analyse architecturale, chiffrage des travaux, 3 stratégies de marge et comparaison de décision.</p>
+        <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5">
+          <div class="flex flex-wrap items-baseline justify-between gap-3 mb-3">
+            <div>
+              <h2 class="font-display text-sm font-bold text-slate-900 dark:text-white">Positionnement Prix / m² par surface (Millau 12100)</h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Zone d'achat décotée (&lt; 1 100 €/m²) vs valeur cible rénovée (1 900 €/m²)</p>
+            </div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">Cliquez un point pour auditer</div>
           </div>
-          <div class="flex items-center gap-2">
-            <select id="ap-select-deal" onchange="changerDealAudit(this.value)" class="bg-slate-950 border border-slate-700 text-amber-300 font-bold text-xs rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer">
-              <option value="">-- Choisir un bien dans la veille --</option>
+          <div id="scatter-wrap"></div>
+          <div id="scatter-hover" class="mt-2 pt-2 border-t border-stone-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">Survolez un point pour afficher le bien.</div>
+        </section>
+
+        <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-4 space-y-3">
+          <div class="flex flex-wrap items-center gap-3">
+            <input type="text" id="q" oninput="renderDeals()" placeholder="Rechercher par rue, agence, mot-clé (ex: Rue Droite, immeuble)..." class="flex-1 min-w-[220px] px-3 py-2 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg text-xs focus:outline-none focus:border-slate-900 dark:focus:border-amber-500" />
+            <select id="f-type" onchange="renderDeals()" class="px-3 py-2 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg text-xs">
+              <option value="all">Tous types de biens</option>
+              <option value="immeuble">Immeubles</option>
+              <option value="maison">Maisons</option>
+              <option value="appartement">Appartements</option>
+              <option value="grange">Granges &amp; Plateaux</option>
             </select>
-            <button onclick="window.print()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 cursor-pointer">
-              🖨️ PDF
-            </button>
+            <select id="f-secteur" onchange="renderDeals()" class="px-3 py-2 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg text-xs">
+              <option value="all">Tous secteurs Millau</option>
+              <option value="Centre Ancien">Centre Ancien</option>
+              <option value="Mandarous / Jaurès">Mandarous / Jaurès</option>
+              <option value="Faubourgs / Tarn">Faubourgs / Tarn</option>
+              <option value="Gare / Malhourtet">Gare / Malhourtet</option>
+              <option value="Périphérie Millau">Périphérie Millau</option>
+            </select>
+            <select id="f-dpe" onchange="renderDeals()" class="px-3 py-2 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg text-xs">
+              <option value="all">Tous DPE</option>
+              <option value="passoires">Passoires F &amp; G</option>
+              <option value="G">DPE G uniquement</option>
+              <option value="F">DPE F uniquement</option>
+            </select>
+            <select id="f-sort" onchange="renderDeals()" class="px-3 py-2 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg text-xs font-semibold">
+              <option value="score_desc">Tri : Score V3 décroissant</option>
+              <option value="marge_desc">Tri : Marge estimée décroissante</option>
+              <option value="prix_asc">Tri : Prix croissant</option>
+              <option value="prix_desc">Tri : Prix décroissant</option>
+              <option value="m2_asc">Tri : Prix / m² croissant</option>
+              <option value="surface_desc">Tri : Surface décroissante</option>
+            </select>
           </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <!-- PHOTOS -->
-          <div class="lg:col-span-2 bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              📸 Analyse Visuelle : Photos extraites de l'annonce
-            </h3>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="ap-photos-grid">
-              <!-- Photos injectées -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-stone-100 dark:border-slate-800 text-xs">
+            <div class="flex flex-wrap items-center gap-4">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" id="f-drops" onchange="renderDeals()" class="rounded border-stone-300 dark:border-slate-700" />
+                <span>Baisses de prix uniquement</span>
+              </label>
+              <select id="f-statut" onchange="renderDeals()" class="bg-transparent text-xs font-medium cursor-pointer">
+                <option value="all">Tous statuts</option>
+                <option value="nouveau">Nouveau</option>
+                <option value="a_etudier">À étudier</option>
+                <option value="visite">Visite planifiée</option>
+                <option value="offre">Offre envoyée</option>
+                <option value="ecarte">Écarté</option>
+              </select>
+              <span id="deals-count" class="font-mono text-slate-500 dark:text-slate-400"></span>
             </div>
-            <div class="text-xs text-slate-400 p-3 bg-slate-900 rounded-lg border border-slate-800/80" id="ap-photos-constat">
-              Chargement des constats visuels...
+            <div class="flex items-center gap-1 p-0.5 bg-stone-100 dark:bg-slate-800 rounded-lg border border-stone-200 dark:border-slate-700">
+              <button onclick="setViewMode('grid')" id="btn-view-grid" class="px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">Cartes</button>
+              <button onclick="setViewMode('table')" id="btn-view-table" class="px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer">Tableau</button>
             </div>
           </div>
+        </section>
 
-          <!-- DIAGNOSTICS -->
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 text-xs">
-            <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
-              📋 État des Lieux & Diagnostics
-            </h3>
-            <div class="space-y-2" id="ap-diagnostics-list">
-              <!-- Diagnostics injectés -->
+        <div id="deals-container"></div>
+      </div>
+
+      <!-- VUE 2 : AUDIT TECHNIQUE -->
+      <div id="tab-audit" class="hidden space-y-6">
+        <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 flex flex-wrap items-center justify-between gap-4">
+          <div class="min-w-0">
+            <div id="ap-meta" class="text-xs text-slate-500 dark:text-slate-400">Audit Technique &amp; Arbitrage</div>
+            <h2 id="ap-titre" class="font-display text-lg font-bold mt-0.5 truncate">Sélectionnez un bien</h2>
+            <div id="ap-metrics" class="text-xs font-mono text-slate-600 dark:text-slate-300 mt-1"></div>
+          </div>
+          <div class="flex items-center gap-2 no-print">
+            <select id="ap-select-deal" onchange="changerDealAudit(this.value)" class="max-w-xs px-3 py-2 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg text-xs font-semibold"></select>
+            <button onclick="window.print()" class="px-3 py-2 rounded-lg border border-stone-200 dark:border-slate-700 text-xs font-semibold cursor-pointer">Imprimer PDF</button>
+          </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-7 bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-3">
+            <h3 class="font-display text-sm font-bold">Relevé visuel de l'annonce</h3>
+            <div id="ap-photos-grid" class="grid grid-cols-2 gap-3"></div>
+            <div id="ap-photos-constat" class="text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-stone-100 dark:border-slate-800"></div>
+          </div>
+          <div class="lg:col-span-5 bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-3">
+            <h3 class="font-display text-sm font-bold">Points de contrôle techniques (Millau)</h3>
+            <div id="ap-diagnostics-list" class="divide-y divide-stone-100 dark:divide-slate-800 text-xs"></div>
+          </div>
+        </section>
+
+        <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-4">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <div>
+              <h3 class="font-display text-sm font-bold">Chiffrage estimatif des travaux (modifiable)</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Ajustez chaque poste TTC pour recalibrer les 3 stratégies de sortie.</p>
             </div>
+            <div id="ap-total-travaux-badge" class="font-mono text-sm font-bold text-slate-900 dark:text-amber-300"></div>
           </div>
-        </div>
-
-        <!-- ESTIMATIF TRAVAUX -->
-        <div class="mb-8">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              🔨 Descriptif Complet & Chiffrage Estimatif des Travaux
-            </h3>
-            <span class="text-xs font-bold text-amber-300" id="ap-total-travaux-badge">Enveloppe estimée : --</span>
-          </div>
-          <div class="overflow-x-auto bg-slate-950 rounded-xl border border-slate-800">
+          <div class="overflow-x-auto border border-stone-200 dark:border-slate-800 rounded-lg">
             <table class="w-full text-xs text-left">
-              <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+              <thead class="bg-stone-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 border-b border-stone-200 dark:border-slate-800">
                 <tr>
-                  <th class="py-2.5 px-3">Poste de travaux</th>
-                  <th class="py-2.5 px-3">Diagnostic constaté</th>
-                  <th class="py-2.5 px-3">Préconisation technique MDB</th>
-                  <th class="py-2.5 px-3 text-right">Budget estimé</th>
+                  <th class="py-2.5 px-3 w-10 text-center">Incl.</th>
+                  <th class="py-2.5 px-3 font-semibold">Poste</th>
+                  <th class="py-2.5 px-3 font-semibold">Diagnostic</th>
+                  <th class="py-2.5 px-3 font-semibold">Préconisation</th>
+                  <th class="py-2.5 px-3 font-semibold text-right w-32">Budget TTC</th>
                 </tr>
               </thead>
-              <tbody id="ap-travaux-tbody" class="divide-y divide-slate-850 text-slate-300">
-                <!-- Postes injectés dynamiquement -->
-              </tbody>
+              <tbody id="ap-travaux-tbody" class="divide-y divide-stone-100 dark:divide-slate-800"></tbody>
             </table>
           </div>
-        </div>
+        </section>
 
-        <!-- STRATÉGIES INTERACTIVES -->
-        <div class="space-y-4">
-          <h3 class="text-base font-bold text-white flex items-center gap-2">
-            🏆 3 Stratégies de Création de Valeur & Arbitrage MDB
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs" id="ap-scenarios-cards">
-            <!-- 3 Cartes de stratégies injectées -->
+        <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-4">
+          <h3 class="font-display text-sm font-bold">Comparatif des 3 stratégies de sortie MDB</h3>
+          <div id="ap-scenarios-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+          <div class="pt-4 border-t border-stone-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+            <p id="ap-verdict-texte" class="text-xs text-slate-600 dark:text-slate-300 max-w-2xl"></p>
+            <button onclick="injecterScenarioDansSimulateur()" class="px-4 py-2.5 rounded-lg bg-slate-900 dark:bg-amber-500 text-white dark:text-slate-950 text-xs font-semibold cursor-pointer">Transférer ce scénario au Simulateur</button>
           </div>
-          <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-3 mt-4">
-            <div class="flex items-center justify-between">
-              <h4 class="text-sm font-bold text-emerald-400">
-                🎯 Recommandation & Validation Stratégique
-              </h4>
-              <span class="text-[11px] text-slate-400 font-mono" id="ap-verdict-delai">Délai : --</span>
-            </div>
-            <p class="text-xs text-slate-300 leading-relaxed" id="ap-verdict-texte">
-              Sélectionnez une annonce pour générer la synthèse décisionnelle.
-            </p>
-            <div class="pt-2 flex justify-end">
-              <button onclick="injecterScenarioDansSimulateur()" id="ap-btn-inject-simu" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition shadow-md cursor-pointer">
-                Transférer ce scénario dans le Simulateur Financier →
-              </button>
-            </div>
-          </div>
-        </div>
+        </section>
       </div>
-    </div>
 
-    <!-- ONGLET 3 : SIMULATEUR MDB -->
-    <div id="tab-simu" class="hidden space-y-6">
-      <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <!-- VUE 3 : SIMULATEUR MDB -->
+      <div id="tab-simu" class="hidden space-y-6">
+        <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 class="text-xl font-bold text-white flex items-center gap-2">
-              <span>🧮</span> Simulateur Financier d’Opération & Découpe MDB
-            </h2>
-            <p class="text-xs text-slate-400">Business plan complet marchand de biens : acquisition 0,715%, découpe, travaux, portage, TVA sur marge et IS.</p>
+            <div id="simu-context-meta" class="text-xs text-slate-500 dark:text-slate-400">Simulation financière MDB · Millau 12100</div>
+            <h2 id="simu-context-titre" class="font-display text-lg font-bold mt-0.5">Ensemble immobilier Millau</h2>
           </div>
-          <div class="flex gap-2">
-            <button onclick="window.print()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 transition cursor-pointer">
-              🖨️ Imprimer
-            </button>
-            <button onclick="genererAnalyseIA()" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg transition cursor-pointer shadow-md shadow-amber-500/20">
-              ✨ Analyse Stratégique & Marge
-            </button>
-          </div>
-        </div>
+          <button onclick="window.print()" class="px-3.5 py-2 rounded-lg border border-stone-200 dark:border-slate-700 text-xs font-semibold cursor-pointer no-print">Imprimer le dossier</button>
+        </section>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div class="lg:col-span-7 space-y-5">
-            <!-- 1. ACQUISITION -->
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-              <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                <span>1. Acquisition & Frais d’acte</span>
-              </h3>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div class="lg:col-span-7 space-y-6">
+            <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-4">
+              <h3 class="font-display text-sm font-bold">01. Acquisition &amp; régime fiscal</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div>
-                  <label class="block text-slate-400 mb-1">Prix affiché FAI (€)</label>
-                  <input type="number" id="sim-prix" value="149000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono font-bold" />
+                  <label class="block text-slate-500 mb-1">Prix affiché FAI (€)</label>
+                  <input type="number" id="sim-prix" value="149000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg font-mono font-bold" />
                 </div>
                 <div>
-                  <label class="block text-slate-400 mb-1">Négociation visée (€)</label>
-                  <input type="number" id="sim-nego" value="14000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-amber-300 font-mono" />
+                  <label class="block text-slate-500 mb-1">Négociation visée (€)</label>
+                  <input type="number" id="sim-nego" value="14000" oninput="calculerSimu()" class="w-full px-3 py-2 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg font-mono text-amber-700 dark:text-amber-300" />
                 </div>
                 <div>
-                  <label class="block text-slate-400 mb-1">Régime notaire</label>
-                  <select id="sim-notaire" onchange="calculerSimu()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono">
+                  <label class="block text-slate-500 mb-1">Droits de mutation</label>
+                  <select id="sim-notaire" onchange="calculerSimu()" class="w-full px-3 py-2 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg font-mono text-xs">
                     <option value="0.00715">MDB (0,715%)</option>
-                    <option value="0.078">Particulier (7,8%)</option>
+                    <option value="0.078">Classique (7,8%)</option>
                   </select>
                 </div>
               </div>
-            </div>
+              <label class="flex items-center gap-2 pt-2 border-t border-stone-100 dark:border-slate-800 text-xs cursor-pointer">
+                <input type="checkbox" id="sim-tva-marge" onchange="calculerSimu()" class="rounded border-stone-300 dark:border-slate-700" />
+                <span>Provisionner la TVA sur marge (20% sur revente − achat)</span>
+              </label>
+            </section>
 
-            <!-- 2. LOTS ET DECOUPE -->
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+            <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-4">
               <div class="flex items-center justify-between">
-                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">
-                  2. Plan de Découpe & Revente Lot par Lot
-                </h3>
-                <button onclick="ajouterLot()" class="text-[11px] font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20 cursor-pointer">
-                  + Ajouter un lot
-                </button>
+                <h3 class="font-display text-sm font-bold">02. Plan de découpe &amp; revente par lot</h3>
+                <button onclick="ajouterLot()" class="px-3 py-1.5 rounded-lg border border-stone-200 dark:border-slate-700 text-xs font-semibold cursor-pointer">+ Ajouter un lot</button>
               </div>
               <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left">
-                  <thead class="text-slate-400 text-[10px] uppercase border-b border-slate-800">
+                  <thead class="text-slate-500 border-b border-stone-200 dark:border-slate-800">
                     <tr>
-                      <th class="py-2">Désignation du lot</th>
-                      <th class="py-2 w-16">Surf. (m²)</th>
-                      <th class="py-2 w-24">Travaux (€)</th>
-                      <th class="py-2 w-28">Prix Revente (€)</th>
+                      <th class="py-2">Lot</th>
+                      <th class="py-2 w-16 text-right">m²</th>
+                      <th class="py-2 w-24 text-right">Travaux</th>
+                      <th class="py-2 w-28 text-right">Revente</th>
+                      <th class="py-2 w-16 text-right">€/m²</th>
                       <th class="py-2 w-8"></th>
                     </tr>
                   </thead>
-                  <tbody id="lots-table-body" class="divide-y divide-slate-800/60 font-mono"></tbody>
+                  <tbody id="lots-table-body" class="divide-y divide-stone-100 dark:divide-slate-800"></tbody>
                 </table>
               </div>
-              <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800/60 text-xs">
-                <div class="text-slate-400">Total Surface : <b id="total-surf" class="text-white">-- m²</b></div>
-                <div class="text-slate-400">Total Travaux : <b id="total-travaux-lots" class="text-amber-400">-- €</b></div>
-                <div class="text-slate-400">Total Revente : <b id="total-revente-lots" class="text-emerald-400">-- €</b></div>
+              <div class="grid grid-cols-3 gap-2 pt-2 border-t border-stone-100 dark:border-slate-800 text-xs">
+                <div>Surface : <strong id="total-surf" class="font-mono">--</strong></div>
+                <div>Travaux : <strong id="total-travaux-lots" class="font-mono text-amber-700 dark:text-amber-300">--</strong></div>
+                <div class="text-right">CA : <strong id="total-revente-lots" class="font-mono text-emerald-700 dark:text-emerald-400">--</strong></div>
               </div>
-            </div>
+            </section>
 
-            <!-- 3. FRAIS ANNEXES, DIVISION ET PORTAGE -->
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-              <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                3. Frais de Division & Financement / Portage
-              </h3>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-4">
+              <h3 class="font-display text-sm font-bold">03. Division juridique &amp; portage financier</h3>
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+                <div><label class="block text-slate-500 mb-1">Géomètre (€)</label><input type="number" id="sim-geometre" value="3200" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg font-mono" /></div>
+                <div><label class="block text-slate-500 mb-1">Divers (€)</label><input type="number" id="sim-divers" value="1500" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg font-mono" /></div>
+                <div><label class="block text-slate-500 mb-1">Portage (mois)</label><input type="number" id="sim-mois" value="8" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg font-mono" /></div>
+                <div><label class="block text-slate-500 mb-1">Taux (%)</label><input type="number" step="0.1" id="sim-taux" value="3.8" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg font-mono" /></div>
+                <div><label class="block text-slate-500 mb-1">Apport (€)</label><input type="number" id="sim-apport" value="35000" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-lg font-mono text-emerald-700 dark:text-emerald-400" /></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="lg:col-span-5 space-y-6">
+            <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-4">
+              <h3 class="font-display text-sm font-bold">Bilan financier prévisionnel</h3>
+              <div class="py-4 border-y border-stone-200 dark:border-slate-800 flex items-baseline justify-between">
                 <div>
-                  <label class="block text-slate-400 mb-1">Géomètre & EDD (€)</label>
-                  <input type="number" id="sim-geometre" value="3200" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono" />
+                  <span class="text-xs text-slate-500 block">Marge brute opération</span>
+                  <span id="res-marge-brute" class="font-mono text-3xl font-bold text-emerald-700 dark:text-emerald-400">--</span>
                 </div>
-                <div>
-                  <label class="block text-slate-400 mb-1">Durée portage (mois)</label>
-                  <input type="number" id="sim-mois" value="8" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono" />
-                </div>
-                <div>
-                  <label class="block text-slate-400 mb-1">Taux emprunt (%)</label>
-                  <input type="number" step="0.1" id="sim-taux" value="3.8" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white font-mono" />
-                </div>
-                <div>
-                  <label class="block text-slate-400 mb-1">Apport (€)</label>
-                  <input type="number" id="sim-apport" value="35000" oninput="calculerSimu()" class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-emerald-400 font-mono" />
+                <div class="text-right">
+                  <span class="text-xs text-slate-500 block">Taux de marge</span>
+                  <span id="res-marge-pct" class="font-mono text-lg font-bold">--</span>
                 </div>
               </div>
-            </div>
-          </div>
+              <div class="grid grid-cols-3 gap-3 text-xs pb-3 border-b border-stone-100 dark:border-slate-800">
+                <div><span class="text-slate-500 block">Marge nette IS</span><strong id="res-marge-nette" class="font-mono">--</strong></div>
+                <div><span class="text-slate-500 block">ROI apport</span><strong id="res-roi" class="font-mono text-amber-700 dark:text-amber-400">--</strong></div>
+                <div><span class="text-slate-500 block">TRI annualisé</span><strong id="res-tri" class="font-mono">--</strong></div>
+              </div>
+              <dl class="space-y-2 text-xs font-mono">
+                <div class="flex justify-between"><dt class="font-sans text-slate-500">Prix achat net</dt><dd id="res-achat">--</dd></div>
+                <div class="flex justify-between"><dt class="font-sans text-slate-500">Frais notaire</dt><dd id="res-notaire">--</dd></div>
+                <div class="flex justify-between"><dt class="font-sans text-slate-500">Travaux</dt><dd id="res-travaux" class="text-amber-700 dark:text-amber-300">--</dd></div>
+                <div class="flex justify-between"><dt class="font-sans text-slate-500">Géomètre &amp; divers</dt><dd id="res-geometre">--</dd></div>
+                <div class="flex justify-between"><dt class="font-sans text-slate-500">Portage financier</dt><dd id="res-portage">--</dd></div>
+                <div class="flex justify-between pt-2 border-t border-stone-200 dark:border-slate-800 font-bold"><dt class="font-sans">Coût de revient</dt><dd id="res-revient">--</dd></div>
+                <div class="flex justify-between font-bold text-emerald-700 dark:text-emerald-400"><dt class="font-sans">Chiffre d'affaires</dt><dd id="res-revente">--</dd></div>
+                <div id="row-tva" class="hidden flex justify-between text-rose-700 dark:text-rose-400"><dt class="font-sans">TVA sur marge</dt><dd id="res-tva">--</dd></div>
+                <div class="flex justify-between text-rose-700 dark:text-rose-400"><dt class="font-sans">IS estimé (15%/25%)</dt><dd id="res-is">--</dd></div>
+              </dl>
+              <div class="pt-3 border-t border-stone-100 dark:border-slate-800 text-xs text-slate-500">Économie notaire MDB : <strong id="res-gain-notaire" class="font-mono text-emerald-700 dark:text-emerald-400">--</strong></div>
+            </section>
 
-          <!-- RESULTATS FINANCIERS DETAILLES -->
-          <div class="lg:col-span-5 bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Bilan Financier & Marges</h3>
-                <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">MDB V3</span>
-              </div>
-              <div class="bg-gradient-to-br from-emerald-950/60 to-slate-900 border border-emerald-500/50 p-4 rounded-xl text-center mb-3">
-                <span class="text-[11px] text-emerald-300 block font-semibold uppercase tracking-wider">Marge Brute Opération</span>
-                <span class="text-3xl font-black text-emerald-400 font-mono" id="res-marge-brute">+68 500 €</span>
-                <span class="text-xs text-emerald-300 block mt-1" id="res-marge-pct">22.1% du CA de revente</span>
-              </div>
-              <div class="grid grid-cols-2 gap-2 mb-3">
-                <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-center">
-                  <span class="text-[10px] text-slate-400 block uppercase">Marge Nette (Après IS)</span>
-                  <b class="text-sm font-black text-white font-mono" id="res-marge-nette">+53 125 €</b>
-                </div>
-                <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-center">
-                  <span class="text-[10px] text-slate-400 block uppercase">ROI sur Apport</span>
-                  <b class="text-sm font-black text-amber-400 font-mono" id="res-roi">151%</b>
-                </div>
-              </div>
-              <div class="text-xs space-y-1.5 text-slate-300 font-mono border-t border-slate-800 pt-3">
-                <div class="flex justify-between"><span>Prix d’achat net :</span><span id="res-achat" class="text-white font-semibold">135 000 €</span></div>
-                <div class="flex justify-between"><span>Frais notaire (MDB) :</span><span id="res-notaire" class="text-white">965 €</span></div>
-                <div class="flex justify-between"><span>Travaux de rénovation :</span><span id="res-travaux" class="text-amber-300">85 000 €</span></div>
-                <div class="flex justify-between"><span>Géomètre & Division :</span><span id="res-geometre" class="text-white">3 200 €</span></div>
-                <div class="flex justify-between"><span>Portage financier & intérêts :</span><span id="res-portage" class="text-slate-400">4 600 €</span></div>
-                <div class="flex justify-between font-bold text-white pt-1.5 border-t border-slate-800">
-                  <span>Coût de revient total :</span><span id="res-revient" class="text-white">228 765 €</span>
-                </div>
-                <div class="flex justify-between font-bold text-emerald-400">
-                  <span>Chiffre d’Affaires total :</span><span id="res-revente">310 000 €</span>
-                </div>
-                <div class="flex justify-between text-slate-400 pt-1 text-[11px]">
-                  <span>Impôt Sociétés (IS estimé 15%/25%) :</span><span id="res-is" class="text-rose-400">-15 375 €</span>
-                </div>
-              </div>
-            </div>
-            <div class="space-y-2 pt-3">
-              <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-[11px] text-slate-400">
-                💡 <strong>Gain statut Marchand de Biens :</strong> économie de <span id="res-gain-notaire" class="text-emerald-400 font-bold">+9 565 €</span>.
-              </div>
-              <button onclick="genererAnalyseIA()" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition cursor-pointer">
-                🎯 Lancer l’Analyse Stratégique & Décisionnelle
-              </button>
-            </div>
+            <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-3">
+              <h3 class="font-display text-sm font-bold">Test de sensibilité (stress-test)</h3>
+              <div id="simu-sensibilite" class="divide-y divide-stone-100 dark:divide-slate-800 text-xs"></div>
+            </section>
           </div>
         </div>
 
-        <!-- BLOC ANALYSE STRATÉGIQUE -->
-        <div id="bloc-analyse-strategique" class="mt-6 pt-6 border-t border-slate-800 space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-base font-bold text-white flex items-center gap-2">
-              <span class="text-amber-400">✨</span> Rapport d’Analyse Stratégique & Validation Bancaire
-            </h3>
-            <span class="text-xs text-slate-400 font-mono" id="analyse-timestamp">Prêt pour audit</span>
+        <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-3">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="font-display text-sm font-bold">Proposition d'offre &amp; argumentaire de négociation</h3>
+            <button onclick="copierPitch()" id="btn-copy-pitch" class="px-3.5 py-1.5 rounded-lg border border-stone-200 dark:border-slate-700 text-xs font-semibold cursor-pointer no-print">Copier le courrier</button>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-              <strong class="text-amber-400 text-sm block flex items-center gap-1.5">
-                🏢 Stratégie d’Arbitrage Conseillée
-              </strong>
-              <p class="text-slate-300 leading-relaxed" id="strat-arbitrage">...</p>
-              <div class="pt-2 border-t border-slate-800/80 text-[11px] text-slate-400" id="strat-lots-detail">...</div>
-            </div>
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-              <strong class="text-emerald-400 text-sm block flex items-center gap-1.5">
-                📐 Explication Précise du Calcul
-              </strong>
-              <div class="text-slate-300 space-y-1.5 leading-relaxed text-[11px]" id="strat-calcul-explication">...</div>
-            </div>
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-              <strong class="text-sky-400 text-sm block flex items-center gap-1.5">
-                💬 Argumentaire de Négociation
-              </strong>
-              <p class="text-slate-300 leading-relaxed text-[11px]" id="strat-pitch">...</p>
-              <button onclick="copierPitch()" id="btn-copy-pitch" class="mt-2 w-full py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-[11px] font-semibold rounded-lg transition cursor-pointer">
-                📋 Copier le pitch de négociation
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ONGLET 4 : STRATEGIE MDB -->
-    <div id="tab-audit" class="hidden space-y-6">
-      <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4">
-        <h2 class="text-xl font-bold text-white">Les 4 Piliers Rentables du Marchand de Biens à Millau</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-300">
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-            <strong class="text-amber-400 text-sm block mb-1">1. Monopropriétés Centre Ancien (Rue Droite, Halles)</strong>
-            <p class="text-slate-400 leading-relaxed">Acheter des immeubles R+3 complets à 550 - 800 €/m² et découper en plusieurs lots (T2/T3). Aucun syndic de copro bloquant.</p>
-          </div>
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-            <strong class="text-purple-400 text-sm block mb-1">2. Passoires thermiques G et F (Loi Climat)</strong>
-            <p class="text-slate-400 leading-relaxed">Négociation agressive (-20% à -30%) en mettant en avant le devis de rénovation globale pour mise aux normes locatives.</p>
-          </div>
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-            <strong class="text-emerald-400 text-sm block mb-1">3. Découpe de parcelles & Granges (Faubourgs)</strong>
-            <p class="text-slate-400 leading-relaxed">Détachement d’un terrain constructible viabilisé pour amortir immédiatement l’acquisition, et rénovation du bâtiment restant.</p>
-          </div>
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
-            <strong class="text-sky-400 text-sm block mb-1">4. Prix de Revente Cible Millau</strong>
-            <p class="text-slate-400 leading-relaxed">À Millau, les T2 et T3 rénovés avec DPE C/D se revendent entre 1 650 € et 2 100 €/m².</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- MODAL DETAIL SCORING V3 -->
-  <div id="modal-scoring" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-    <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-2xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-      <button onclick="fermerModalScoring()" class="absolute right-4 top-4 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition cursor-pointer">✕</button>
-      <div class="flex items-center gap-2 mb-2">
-        <span id="modal-badge-qualite" class="px-2.5 py-0.5 rounded text-xs font-black border bg-emerald-500/20 text-emerald-300 border-emerald-500/40">Excellente opportunité</span>
-        <span class="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Scoring V3 Millau</span>
-      </div>
-      <h3 id="modal-titre" class="text-lg font-bold text-white mb-1">Détail du bien</h3>
-      <p id="modal-sous-titre" class="text-xs text-slate-400 mb-5">Agence • Millau</p>
-
-      <div class="space-y-3 text-xs mb-5">
-        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-          <div class="flex justify-between font-bold text-white mb-1">
-            <span class="text-emerald-400">1. Marge Potentielle Prévisionnelle (35%)</span>
-            <span id="modal-pts-marge" class="text-emerald-400">-- / 35 pts</span>
-          </div>
-          <p id="modal-desc-marge" class="text-slate-400 text-[11px] leading-relaxed">Calculé sur CA Revente - Travaux - Frais MDB.</p>
-        </div>
-        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-          <div class="flex justify-between font-bold text-white mb-1">
-            <span class="text-indigo-400">2. Découpe & Création de Valeur (25%)</span>
-            <span id="modal-pts-decoupe" class="text-indigo-400">-- / 25 pts</span>
-          </div>
-          <p id="modal-desc-decoupe" class="text-slate-400 text-[11px] leading-relaxed">Monopropriété sans syndic, plateaux ou division en plusieurs lots.</p>
-        </div>
-        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-          <div class="flex justify-between font-bold text-white mb-1">
-            <span class="text-amber-400">3. Levier de Négociation & Décote (20%)</span>
-            <span id="modal-pts-negoc" class="text-amber-400">-- / 20 pts</span>
-          </div>
-          <p id="modal-desc-negoc" class="text-slate-400 text-[11px] leading-relaxed">Passoire thermique F/G, historique de baisses de prix constatées et prix/m² bas.</p>
-        </div>
-        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-          <div class="flex justify-between font-bold text-white mb-1">
-            <span class="text-sky-400">4. Sécurité & Risque d’Exécution (20%)</span>
-            <span id="modal-pts-securite" class="text-sky-400">-- / 20 pts</span>
-          </div>
-          <p id="modal-desc-securite" class="text-slate-400 text-[11px] leading-relaxed">Ticket d’achat liquide et absence de copropriété bloquante.</p>
-        </div>
+          <pre id="strat-pitch" class="whitespace-pre-wrap font-sans text-xs text-slate-700 dark:text-slate-300 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-800 rounded-lg p-4 leading-relaxed"></pre>
+        </section>
       </div>
 
-      <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
-        <button onclick="fermerModalScoring()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl">Fermer</button>
-        <button id="modal-btn-simu" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl shadow-md">🧮 Simuler ce bien</button>
+      <!-- VUE 4 : STRATÉGIE & SECTEUR MILLAU -->
+      <div id="tab-strategie" class="hidden space-y-6">
+        <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-4">
+          <h2 class="font-display text-base font-bold">Atlas des micro-marchés de Millau (12100)</h2>
+          <div class="overflow-x-auto border border-stone-200 dark:border-slate-800 rounded-lg">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-stone-50 dark:bg-slate-950 text-slate-500 border-b border-stone-200 dark:border-slate-800">
+                <tr>
+                  <th class="py-3 px-4 font-semibold">Secteur &amp; Quartiers</th>
+                  <th class="py-3 px-3 font-semibold">Achat brut</th>
+                  <th class="py-3 px-3 font-semibold">Revente rénovée</th>
+                  <th class="py-3 px-3 font-semibold">Liquidité</th>
+                  <th class="py-3 px-4 font-semibold">Vigilance urbanisme</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-100 dark:divide-slate-800">
+                <tr><td class="py-3 px-4"><strong>Centre Ancien</strong><div class="text-slate-500">Rue Droite, Halles, Capelle, Foch</div></td><td class="py-3 px-3 font-mono">600 – 950 €/m²</td><td class="py-3 px-3 font-mono text-emerald-700 dark:text-emerald-400">1 650 – 1 950 €/m²</td><td class="py-3 px-3 font-semibold text-emerald-700 dark:text-emerald-400">Élevée</td><td class="py-3 px-4 text-slate-500">Périmètre ABF (menuiseries bois, enduits chaux)</td></tr>
+                <tr><td class="py-3 px-4"><strong>Mandarous / Jaurès</strong><div class="text-slate-500">Mandarous, Av. Jean Jaurès, Bd Bonald</div></td><td class="py-3 px-3 font-mono">850 – 1 150 €/m²</td><td class="py-3 px-3 font-mono text-emerald-700 dark:text-emerald-400">1 850 – 2 150 €/m²</td><td class="py-3 px-3 font-semibold text-emerald-700 dark:text-emerald-400">Élevée</td><td class="py-3 px-4 text-slate-500">Attention aux baux commerciaux RDC</td></tr>
+                <tr><td class="py-3 px-4"><strong>Faubourgs / Tarn</strong><div class="text-slate-500">Bords du Tarn, Cureplat, La Pouncho</div></td><td class="py-3 px-3 font-mono">750 – 1 100 €/m²</td><td class="py-3 px-3 font-mono text-emerald-700 dark:text-emerald-400">1 800 – 2 200 €/m²</td><td class="py-3 px-3 font-semibold text-emerald-700 dark:text-emerald-400">Élevée</td><td class="py-3 px-4 text-slate-500">Vérifier PPRI Tarn sur parcelles basses</td></tr>
+                <tr><td class="py-3 px-4"><strong>Gare / Malhourtet</strong><div class="text-slate-500">Gare SNCF, Malhourtet, Beauregard</div></td><td class="py-3 px-3 font-mono">650 – 950 €/m²</td><td class="py-3 px-3 font-mono text-emerald-700 dark:text-emerald-400">1 600 – 1 850 €/m²</td><td class="py-3 px-3 font-semibold text-amber-700 dark:text-amber-400">Moyenne</td><td class="py-3 px-4 text-slate-500">Changement de destination PLU zone U</td></tr>
+                <tr><td class="py-3 px-4"><strong>Périphérie Millau</strong><div class="text-slate-500">Hauteurs, Massebiau, sorties ville</div></td><td class="py-3 px-3 font-mono">800 – 1 150 €/m²</td><td class="py-3 px-3 font-mono text-emerald-700 dark:text-emerald-400">1 750 – 2 100 €/m²</td><td class="py-3 px-3 font-semibold text-slate-500">Sélective</td><td class="py-3 px-4 text-slate-500">Assainissement et accès voirie</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+          <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-3">
+            <h3 class="font-display text-sm font-bold">Les 4 piliers d'exécution Marchand de Biens</h3>
+            <div class="divide-y divide-stone-100 dark:divide-slate-800">
+              <div class="py-2.5"><strong>01. Monopropriétés Centre Ancien</strong><p class="text-slate-500 mt-0.5">Achat R+2/R+3 entre 600 et 850 €/m², découpe en T2/T3 sans syndic initial bloquant.</p></div>
+              <div class="py-2.5"><strong>02. Passoires thermiques F &amp; G</strong><p class="text-slate-500 mt-0.5">Décote -15% à -25% appuyée par l'audit énergétique, sortie DPE C par ITI + PAC.</p></div>
+              <div class="py-2.5"><strong>03. Détachement parcellaire &amp; granges</strong><p class="text-slate-500 mt-0.5">Division d'un lot bâti ou terrain constructible pour solder rapidement le portage.</p></div>
+              <div class="py-2.5"><strong>04. Liquidité cible 85 k€ – 145 k€</strong><p class="text-slate-500 mt-0.5">Revente optimale entre 1 750 et 2 100 €/m² sur Millau pour primo-accédants et locatif.</p></div>
+            </div>
+          </section>
+          <section class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 space-y-3">
+            <h3 class="font-display text-sm font-bold">Grille de visite terrain (12100)</h3>
+            <div class="divide-y divide-stone-100 dark:divide-slate-800">
+              <div class="py-2.5"><strong>Colonnes Enedis &amp; Eau</strong><p class="text-slate-500 mt-0.5">Faisabilité colonne montante en façade ou cage d'escalier et compteurs individuels.</p></div>
+              <div class="py-2.5"><strong>Périmètre ABF</strong><p class="text-slate-500 mt-0.5">Menuiseries bois peintes obligatoires en secteur sauvegardé (Rue Droite / Capelle).</p></div>
+              <div class="py-2.5"><strong>Structure planchers &amp; toiture</strong><p class="text-slate-500 mt-0.5">Sonder solives autour des pièces humides, état zinguerie et couverture.</p></div>
+              <div class="py-2.5"><strong>Zonage PPRI Tarn</strong><p class="text-slate-500 mt-0.5">Contrôle inondation sur Cureplat / Bords du Tarn avant aménagement RDC.</p></div>
+            </div>
+          </section>
+        </div>
       </div>
+    </main>
+  </div>
+</div>
+
+<!-- MODAL SCORING V3 -->
+<div id="modal-scoring" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+  <div class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl max-w-xl w-full p-6 shadow-xl relative">
+    <button onclick="fermerModalScoring()" class="absolute right-4 top-4 text-slate-400 hover:text-slate-900 dark:hover:text-white cursor-pointer">✕</button>
+    <div id="modal-qualite" class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 mb-1"></div>
+    <h3 id="modal-titre" class="font-display text-lg font-bold"></h3>
+    <p id="modal-sous-titre" class="text-xs text-slate-500 mb-4"></p>
+    <div id="modal-piliers" class="divide-y divide-stone-200 dark:divide-slate-800 border-y border-stone-200 dark:border-slate-800 text-xs"></div>
+    <div class="mt-4 flex justify-end gap-2">
+      <button onclick="fermerModalScoring()" class="px-3.5 py-2 rounded-lg border border-stone-200 dark:border-slate-700 text-xs font-semibold cursor-pointer">Fermer</button>
+      <button id="modal-btn-simu" class="px-3.5 py-2 rounded-lg bg-slate-900 dark:bg-amber-500 text-white dark:text-slate-950 text-xs font-semibold cursor-pointer">Simuler</button>
     </div>
   </div>
+</div>
 
-  <script>
-    const DATA = __DATA__;
-    let currentLots = [
-      { id: '1', nom: 'Lot 1 : Local RDC / Garage', surface: 45, travaux: 18000, revente: 42000 },
-      { id: '2', nom: 'Lot 2 : T2 1er étage rénové', surface: 60, travaux: 45000, revente: 105000 },
-      { id: '3', nom: 'Lot 3 : T3 2ème étage rénové', surface: 65, travaux: 48000, revente: 118000 }
+<script>
+const DATA = __DATA__;
+const STATUT_KEY = 'millau_mdb_statuts_v1';
+const THEME_KEY = 'millau_mdb_theme_v1';
+let statuts = {};
+try { statuts = JSON.parse(localStorage.getItem(STATUT_KEY) || '{}'); } catch (e) {}
+let viewMode = 'grid';
+let currentAuditDeal = DATA[0] || null;
+let auditPostes = [];
+let selectedStratId = 'cle_en_main';
+let currentLots = [
+  { id: '1', nom: 'Lot 1 : RDC / Garage', surface: 45, travaux: 18000, revente: 58000 },
+  { id: '2', nom: 'Lot 2 : T2 1er étage', surface: 58, travaux: 42000, revente: 112000 },
+  { id: '3', nom: 'Lot 3 : T3 2e étage', surface: 65, travaux: 46000, revente: 126000 }
+];
+let simuContext = { titre: 'Ensemble immobilier Millau', dpe: 'F', agence: 'Millau' };
+
+function fmt(n) { return Math.round(Number(n) || 0).toLocaleString('fr-FR'); }
+function sfmt(n) { const r = Math.round(Number(n) || 0); return (r > 0 ? '+' : '') + r.toLocaleString('fr-FR') + ' €'; }
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function safeUrl(u) { const s = String(u || '').trim(); return /^https?:\/\//i.test(s) ? esc(s) : '#'; }
+
+function applyTheme(t) {
+  document.documentElement.classList.toggle('dark', t === 'dark');
+  const btn = document.getElementById('btn-theme');
+  if (btn) btn.textContent = t === 'dark' ? 'Thème clair' : 'Thème sombre';
+  try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+}
+function toggleTheme() { applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark'); }
+applyTheme(localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light');
+
+function setTab(name) {
+  const titles = { deals: 'Marché & Opportunités', audit: 'Audit Technique & Travaux', simu: 'Simulateur & Découpe MDB', strategie: 'Stratégie & Secteur Millau' };
+  document.getElementById('top-title').textContent = titles[name] || '';
+  ['deals', 'audit', 'simu', 'strategie'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('hidden', t !== name);
+    const nav = document.getElementById('nav-' + t);
+    const mnav = document.getElementById('mnav-' + t);
+    if (nav) nav.className = 'w-full text-left px-3.5 py-2.5 rounded-lg cursor-pointer ' + (t === name ? 'bg-slate-900 text-white dark:bg-amber-500 dark:text-slate-950' : 'text-slate-700 hover:bg-stone-100 dark:text-slate-300 dark:hover:bg-slate-800/70');
+    if (mnav) mnav.className = 'px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap cursor-pointer ' + (t === name ? 'bg-slate-900 text-white dark:bg-amber-500 dark:text-slate-950' : 'text-slate-600 dark:text-slate-300');
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setViewMode(m) {
+  viewMode = m;
+  document.getElementById('btn-view-grid').className = 'px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer ' + (m === 'grid' ? 'bg-white dark:bg-slate-900 shadow-xs' : 'text-slate-500');
+  document.getElementById('btn-view-table').className = 'px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer ' + (m === 'table' ? 'bg-white dark:bg-slate-900 shadow-xs' : 'text-slate-500');
+  renderDeals();
+}
+
+function getSecteur(a) {
+  if (a.secteur) return a.secteur;
+  const t = ((a.titre || '') + ' ' + (a.mots_detectes || '')).toLowerCase();
+  if (/droite|halles|capelle|foch/.test(t)) return 'Centre Ancien';
+  if (/mandarous|jaur[èe]s|bonald/.test(t)) return 'Mandarous / Jaurès';
+  if (/tarn|faubourg|viaduc|cureplat|pouncho/.test(t)) return 'Faubourgs / Tarn';
+  if (/gare|malhourtet|beauregard/.test(t)) return 'Gare / Malhourtet';
+  return 'Périphérie Millau';
+}
+
+function getType(a) {
+  if (a.type_bien) return a.type_bien;
+  const t = ((a.titre || '') + ' ' + (a.mots_detectes || '')).toLowerCase();
+  if (/immeuble|monopropri|bâtisse/.test(t)) return 'immeuble';
+  if (/grange|plateau|remise|atelier/.test(t)) return 'grange';
+  if (/appartement|t2|t3|t4|studio/.test(t)) return 'appartement';
+  return 'maison';
+}
+
+function updatePipelineCounts() {
+  const c = { etude: 0, visite: 0, offre: 0 };
+  DATA.forEach(a => {
+    const st = statuts[a.url] || (a.nouvelle ? 'nouveau' : 'a_etudier');
+    if (st === 'visite') c.visite++;
+    else if (st === 'offre') c.offre++;
+    else if (st !== 'ecarte') c.etude++;
+  });
+  document.getElementById('pipe-total').textContent = DATA.length;
+  document.getElementById('pipe-etude').textContent = c.etude;
+  document.getElementById('pipe-visite').textContent = c.visite;
+  document.getElementById('pipe-offre').textContent = c.offre;
+}
+
+function changeStatutByIdx(idx, val) {
+  const a = DATA[idx];
+  if (!a || !a.url) return;
+  statuts[a.url] = val;
+  try { localStorage.setItem(STATUT_KEY, JSON.stringify(statuts)); } catch (e) {}
+  updatePipelineCounts();
+}
+
+function getFiltered() {
+  const q = (document.getElementById('q').value || '').toLowerCase();
+  const ft = document.getElementById('f-type').value;
+  const fs = document.getElementById('f-secteur').value;
+  const fd = document.getElementById('f-dpe').value;
+  const fsort = document.getElementById('f-sort').value;
+  const fdrops = document.getElementById('f-drops').checked;
+  const fst = document.getElementById('f-statut').value;
+
+  const list = DATA.filter(a => {
+    const sec = getSecteur(a), typ = getType(a);
+    const txt = ((a.titre || '') + ' ' + (a.mots_detectes || '') + ' ' + (a.agence || '') + ' ' + sec).toLowerCase();
+    if (q && !txt.includes(q)) return false;
+    if (ft !== 'all' && typ !== ft) return false;
+    if (fs !== 'all' && sec !== fs) return false;
+    if (fd === 'passoires' && a.dpe !== 'F' && a.dpe !== 'G') return false;
+    if ((fd === 'F' || fd === 'G') && a.dpe !== fd) return false;
+    if (fdrops && !(a.baisse_prix_pct > 0 || a.a_baisse)) return false;
+    const cur = statuts[a.url] || (a.nouvelle ? 'nouveau' : 'a_etudier');
+    if (fst !== 'all' && cur !== fst) return false;
+    return true;
+  });
+
+  list.sort((a, b) => {
+    if (fsort === 'score_desc') return (b.score_v3 || b.score || 0) - (a.score_v3 || a.score || 0);
+    if (fsort === 'marge_desc') return (b.marge_estimee_montant || 0) - (a.marge_estimee_montant || 0);
+    if (fsort === 'prix_asc') return (a.prix || 9e9) - (b.prix || 9e9);
+    if (fsort === 'prix_desc') return (b.prix || 0) - (a.prix || 0);
+    if (fsort === 'm2_asc') return (a.prix_m2 || 9e9) - (b.prix_m2 || 9e9);
+    if (fsort === 'surface_desc') return (b.surface || 0) - (a.surface || 0);
+    return 0;
+  });
+  return list;
+}
+
+function renderScatter(list) {
+  const valid = list.filter(a => a.surface > 0 && a.prix_m2 > 0);
+  const wrap = document.getElementById('scatter-wrap');
+  if (!valid.length) { wrap.innerHTML = '<div class="py-10 text-center text-xs text-slate-500">Aucun point exploitable.</div>'; return; }
+  const W = 760, H = 220, pL = 52, pR = 20, pT = 20, pB = 30;
+  const maxS = Math.max(260, ...valid.map(a => a.surface + 20));
+  const maxM = Math.max(2100, ...valid.map(a => a.prix_m2 + 150));
+  const xp = s => pL + ((s - 40) / Math.max(100, maxS - 40)) * (W - pL - pR);
+  const yp = m => H - pB - ((m - 400) / Math.max(800, maxM - 400)) * (H - pT - pB);
+
+  let lines = [600, 1100, 1500, 1900].map(v => {
+    const y = yp(v);
+    const col = v === 1900 ? '#059669' : (v === 1100 ? '#D97706' : 'currentColor');
+    const dash = (v === 1900 || v === 1100) ? 'stroke-dasharray="5 4"' : '';
+    const op = (v === 1900 || v === 1100) ? '0.6' : '0.12';
+    return `<line x1="${pL}" x2="${W-pR}" y1="${y}" y2="${y}" stroke="${col}" stroke-opacity="${op}" ${dash} /><text x="${pL-6}" y="${y+3}" text-anchor="end" class="fill-slate-400 text-[10px] font-mono">${v}€</text>`;
+  }).join('');
+
+  const pts = valid.map(a => {
+    const cx = Math.max(pL+6, Math.min(W-pR-6, xp(a.surface)));
+    const cy = Math.max(pT+6, Math.min(H-pB-6, yp(a.prix_m2)));
+    const fill = a.score_v3 >= 7.5 ? '#059669' : (a.score_v3 >= 5.5 ? '#D97706' : '#94A3B8');
+    const idx = DATA.indexOf(a);
+    return `<circle cx="${cx}" cy="${cy}" r="6" fill="${fill}" stroke="#fff" stroke-width="1.5" class="cursor-pointer" onmouseover="hoverScatter(${idx})" onclick="lancerAudit(${idx})" />`;
+  }).join('');
+
+  wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="w-full h-auto max-h-56 select-none">${lines}<text x="${W-pR}" y="${yp(1900)-5}" text-anchor="end" class="fill-emerald-600 text-[10px]">Revente cible 1 900 €/m²</text><text x="${W-pR}" y="${yp(1100)-5}" text-anchor="end" class="fill-amber-600 text-[10px]">Seuil achat 1 100 €/m²</text>${pts}</svg>`;
+}
+
+function hoverScatter(idx) {
+  const a = DATA[idx];
+  if (a) document.getElementById('scatter-hover').innerHTML = `<strong>${esc(a.titre)}</strong> — <span class="font-mono">${esc(a.agence)} · ${fmt(a.prix)} € · ${a.surface} m² · ${a.prix_m2} €/m² · Score ${Number(a.score_v3).toFixed(1)}/10</span>`;
+}
+
+function renderDeals() {
+  const list = getFiltered();
+  updatePipelineCounts();
+  renderScatter(list);
+
+  const validM2 = DATA.map(a => a.prix_m2).filter(Boolean).sort((a, b) => a - b);
+  const med = validM2.length ? validM2[Math.floor(validM2.length / 2)] : null;
+  const drops = DATA.filter(a => a.baisse_prix_pct > 0 || a.a_baisse).length;
+  const pass = DATA.filter(a => a.dpe === 'F' || a.dpe === 'G').length;
+  const top = list.filter(a => a.marge_estimee_montant >= 35000).length;
+
+  document.getElementById('kpi-cards').innerHTML =
+    `<div class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-4"><div class="text-xs text-slate-500">Biens suivis</div><div class="mt-1 font-mono text-2xl font-bold">${DATA.length}</div><div class="mt-0.5 text-xs font-mono text-emerald-700 dark:text-emerald-400">${top} à marge ≥ 35 k€</div></div>` +
+    `<div class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-4"><div class="text-xs text-slate-500">Prix médian affiché</div><div class="mt-1 font-mono text-2xl font-bold whitespace-nowrap">${med ? med + ' €/m²' : '–'}</div><div class="mt-0.5 text-xs font-mono text-slate-500">Cible 1 900 €/m²</div></div>` +
+    `<div class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-4"><div class="text-xs text-slate-500">Baisses détectées</div><div class="mt-1 font-mono text-2xl font-bold text-amber-700 dark:text-amber-400">${drops}</div><div class="mt-0.5 text-xs text-slate-500">Levier négociation</div></div>` +
+    `<div class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-4"><div class="text-xs text-slate-500">Passoires F &amp; G</div><div class="mt-1 font-mono text-2xl font-bold text-rose-700 dark:text-rose-400">${pass}</div><div class="mt-0.5 text-xs text-slate-500">Décote travaux</div></div>`;
+
+  document.getElementById('deals-count').textContent = list.length + ' résultat(s)';
+  const box = document.getElementById('deals-container');
+  if (!list.length) { box.innerHTML = '<div class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-10 text-center text-xs text-slate-500">Aucun bien ne correspond aux critères.</div>'; return; }
+
+  if (viewMode === 'table') {
+    box.innerHTML = `<div class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl overflow-x-auto"><table class="w-full text-xs text-left"><thead class="bg-stone-50 dark:bg-slate-950 text-slate-500 border-b border-stone-200 dark:border-slate-800"><tr><th class="py-3 px-4">Bien &amp; Secteur</th><th class="py-3 px-3">Agence</th><th class="py-3 px-3 text-right">Prix FAI</th><th class="py-3 px-3 text-right">Surf.</th><th class="py-3 px-3 text-right">€/m²</th><th class="py-3 px-3 text-center">DPE</th><th class="py-3 px-3 text-right">Marge est.</th><th class="py-3 px-3 text-right">Score</th><th class="py-3 px-4 text-right">Actions</th></tr></thead><tbody class="divide-y divide-stone-100 dark:divide-slate-800">${list.map(a => {
+      const idx = DATA.indexOf(a);
+      return `<tr class="hover:bg-stone-50 dark:hover:bg-slate-800/40"><td class="py-3 px-4 max-w-xs"><div class="font-semibold truncate">${esc(a.titre)}</div><div class="text-slate-500">${esc(getSecteur(a))}${a.baisse_prix_pct>0?' · -'+a.baisse_prix_pct+'%':''}</div></td><td class="py-3 px-3">${esc(a.agence)}</td><td class="py-3 px-3 text-right font-mono font-semibold">${a.prix?fmt(a.prix)+' €':'–'}</td><td class="py-3 px-3 text-right font-mono">${a.surface?a.surface+' m²':'–'}</td><td class="py-3 px-3 text-right font-mono">${a.prix_m2?a.prix_m2+' €':'–'}</td><td class="py-3 px-3 text-center font-mono font-bold">${esc(a.dpe)}</td><td class="py-3 px-3 text-right font-mono font-semibold ${a.marge_estimee_montant>=0?'text-emerald-700 dark:text-emerald-400':'text-rose-700'}">${sfmt(a.marge_estimee_montant)}</td><td class="py-3 px-3 text-right font-mono font-bold"><button onclick="afficherModalScoring(${idx})" class="hover:underline cursor-pointer">${Number(a.score_v3||0).toFixed(1)}/10</button></td><td class="py-3 px-4 text-right whitespace-nowrap space-x-2"><button onclick="lancerAudit(${idx})" class="hover:underline cursor-pointer">Audit</button><button onclick="simulerDeal(${idx})" class="font-semibold text-amber-700 dark:text-amber-400 hover:underline cursor-pointer">Simuler</button></td></tr>`;
+    }).join('')}</tbody></table></div>`;
+    return;
+  }
+
+  box.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${list.map(a => {
+    const idx = DATA.indexOf(a);
+    const cur = statuts[a.url] || (a.nouvelle ? 'nouveau' : 'a_etudier');
+    const thumb = (a.photos && a.photos[0]) ? `<img src="${safeUrl(a.photos[0])}" referrerpolicy="no-referrer" class="w-20 h-16 rounded-lg object-cover shrink-0 border border-stone-200 dark:border-slate-800" onerror="this.style.display='none'" />` : '';
+    const href = safeUrl(a.url);
+    return `<article class="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 rounded-xl p-5 flex flex-col justify-between gap-4">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between gap-2 text-xs">
+          <div class="text-slate-500 dark:text-slate-400 truncate"><strong class="text-slate-800 dark:text-slate-200">${esc(a.agence)}</strong> · ${esc(getSecteur(a))} · DPE ${esc(a.dpe)}${a.baisse_prix_pct>0?' · <span class="font-mono font-semibold text-rose-700 dark:text-rose-400">-'+a.baisse_prix_pct+'%</span>':''}</div>
+          <button onclick="afficherModalScoring(${idx})" class="font-mono font-bold hover:underline shrink-0 cursor-pointer">Score ${Number(a.score_v3||0).toFixed(1)}/10</button>
+        </div>
+        <div class="flex items-start gap-3">${thumb}<div class="min-w-0 flex-1"><h3 class="font-display text-base font-bold leading-snug line-clamp-2"><a href="${href}" target="_blank" rel="noopener noreferrer" class="hover:underline">${esc(a.titre || a.url)}</a></h3><p class="text-xs text-slate-500 mt-1 line-clamp-1">${esc(a.mots_detectes || '')}</p></div></div>
+        <div class="grid grid-cols-4 gap-2 pt-3 border-t border-stone-100 dark:border-slate-800 text-xs">
+          <div><span class="text-slate-500 block">Prix FAI</span><span class="font-mono font-bold">${a.prix?fmt(a.prix)+' €':'–'}</span></div>
+          <div><span class="text-slate-500 block">Surface</span><span class="font-mono font-semibold">${a.surface?a.surface+' m²':'–'}</span></div>
+          <div><span class="text-slate-500 block">Prix / m²</span><span class="font-mono font-semibold">${a.prix_m2?a.prix_m2+' €':'–'}</span></div>
+          <div><span class="text-slate-500 block">Marge est.</span><span class="font-mono font-bold ${a.marge_estimee_montant>=0?'text-emerald-700 dark:text-emerald-400':'text-rose-700'}">${sfmt(a.marge_estimee_montant)}</span></div>
+        </div>
+      </div>
+      <div class="pt-3 border-t border-stone-100 dark:border-slate-800 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <select onchange="changeStatutByIdx(${idx}, this.value)" class="text-xs bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded-md px-2 py-1">
+            <option value="nouveau" ${cur==='nouveau'?'selected':''}>Nouveau</option>
+            <option value="a_etudier" ${cur==='a_etudier'?'selected':''}>À étudier</option>
+            <option value="visite" ${cur==='visite'?'selected':''}>Visite planifiée</option>
+            <option value="offre" ${cur==='offre'?'selected':''}>Offre envoyée</option>
+            <option value="ecarte" ${cur==='ecarte'?'selected':''}>Écarté</option>
+          </select>
+          <a href="${href}" target="_blank" rel="noopener noreferrer" class="text-xs text-slate-500 hover:underline">Annonce ↗</a>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="lancerAudit(${idx})" class="px-3 py-1.5 rounded-lg border border-stone-300 dark:border-slate-700 text-xs font-semibold cursor-pointer">Audit</button>
+          <button onclick="simulerDeal(${idx})" class="px-3 py-1.5 rounded-lg bg-slate-900 dark:bg-amber-500 text-white dark:text-slate-950 text-xs font-semibold cursor-pointer">Simuler</button>
+        </div>
+      </div>
+    </article>`;
+  }).join('')}</div>`;
+}
+
+function initAuditSelector() {
+  const sel = document.getElementById('ap-select-deal');
+  sel.innerHTML = DATA.map((d, i) => `<option value="${i}">${esc((d.titre||'Bien').slice(0,52))} — ${d.prix?fmt(d.prix)+' €':''}</option>`).join('');
+  if (DATA.length) chargerAudit(0, false);
+}
+
+function changerDealAudit(val) { if (val !== '') chargerAudit(parseInt(val, 10), false); }
+function lancerAudit(idx) { chargerAudit(idx, true); }
+
+function chargerAudit(idx, switchTab) {
+  const deal = DATA[idx];
+  if (!deal) return;
+  currentAuditDeal = deal;
+  document.getElementById('ap-select-deal').value = idx;
+  const sec = getSecteur(deal);
+  document.getElementById('ap-meta').textContent = `Audit Technique · ${sec} · ${deal.agence}`;
+  document.getElementById('ap-titre').textContent = deal.titre || deal.url;
+  document.getElementById('ap-metrics').textContent = `Prix FAI : ${deal.prix?fmt(deal.prix)+' €':'–'} · Surface : ${deal.surface?deal.surface+' m²':'N/C'} · DPE ${deal.dpe}`;
+
+  const pg = document.getElementById('ap-photos-grid');
+  pg.innerHTML = (deal.photos && deal.photos.length) ? deal.photos.map(s => `<img src="${safeUrl(s)}" referrerpolicy="no-referrer" class="aspect-[4/3] w-full rounded-lg object-cover border border-stone-200 dark:border-slate-800" onerror="this.style.display='none'" />`).join('') : '<div class="col-span-2 py-8 text-center text-xs text-slate-500 border border-dashed border-stone-300 dark:border-slate-700 rounded-lg">Aucune photo extraite</div>';
+  document.getElementById('ap-photos-constat').innerHTML = `Annonce source : <a href="${safeUrl(deal.url)}" target="_blank" rel="noopener noreferrer" class="font-semibold underline">${esc(deal.agence)} ↗</a>`;
+
+  document.getElementById('ap-diagnostics-list').innerHTML =
+    `<div class="py-2.5"><strong>Électricité &amp; division Enedis</strong><p class="text-slate-500 mt-0.5">Colonne montante et compteurs Linky individuels à prévoir par lot.</p></div>` +
+    `<div class="py-2.5"><strong>Performance énergétique (DPE ${esc(deal.dpe)})</strong><p class="text-slate-500 mt-0.5">Sortie DPE C par ITI + PAC air/air + VMC hygroréglable.</p></div>` +
+    `<div class="py-2.5"><strong>Urbanisme (${esc(sec)})</strong><p class="text-slate-500 mt-0.5">${sec==='Centre Ancien'?'Périmètre ABF : menuiseries bois et enduit chaux.':'Contrôler PLU / PPRI avant division RDC.'}</p></div>`;
+
+  const surf = deal.surface && deal.surface > 20 ? deal.surface : 140;
+  const coeff = deal.dpe === 'G' ? 1.15 : (deal.dpe === 'F' ? 1.0 : 0.85);
+  auditPostes = [
+    { poste: 'Colonnes électriques & Enedis', diag: 'Compteur unique', preco: 'Colonne montante & Linky individuels', budget: surf > 130 ? 9500 : 5800, actif: true },
+    { poste: 'Menuiseries & Isolation (ITI)', diag: 'DPE ' + deal.dpe, preco: sec === 'Centre Ancien' ? 'Bois double vitrage ABF + ITI' : 'Double vitrage + ITI 140 mm', budget: Math.round(surf * 185 * coeff), actif: true },
+    { poste: 'Chauffage, ECS & VMC', diag: 'Équipement vétuste', preco: 'Ballon thermo + PAC air/air + VMC', budget: Math.round(surf * 135 * coeff), actif: true },
+    { poste: 'Second-œuvre & finitions', diag: 'Distribution datée', preco: 'Cuisines, douches, sols, peintures', budget: Math.round(surf * 230), actif: true },
+    { poste: 'Parties communes & toiture', diag: 'Couverture / cage', preco: 'Révision toiture & façade', budget: surf > 150 ? 11500 : 6500, actif: true }
+  ];
+  selectedStratId = 'cle_en_main';
+  renderAuditTravaux();
+  if (switchTab) setTab('audit');
+}
+
+function renderAuditTravaux() {
+  const tbody = document.getElementById('ap-travaux-tbody');
+  tbody.innerHTML = auditPostes.map((p, i) => `<tr class="${p.actif?'':'opacity-50'}"><td class="py-2 px-3 text-center"><input type="checkbox" ${p.actif?'checked':''} onchange="auditPostes[${i}].actif=this.checked;renderAuditTravaux()" /></td><td class="py-2 px-3 font-semibold">${p.poste}</td><td class="py-2 px-3 text-slate-500">${p.diag}</td><td class="py-2 px-3">${p.preco}</td><td class="py-2 px-3 text-right"><input type="number" step="500" value="${p.budget}" oninput="auditPostes[${i}].budget=Math.max(0,parseFloat(this.value)||0);renderAuditStrategies()" class="w-28 px-2 py-1 text-right font-mono bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded" /></td></tr>`).join('');
+  renderAuditStrategies();
+}
+
+function renderAuditStrategies() {
+  if (!currentAuditDeal) return;
+  const totalTrav = auditPostes.reduce((s, p) => s + (p.actif ? p.budget : 0), 0);
+  document.getElementById('ap-total-travaux-badge').textContent = 'Enveloppe active : ' + fmt(totalTrav) + ' €';
+  const prix = currentAuditDeal.prix || 140000;
+  const surf = currentAuditDeal.surface && currentAuditDeal.surface > 20 ? currentAuditDeal.surface : 140;
+  const notaire = Math.round(prix * 0.00715), geom = surf > 120 ? 3200 : 1800;
+
+  const strats = [
+    { id: 'plateaux', titre: 'Vente Plateaux Bruts', delai: '4-5 mois', mois: 5, trav: Math.round(Math.min(34000, totalTrav * 0.28)), rev: Math.round(surf * 1260), desc: 'Division, parties communes et réseaux Enedis uniquement.' },
+    { id: 'cle_en_main', titre: 'Rénovation Clé en main', delai: '10-12 mois', mois: 11, trav: totalTrav, rev: Math.round(surf * 1950), desc: 'Réhabilitation DPE C prête à habiter (CA maximal).' },
+    { id: 'hybride', titre: 'Formule Hybride', delai: '7-8 mois', mois: 7, trav: Math.round(totalTrav * 0.65), rev: Math.round(surf * 1680), desc: 'Rénovation des lots principaux + plateau brut.' }
+  ].map(s => {
+    const port = Math.round((prix + s.trav) * (s.id === 'cle_en_main' ? 0.05 : s.id === 'hybride' ? 0.035 : 0.025));
+    s.marge = s.rev - (prix + notaire + s.trav + geom + port);
+    s.pct = s.rev ? ((s.marge / s.rev) * 100).toFixed(1) : '0';
+    return s;
+  });
+  window.__auditStrats = strats;
+
+  document.getElementById('ap-scenarios-cards').innerHTML = strats.map(s => {
+    const sel = s.id === selectedStratId;
+    return `<button onclick="selectedStratId='${s.id}';renderAuditStrategies()" class="text-left p-4 rounded-xl border cursor-pointer ${sel?'border-slate-900 bg-stone-50 dark:border-amber-500 dark:bg-amber-500/10':'border-stone-200 dark:border-slate-800'}"><div class="flex justify-between text-xs text-slate-500 mb-1"><span>Délai : ${s.delai}</span></div><div class="font-display text-sm font-bold mb-1">${s.titre}</div><p class="text-xs text-slate-500 mb-3">${s.desc}</p><div class="pt-2 border-t border-stone-200 dark:border-slate-800 text-xs space-y-1"><div class="flex justify-between"><span>Travaux</span><strong class="font-mono">${fmt(s.trav)} €</strong></div><div class="flex justify-between"><span>Revente</span><strong class="font-mono">${fmt(s.rev)} €</strong></div><div class="flex justify-between"><span>Marge brute</span><strong class="font-mono ${s.marge>=0?'text-emerald-700 dark:text-emerald-400':'text-rose-700'}">${sfmt(s.marge)} (${s.pct}%)</strong></div></div></button>`;
+  }).join('');
+
+  const cur = strats.find(s => s.id === selectedStratId) || strats[1];
+  document.getElementById('ap-verdict-texte').innerHTML = `Scénario retenu : <strong>${cur.titre}</strong> · Travaux <strong class="font-mono">${fmt(cur.trav)} €</strong> pour revente <strong class="font-mono">${fmt(cur.rev)} €</strong>.`;
+}
+
+function injecterScenarioDansSimulateur() {
+  if (!currentAuditDeal || !window.__auditStrats) return;
+  const sc = window.__auditStrats.find(s => s.id === selectedStratId) || window.__auditStrats[1];
+  const idx = DATA.indexOf(currentAuditDeal);
+  simulerDeal(idx, sc.trav, sc.mois, sc.rev);
+}
+
+function simulerDeal(idx, customTrav, customMois, customRev) {
+  const a = DATA[idx];
+  if (!a) return;
+  const prix = a.prix || 140000;
+  const surf = a.surface && a.surface > 20 ? a.surface : 140;
+  const trav = customTrav || Math.round(surf * (a.dpe === 'G' ? 780 : a.dpe === 'F' ? 680 : 550));
+  const rev = customRev || Math.round(surf * 1900);
+  document.getElementById('sim-prix').value = prix;
+  document.getElementById('sim-nego').value = Math.round(prix * 0.08);
+  document.getElementById('sim-mois').value = customMois || 9;
+  simuContext = { titre: a.titre || 'Bien Millau', dpe: a.dpe || '?', agence: a.agence || 'Agence' };
+  document.getElementById('simu-context-titre').textContent = simuContext.titre;
+  document.getElementById('simu-context-meta').textContent = `Simulation financière MDB · ${simuContext.agence} · DPE ${simuContext.dpe}`;
+
+  if (surf > 150) {
+    currentLots = [
+      { id: '1', nom: 'Lot 1 : RDC / Local', surface: Math.round(surf*0.3), travaux: Math.round(trav*0.22), revente: Math.round(rev*0.24) },
+      { id: '2', nom: 'Lot 2 : 1er étage T2', surface: Math.round(surf*0.35), travaux: Math.round(trav*0.39), revente: Math.round(rev*0.38) },
+      { id: '3', nom: 'Lot 3 : 2e étage T2/T3', surface: Math.round(surf*0.35), travaux: Math.round(trav*0.39), revente: Math.round(rev*0.38) }
     ];
-    let selectedDealContext = null;
-    let currentAuditDeal = null;
-    let currentAuditScenario = null;
-    let selectedScenarioKey = 'strat2';
-
-    function fmt(n) {
-      return (Number(n) || 0).toLocaleString('fr-FR');
-    }
-
-    function setTab(name) {
-      ['deals', 'audit_profond', 'simu', 'audit'].forEach(t => {
-        const el = document.getElementById('tab-' + t);
-        if (el) el.classList.toggle('hidden', t !== name);
-        const btn = document.getElementById('btn-tab-' + t);
-        if (btn) {
-          if (t === name) {
-            btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-amber-500 text-slate-950 cursor-pointer';
-          } else {
-            btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-300 hover:bg-slate-800 cursor-pointer';
-          }
-        }
-      });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function initAuditDealSelector() {
-      const sel = document.getElementById('ap-select-deal');
-      if (!sel) return;
-      sel.innerHTML = '<option value="">-- Choisir un bien dans la veille (' + DATA.length + ' dispo) --</option>';
-      DATA.forEach((d, idx) => {
-        const opt = document.createElement('option');
-        opt.value = idx;
-        opt.textContent = (d.titre || 'Bien sans titre') + ' — ' + (d.prix ? fmt(d.prix) + ' €' : '') + ' (' + (d.surface || '?') + ' m²)';
-        sel.appendChild(opt);
-      });
-    }
-
-    function changerDealAudit(val) {
-      if (val === '') return;
-      const d = DATA[parseInt(val, 10)];
-      if (d) lancerAuditApprofondi(d);
-    }
-
-    function lancerAuditApprofondi(deal) {
-      currentAuditDeal = deal;
-      const idx = DATA.indexOf(deal);
-      const sel = document.getElementById('ap-select-deal');
-      if (sel && idx >= 0) sel.value = idx;
-
-      document.getElementById('ap-titre').textContent = deal.titre || 'Bien immobilier';
-      document.getElementById('ap-soustitre').textContent = (deal.agence || 'Agence') + ' • ' + (deal.prix ? fmt(deal.prix) + ' €' : '') + ' • DPE ' + (deal.dpe || '?') + ' • ' + (deal.surface || 0) + ' m²';
-
-      // 1. Photos
-      const photosGrid = document.getElementById('ap-photos-grid');
-      if (deal.photos && deal.photos.length > 0) {
-        photosGrid.innerHTML = deal.photos.map(src => 
-          `<div class="h-32 rounded-xl overflow-hidden border border-slate-800 relative group bg-slate-900 flex items-center justify-center">
-            <img src="${src}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Photo extraite de l'annonce" onerror="this.style.display='none'">
-          </div>`
-        ).join('');
-      } else {
-        photosGrid.innerHTML = `<div class="col-span-4 text-center py-8 text-slate-500 text-xs border border-dashed border-slate-700 rounded-xl">Aucune photo HD extractible sur cette plateforme.</div>`;
-      }
-
-      document.getElementById('ap-photos-constat').innerHTML = 
-        `🔍 <strong>Source des visuels et de l'analyse :</strong> <a href="${deal.url}" target="_blank" class="text-amber-400 font-bold hover:underline">${deal.agence} ↗</a><br/>
-        <span class="text-[10px]">Images extraites automatiquement depuis l'annonce d'origine pour les besoins de l'audit interne MDB.</span>`;
-
-      // 2. Diagnostics
-      const diagList = document.getElementById('ap-diagnostics-list');
-      diagList.innerHTML = 
-        '<div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800"><b class="text-slate-200 block">⚡ Électricité & Réseaux</b><span class="text-slate-400 text-[11px]">Installation à vérifier. Nécessité de créer des colonnes individuelles Enedis pour chaque lot.</span></div>' +
-        '<div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800"><b class="text-slate-200 block">🔥 Performance Énergétique (DPE ' + (deal.dpe || '?') + ')</b><span class="text-slate-400 text-[11px]">Isolation thermique par l’intérieur (ITI) et VMC hydrob à prévoir pour optimisation.</span></div>';
-
-      // 3. Postes de travaux
-      const surf = deal.surface || 150;
-      const budgetM2 = deal.dpe === 'G' ? 750 : 600;
-      const totalTrav = Math.round(surf * budgetM2);
-      document.getElementById('ap-total-travaux-badge').textContent = 'Enveloppe globale estimée : ' + fmt(totalTrav) + ' € TTC';
-
-      const tbody = document.getElementById('ap-travaux-tbody');
-      tbody.innerHTML = 
-        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">⚡ Colonnes & Enedis</td><td class="py-2.5 px-3 text-slate-400">Compteur unique</td><td class="py-2.5 px-3 text-amber-300">Création colonnes / compteurs Linky individuels</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">9 500 €</td></tr>' +
-        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🪟 Menuiseries & Isolation</td><td class="py-2.5 px-3 text-slate-400">Vétuste</td><td class="py-2.5 px-3 text-amber-300">Double vitrage + doublage laine minérale 120mm</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + fmt(Math.round(surf * 180)) + ' €</td></tr>' +
-        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🚰 Chauffage & PAC</td><td class="py-2.5 px-3 text-slate-400">Électrique obsolète</td><td class="py-2.5 px-3 text-amber-300">Ballons thermo. + splits PAC air/air individuels</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + fmt(Math.round(surf * 140)) + ' €</td></tr>' +
-        '<tr class="hover:bg-slate-900/50"><td class="py-2.5 px-3 font-semibold text-white">🔨 Second-œuvre</td><td class="py-2.5 px-3 text-slate-400">À refaire</td><td class="py-2.5 px-3 text-amber-300">Cuisines équipées, douches, sols stratifiés, peintures</td><td class="py-2.5 px-3 text-right font-mono font-bold text-amber-400">' + fmt(Math.round(surf * 230)) + ' €</td></tr>';
-
-      // 4. Stratégies interactives
-      const prixAchat = deal.prix || 140000;
-      const notaireMdb = Math.round(prixAchat * 0.00715);
-
-      currentAuditScenario = {
-        strat1: { 
-          id: 'strat1', titre: 'Vente Plateaux Bruts', delai: '4 mois',
-          desc: 'Travaux limités aux parties communes et compteurs. Les acquéreurs font leur propre aménagement.',
-          travaux: 32000, revente: Math.round(surf * 1250) 
-        },
-        strat2: { 
-          id: 'strat2', titre: 'Rénovation Totale Clé en main', delai: '11 mois',
-          desc: 'Rénovation prête à habiter (DPE C). Maximise le chiffre d’affaires et le prix au m² sur Millau.',
-          travaux: totalTrav, revente: Math.round(surf * 1950), recommande: true
-        },
-        strat3: { 
-          id: 'strat3', titre: 'Formule Hybride', delai: '7 mois',
-          desc: 'Rénover 1 lot principal et vendre le reste en plateaux bruts. Excellent compromis risque/délai.',
-          travaux: Math.round(totalTrav * 0.65), revente: Math.round(surf * 1650) 
-        }
-      };
-
-      Object.keys(currentAuditScenario).forEach(key => {
-        let sc = currentAuditScenario[key];
-        sc.marge = sc.revente - (prixAchat + notaireMdb + sc.travaux + 6000 + (key==='strat2'?12000:0));
-      });
-
-      selectedScenarioKey = 'strat2';
-      afficherScenarios();
-      setTab('audit_profond');
-    }
-
-    function afficherScenarios() {
-      const scnCards = document.getElementById('ap-scenarios-cards');
-      const signe = n => (n >= 0 ? '+' : '') + fmt(n) + ' €';
-
-      scnCards.innerHTML = Object.values(currentAuditScenario).map(sc => {
-        const isSelected = selectedScenarioKey === sc.id;
-        const borderClass = isSelected ? 'border-amber-500 bg-amber-500/10 scale-[1.02] shadow-lg shadow-amber-500/10' : 'border-slate-800 bg-slate-950 hover:border-slate-600 opacity-80 hover:opacity-100';
-        const titleClass = isSelected ? 'text-amber-400' : 'text-white';
-        const badge = sc.recommande ? `<span class="absolute -top-2.5 right-3 bg-amber-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">⭐ RECOMMANDÉ</span>` : '';
-
-        return `
-          <div onclick="selectionnerScenario('${sc.id}')" class="p-4 rounded-xl border ${borderClass} space-y-2 relative transition-all duration-300 cursor-pointer">
-            ${badge}
-            <div class="flex justify-between items-center">
-              <span class="font-bold ${titleClass}">${sc.titre}</span>
-              <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">${sc.delai}</span>
-            </div>
-            <div class="text-slate-400 text-[11px] h-8">${sc.desc}</div>
-            <div class="pt-2 border-t ${isSelected ? 'border-amber-500/30' : 'border-slate-800'} space-y-1">
-              <div>Travaux : <b class="text-white">${fmt(sc.travaux)} €</b></div>
-              <div>Revente : <b class="text-white">${fmt(sc.revente)} €</b></div>
-              <div>Marge brute : <b class="text-emerald-400 font-bold">${signe(sc.marge)}</b></div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      const scActuel = currentAuditScenario[selectedScenarioKey];
-      document.getElementById('ap-verdict-delai').textContent = 'Horizon de débouclage : ' + scActuel.delai;
-      document.getElementById('ap-verdict-texte').innerHTML = 
-        `Vous avez sélectionné la stratégie <strong>${scActuel.titre}</strong>. Cette option nécessite une enveloppe travaux estimée à <strong>${fmt(scActuel.travaux)} €</strong> et permet de viser un Chiffre d'Affaires de revente de <strong>${fmt(scActuel.revente)} €</strong>.`;
-    }
-
-    function selectionnerScenario(key) {
-      selectedScenarioKey = key;
-      afficherScenarios();
-    }
-
-    function injecterScenarioDansSimulateur() {
-      if (!currentAuditDeal || !currentAuditScenario) return;
-      const a = currentAuditDeal;
-      const stratChoisie = currentAuditScenario[selectedScenarioKey];
-      
-      selectedDealContext = { prix: a.prix, surface: a.surface, titre: a.titre, dpe: a.dpe, agence: a.agence };
-      document.getElementById('sim-prix').value = a.prix || 140000;
-      document.getElementById('sim-nego').value = Math.round((a.prix || 140000) * 0.08);
-
-      if (selectedScenarioKey === 'strat1') {
-        currentLots = [
-          { id: '1', nom: 'Vente en Plateau Brut 1', surface: Math.round((a.surface||100)*0.5), travaux: Math.round(stratChoisie.travaux*0.5), revente: Math.round(stratChoisie.revente*0.5) },
-          { id: '2', nom: 'Vente en Plateau Brut 2', surface: Math.round((a.surface||100)*0.5), travaux: Math.round(stratChoisie.travaux*0.5), revente: Math.round(stratChoisie.revente*0.5) }
-        ];
-      } else if (selectedScenarioKey === 'strat2') {
-        currentLots = [
-          { id: '1', nom: 'Appartement Rénové Clé en main 1', surface: Math.round((a.surface||100)*0.5), travaux: Math.round(stratChoisie.travaux*0.5), revente: Math.round(stratChoisie.revente*0.5) },
-          { id: '2', nom: 'Appartement Rénové Clé en main 2', surface: Math.round((a.surface||100)*0.5), travaux: Math.round(stratChoisie.travaux*0.5), revente: Math.round(stratChoisie.revente*0.5) }
-        ];
-      } else {
-        currentLots = [
-          { id: '1', nom: 'Lot RDC Brut', surface: Math.round((a.surface||100)*0.4), travaux: Math.round(stratChoisie.travaux*0.2), revente: Math.round(stratChoisie.revente*0.35) },
-          { id: '2', nom: 'Lot Étage Rénové', surface: Math.round((a.surface||100)*0.6), travaux: Math.round(stratChoisie.travaux*0.8), revente: Math.round(stratChoisie.revente*0.65) }
-        ];
-      }
-
-      renderLotsTable();
-      genererAnalyseIA(false);
-      setTab('simu');
-    }
-
-    function majTotauxLots() {
-      let totalSurf = 0, totalTrav = 0, totalRev = 0;
-      currentLots.forEach(lot => {
-        totalSurf += lot.surface || 0;
-        totalTrav += lot.travaux || 0;
-        totalRev += lot.revente || 0;
-      });
-      document.getElementById('total-surf').textContent = totalSurf + ' m²';
-      document.getElementById('total-travaux-lots').textContent = fmt(totalTrav) + ' €';
-      document.getElementById('total-revente-lots').textContent = fmt(totalRev) + ' €';
-      calculerSimu();
-    }
-
-    function renderLotsTable() {
-      const tbody = document.getElementById('lots-table-body');
-      tbody.innerHTML = '';
-      currentLots.forEach((lot, idx) => {
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-900/60 transition';
-        tr.innerHTML =
-          '<td class="py-2 pr-2"><input type="text" class="lot-nom-input w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-slate-200 text-xs focus:border-amber-500" /></td>' +
-          '<td class="py-2 pr-2"><input type="number" class="lot-surf-input w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-white text-xs" /></td>' +
-          '<td class="py-2 pr-2"><input type="number" class="lot-trav-input w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-amber-300 text-xs" /></td>' +
-          '<td class="py-2 pr-2"><input type="number" class="lot-rev-input w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-emerald-400 font-bold text-xs" /></td>' +
-          '<td class="py-2 text-center"><button class="btn-suppr-lot text-slate-600 hover:text-rose-400 text-xs cursor-pointer">✕</button></td>';
-
-        const inpNom = tr.querySelector('.lot-nom-input');
-        inpNom.value = lot.nom || '';
-        inpNom.oninput = function() { currentLots[idx].nom = this.value; };
-
-        const inpSurf = tr.querySelector('.lot-surf-input');
-        inpSurf.value = lot.surface || 0;
-        inpSurf.oninput = function() { updateLot(idx, 'surface', parseFloat(this.value) || 0); };
-
-        const inpTrav = tr.querySelector('.lot-trav-input');
-        inpTrav.value = lot.travaux || 0;
-        inpTrav.oninput = function() { updateLot(idx, 'travaux', parseFloat(this.value) || 0); };
-
-        const inpRev = tr.querySelector('.lot-rev-input');
-        inpRev.value = lot.revente || 0;
-        inpRev.oninput = function() { updateLot(idx, 'revente', parseFloat(this.value) || 0); };
-
-        tr.querySelector('.btn-suppr-lot').onclick = function() { supprimerLot(idx); };
-        tbody.appendChild(tr);
-      });
-      majTotauxLots();
-    }
-
-    function ajouterLot() {
-      const num = currentLots.length + 1;
-      currentLots.push({
-        id: Date.now().toString(),
-        nom: 'Lot ' + num + ' : T2 rénové',
-        surface: 50, travaux: 38000, revente: 92000
-      });
-      renderLotsTable();
-    }
-
-    function supprimerLot(idx) {
-      if (currentLots.length <= 1) return;
-      currentLots.splice(idx, 1);
-      renderLotsTable();
-    }
-
-    function updateLot(idx, field, val) {
-      if (currentLots[idx]) {
-        currentLots[idx][field] = val;
-        majTotauxLots();
-      }
-    }
-
-    function simulerDeal(prix, surface, titre, dpe, agence) {
-      selectedDealContext = { prix, surface, titre, dpe, agence };
-      document.getElementById('sim-prix').value = prix || 140000;
-      document.getElementById('sim-nego').value = Math.round((prix || 140000) * 0.08);
-
-      const m2 = surface || 160;
-      if (m2 > 180) {
-        currentLots = [
-          { id: '1', nom: 'RDC', surface: Math.round(m2 * 0.22), travaux: Math.round(m2 * 0.22 * 450), revente: Math.round(m2 * 0.22 * 1100) },
-          { id: '2', nom: '1er étage', surface: Math.round(m2 * 0.26), travaux: Math.round(m2 * 0.26 * 850), revente: Math.round(m2 * 0.26 * 1900) },
-          { id: '3', nom: '2ème étage', surface: Math.round(m2 * 0.26), travaux: Math.round(m2 * 0.26 * 800), revente: Math.round(m2 * 0.26 * 1900) },
-          { id: '4', nom: '3ème étage', surface: Math.round(m2 * 0.26), travaux: Math.round(m2 * 0.26 * 850), revente: Math.round(m2 * 0.26 * 1950) }
-        ];
-      } else if (m2 > 100) {
-        currentLots = [
-          { id: '1', nom: 'Lot 1', surface: Math.round(m2 * 0.55), travaux: Math.round(m2 * 0.55 * 800), revente: Math.round(m2 * 0.55 * 1950) },
-          { id: '2', nom: 'Lot 2', surface: Math.round(m2 * 0.45), travaux: Math.round(m2 * 0.45 * 850), revente: Math.round(m2 * 0.45 * 1900) }
-        ];
-      } else {
-        currentLots = [
-          { id: '1', nom: 'Lot unique', surface: m2, travaux: Math.round(m2 * (dpe === 'G' ? 950 : 750)), revente: Math.round(m2 * 1900) }
-        ];
-      }
-
-      renderLotsTable();
-      genererAnalyseIA(false);
-      setTab('simu');
-    }
-
-    function calculerSimu() {
-      const prixAffiche = parseFloat(document.getElementById('sim-prix').value) || 0;
-      const negociation = parseFloat(document.getElementById('sim-nego').value) || 0;
-      const prixNet = Math.max(0, prixAffiche - negociation);
-      const tauxNotaire = parseFloat(document.getElementById('sim-notaire').value) || 0.00715;
-      const notaire = Math.round(prixNet * tauxNotaire);
-      const geometre = parseFloat(document.getElementById('sim-geometre').value) || 0;
-      const dureeMois = parseFloat(document.getElementById('sim-mois').value) || 8;
-      const tauxCredit = parseFloat(document.getElementById('sim-taux').value) || 3.8;
-      const apport = parseFloat(document.getElementById('sim-apport').value) || 0;
-
-      const totalTravaux = currentLots.reduce((sum, l) => sum + (l.travaux || 0), 0);
-      const reventeTotale = currentLots.reduce((sum, l) => sum + (l.revente || 0), 0);
-
-      const emprunt = Math.max(0, prixNet + notaire + totalTravaux + geometre - apport);
-      const portage = Math.round(emprunt * (tauxCredit / 100) * (dureeMois / 12) + (emprunt * 0.01));
-
-      const revient = prixNet + notaire + totalTravaux + geometre + portage;
-      const margeBrute = reventeTotale - revient;
-      const pctBrute = reventeTotale > 0 ? ((margeBrute / reventeTotale) * 100).toFixed(1) : 0;
-
-      let isEstime = 0;
-      if (margeBrute > 0) {
-        if (margeBrute <= 42500) isEstime = Math.round(margeBrute * 0.15);
-        else isEstime = Math.round((42500 * 0.15) + ((margeBrute - 42500) * 0.25));
-      }
-      const margeNette = margeBrute - isEstime;
-      const roi = apport > 0 ? Math.round((margeNette / apport) * 100) : 0;
-      const gainNotaire = Math.round(prixNet * (0.078 - 0.00715));
-
-      document.getElementById('res-achat').textContent = fmt(prixNet) + ' €';
-      document.getElementById('res-notaire').textContent = fmt(notaire) + ' €';
-      document.getElementById('res-travaux').textContent = fmt(totalTravaux) + ' €';
-      document.getElementById('res-geometre').textContent = fmt(geometre) + ' €';
-      document.getElementById('res-portage').textContent = fmt(portage) + ' €';
-      document.getElementById('res-revient').textContent = fmt(revient) + ' €';
-      document.getElementById('res-revente').textContent = fmt(reventeTotale) + ' €';
-      document.getElementById('res-is').textContent = (isEstime > 0 ? '-' : '') + fmt(isEstime) + ' €';
-      document.getElementById('res-marge-brute').textContent = (margeBrute >= 0 ? '+' : '') + fmt(margeBrute) + ' €';
-      document.getElementById('res-marge-pct').textContent = pctBrute + '% du CA de revente';
-      document.getElementById('res-marge-nette').textContent = (margeNette >= 0 ? '+' : '') + fmt(margeNette) + ' €';
-      document.getElementById('res-roi').textContent = roi + '%';
-      document.getElementById('res-gain-notaire').textContent = '+' + fmt(gainNotaire) + ' €';
-
-      window.__revientSimu = revient;
-
-      if (typeof genererAnalyseIA === 'function') {
-        genererAnalyseIA(false);
-      }
-    }
-
-    function genererAnalyseIA(userInteraction) {
-      const withScroll = userInteraction !== false; 
-
-      const prix = parseFloat(document.getElementById('sim-prix').value) || 140000;
-      const nego = parseFloat(document.getElementById('sim-nego').value) || 0;
-      const prixNet = Math.max(0, prix - nego);
-      const nbLots = currentLots.length;
-      const revente = currentLots.reduce((s, l) => s + (l.revente || 0), 0);
-      const travaux = currentLots.reduce((s, l) => s + (l.travaux || 0), 0);
-      const revient = window.__revientSimu || parseFloat(document.getElementById('res-revient').textContent.replace(/[^\d]/g, '')) || 0;
-      const marge = revente - revient;
-      const margePct = revente > 0 ? ((marge / revente) * 100).toFixed(1) : 0;
-
-      const titre = selectedDealContext ? selectedDealContext.titre : 'Ensemble immobilier Millau';
-      const dpe = selectedDealContext ? selectedDealContext.dpe : 'F';
-
-      document.getElementById('analyse-timestamp').textContent = 'Audit généré à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-
-      if (nbLots >= 3) {
-        document.getElementById('strat-arbitrage').innerHTML =
-          '<strong>Découpe cadastrale en ' + nbLots + ' lots en copropriété neuve.</strong><br/>Acheter la monopropriété en bloc (statut MDB art. 1115 CGI, notaire ~0.715%). Créer l’EDD et le règlement de copropriété avec géomètre. Rénovation par tranche : le cash flow des 2 premières ventes solde le crédit bancaire.';
-        document.getElementById('strat-lots-detail').textContent =
-          'Cible de revente Millau : T2 et T3 prêts à habiter (1 800 à 1 950 €/m²). Marché très demandeur.';
-      } else {
-        document.getElementById('strat-arbitrage').innerHTML =
-          '<strong>Réhabilitation thermique & arbitrage rapide.</strong><br/>Sortir le bien du statut de passoire (DPE ' + dpe + ') par isolation globale et PAC. Revente à la découpe ou en bloc rénové.';
-        document.getElementById('strat-lots-detail').textContent =
-          'Revente estimée à 1 850 €/m² pour des appartements DPE C.';
-      }
-
-      document.getElementById('strat-calcul-explication').innerHTML =
-        '<div>• <strong>Prix achat net négocié :</strong> ' + fmt(prixNet) + ' € (-' + fmt(nego) + ' € d’offre).</div>' +
-        '<div>• <strong>Budget travaux global :</strong> ' + fmt(travaux) + ' € (compteurs Enedis individuels, réfection totale).</div>' +
-        '<div>• <strong>Coût de revient total :</strong> ' + fmt(revient) + ' € (frais MDB + géomètre + portage inclus).</div>' +
-        '<div>• <strong>Chiffre d’Affaires :</strong> ' + fmt(revente) + ' € sur ' + nbLots + ' lots.</div>' +
-        '<div>• <strong>Marge Brute dégagée :</strong> <span class="' + (marge >= 0 ? 'text-emerald-400' : 'text-rose-400') + ' font-bold">' + (marge >= 0 ? '+' : '') + fmt(marge) + ' € (' + margePct + '%)</span>.</div>';
-
-      document.getElementById('strat-pitch').textContent =
-        '« Bonjour, suite à notre visite du bien "' + titre.substring(0, 50) + '...", nous vous transmettons notre offre ferme à ' + fmt(prixNet) + ' € net vendeur. Notre dossier est sans condition suspensive de prêt (financement pro MDB disponible). Nous prenons le bien en l’état avec l’audit énergétique et nous nous engageons sur une signature sous 30 jours. »';
-
-      if (withScroll) {
-        const bloc = document.getElementById('bloc-analyse-strategique');
-        if (bloc) {
-          bloc.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          bloc.classList.remove('border-slate-800');
-          bloc.classList.add('border-amber-500', 'bg-amber-500/10', 'transition-all', 'duration-500');
-          setTimeout(() => {
-            bloc.classList.remove('border-amber-500', 'bg-amber-500/10');
-            bloc.classList.add('border-slate-800');
-          }, 800);
-        }
-      }
-    }
-
-    function copierPitch() {
-      const text = document.getElementById('strat-pitch').textContent;
-      try { navigator.clipboard.writeText(text); } catch (e) {}
-      const btn = document.getElementById('btn-copy-pitch');
-      btn.textContent = '✅ Argumentaire copié !';
-      setTimeout(() => { btn.textContent = '📋 Copier le pitch de négociation'; }, 2000);
-    }
-
-    function afficherModalScoring(idx) {
-      const a = DATA[idx];
-      if (!a) return;
-      document.getElementById('modal-titre').textContent = a.titre || 'Bien immobilier';
-      document.getElementById('modal-sous-titre').textContent = (a.agence || '') + ' • Millau • ' + (a.prix ? fmt(a.prix) + ' €' : '') + ' (' + (a.prix_m2 || '?') + ' €/m²)';
-
-      const marge = a.marge_estimee_montant || 0;
-      const margePct = a.marge_estimee_pct || 0;
-      document.getElementById('modal-pts-marge').textContent = (margePct >= 18 ? '30' : (margePct >= 12 ? '20' : '10')) + ' / 35 pts';
-      document.getElementById('modal-desc-marge').textContent = 'Marge brute estimée : ' + (marge >= 0 ? '+' : '') + fmt(marge) + ' € (' + margePct + '% du CA). Standard MDB de sécurité financière.';
-
-      document.getElementById('modal-pts-decoupe').textContent = (a.surface > 150 ? '25' : (a.surface > 80 ? '18' : '10')) + ' / 25 pts';
-      document.getElementById('modal-desc-decoupe').textContent = 'Surface ' + (a.surface || 0) + ' m². Potentiel de division en ' + (a.surface > 150 ? '3 à 4 lots' : '2 lots') + ' indépendants.';
-
-      const ptsNegoc = (a.dpe === 'G' ? 8 : (a.dpe === 'F' ? 6 : 0)) + (a.baisse_prix_pct > 0 ? 8 : 0);
-      document.getElementById('modal-pts-negoc').textContent = ptsNegoc + ' / 20 pts';
-      document.getElementById('modal-desc-negoc').textContent = 'DPE ' + (a.dpe || '?') + ' + Baisses de prix constatées (-' + (a.baisse_prix_pct || 0) + '%). Fort pouvoir de négociation.';
-
-      document.getElementById('modal-pts-securite').textContent = '16 / 20 pts';
-      document.getElementById('modal-desc-securite').textContent = 'Marché millavois liquide sous 180 000 €. Absence de copropriété complexe bloquante.';
-
-      const btnSimu = document.getElementById('modal-btn-simu');
-      btnSimu.onclick = function() {
-        fermerModalScoring();
-        simulerDeal(a.prix, a.surface, a.titre, a.dpe, a.agence);
-      };
-
-      document.getElementById('modal-scoring').classList.remove('hidden');
-    }
-
-    function fermerModalScoring() {
-      document.getElementById('modal-scoring').classList.add('hidden');
-    }
-
-    function renderDeals() {
-      const q = (document.getElementById('q').value || '').toLowerCase();
-      const ftype = document.getElementById('f-type').value;
-      const fsort = document.getElementById('f-sort').value;
-      const fdpe = document.getElementById('f-dpe').value;
-      const fdrops = document.getElementById('f-drops').checked;
-
-      let filtered = DATA.filter(a => {
-        const fullText = ((a.titre || '') + ' ' + (a.mots_detectes || '') + ' ' + (a.agence || '')).toLowerCase();
-        const matchesQ = !q || fullText.includes(q);
-        const matchesDpe = fdpe === 'all' || (fdpe === 'passoires' && (a.dpe === 'F' || a.dpe === 'G')) || a.dpe === fdpe;
-        const matchesDrops = !fdrops || (a.baisse_prix_pct > 0);
-
-        let matchesType = true;
-        if (ftype === 'immeuble') matchesType = fullText.includes('immeuble') || fullText.includes('monopropri') || fullText.includes('bâtisse');
-        else if (ftype === 'maison') matchesType = fullText.includes('maison') || fullText.includes('villa');
-        else if (ftype === 'appartement') matchesType = fullText.includes('appartement') || fullText.includes('t2') || fullText.includes('t3') || fullText.includes('studio');
-        else if (ftype === 'grange') matchesType = fullText.includes('grange') || fullText.includes('plateau') || fullText.includes('remise') || fullText.includes('atelier');
-
-        return matchesQ && matchesDpe && matchesDrops && matchesType;
-      });
-
-      filtered.sort((a, b) => {
-        if (fsort === 'score_desc') return (b.score_v3 || b.score || 0) - (a.score_v3 || a.score || 0);
-        if (fsort === 'marge_desc') return (b.marge_estimee_montant || 0) - (a.marge_estimee_montant || 0);
-        if (fsort === 'prix_asc') return (a.prix || 9999999) - (b.prix || 9999999);
-        if (fsort === 'prix_desc') return (b.prix || 0) - (a.prix || 0);
-        if (fsort === 'm2_asc') return (a.prix_m2 || 9999999) - (b.prix_m2 || 9999999);
-        if (fsort === 'm2_desc') return (b.prix_m2 || 0) - (a.prix_m2 || 0);
-        if (fsort === 'surface_desc') return (b.surface || 0) - (a.surface || 0);
-        return 0;
-      });
-
-      const total = DATA.length;
-      const drops = DATA.filter(a => a.baisse_prix_pct > 0).length;
-      const passoires = DATA.filter(a => a.dpe === 'F' || a.dpe === 'G').length;
-      const news = DATA.filter(a => a.nouvelle).length;
-
-      document.getElementById('kpi-cards').innerHTML =
-        '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl"><b class="text-xl font-bold text-white block">' + total + '</b><span class="text-[10px] uppercase text-slate-400">Biens suivis</span></div>' +
-        '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl"><b class="text-xl font-bold text-amber-400 block">' + news + '</b><span class="text-[10px] uppercase text-slate-400">Nouveautés</span></div>' +
-        '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl"><b class="text-xl font-bold text-rose-400 block">' + drops + '</b><span class="text-[10px] uppercase text-slate-400">Baisses de prix</span></div>' +
-        '<div class="bg-slate-900 border border-slate-800 p-3 rounded-xl"><b class="text-xl font-bold text-purple-400 block">' + passoires + '</b><span class="text-[10px] uppercase text-slate-400">Passoires F/G</span></div>';
-
-      const grid = document.getElementById('deals-grid');
-      grid.innerHTML = '';
-      if (!filtered.length) {
-        grid.innerHTML = '<div class="col-span-2 text-center py-12 text-slate-500">' +
-          (total === 0
-            ? 'Aucune annonce collectée pour le moment. Consultez les logs du scraper.'
-            : 'Aucun bien ne correspond aux filtres sélectionnés.') +
-          '</div>';
-        return;
-      }
-
-      filtered.forEach(a => {
-        try {
-          const dpeClass = a.dpe === 'G' ? 'bg-purple-900 text-purple-100 ring-1 ring-purple-400' :
-                           a.dpe === 'F' ? 'bg-rose-900 text-rose-100' :
-                           a.dpe === 'E' ? 'bg-amber-900 text-amber-100' : 'bg-slate-800 text-slate-300';
-
-          const scoreVal = a.score_v3 ? Number(a.score_v3).toFixed(1) : (a.score ? a.score + '/10' : '–');
-          const margeMontant = a.marge_estimee_montant ? '+' + fmt(a.marge_estimee_montant) + ' €' : '–';
-          const margePct = a.marge_estimee_pct ? '(' + a.marge_estimee_pct + '%)' : '';
-
-          const card = document.createElement('div');
-          card.className = 'bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 flex flex-col justify-between hover:border-slate-700 transition shadow-sm';
-          const dpeVal = a.dpe || '?';
-
-          card.innerHTML =
-            '<div>' +
-              '<div class="flex items-center justify-between gap-2 mb-2">' +
-                '<div class="flex items-center gap-1.5 flex-wrap">' +
-                  '<span class="px-2 py-0.5 rounded text-[11px] font-bold ' + dpeClass + '">DPE ' + dpeVal + '</span>' +
-                  '<button class="btn-score-card px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 transition cursor-pointer" title="Cliquer pour voir les 4 piliers de scoring">⚡ Score V3: ' + scoreVal + '</button>' +
-                  (a.baisse_prix_pct > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">📉 -' + a.baisse_prix_pct + '%</span>' : '') +
-                  (a.marge_estimee_montant > 0 ? '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">💰 ' + margeMontant + ' ' + margePct + '</span>' : '') +
-                '</div>' +
-                '<span class="text-[11px] text-slate-500 font-medium">' + (a.agence || '') + '</span>' +
-              '</div>' +
-              '<h3 class="text-base font-bold text-white leading-snug"><a href="' + a.url + '" target="_blank" rel="noopener" class="hover:text-amber-400 transition">' + (a.titre || a.url) + '</a></h3>' +
-              '<div class="grid grid-cols-3 gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 my-3 text-center">' +
-                '<div><span class="text-[9px] uppercase text-slate-500 block">Prix FAI</span><b class="text-sm font-bold text-white">' + (a.prix ? fmt(a.prix) + ' €' : '–') + '</b></div>' +
-                '<div><span class="text-[9px] uppercase text-slate-500 block">Surface</span><b class="text-sm font-bold text-slate-300">' + (a.surface ? a.surface + ' m²' : '–') + '</b></div>' +
-                '<div><span class="text-[9px] uppercase text-slate-500 block">Prix au m²</span><b class="text-sm font-bold text-amber-300">' + (a.prix_m2 ? a.prix_m2 + ' €' : '–') + '</b></div>' +
-              '</div>' +
-              '<div class="text-xs text-slate-400 line-clamp-2">' + (a.mots_detectes || '') + '</div>' +
-            '</div>' +
-            '<div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2 flex-wrap">' +
-              '<div class="flex items-center gap-2">' +
-                '<a href="' + a.url + '" target="_blank" rel="noopener" class="text-xs text-slate-400 hover:text-white underline">Fiche ↗</a>' +
-                '<button class="btn-detail-card text-xs text-amber-400 hover:text-amber-300 underline font-medium cursor-pointer">Piliers</button>' +
-              '</div>' +
-              '<div class="flex items-center gap-2">' +
-                '<button class="btn-audit-card px-3 py-1.5 bg-gradient-to-r from-amber-500/25 to-indigo-500/25 hover:from-amber-500/35 hover:to-indigo-500/35 text-amber-200 border border-amber-500/40 text-xs font-bold rounded-lg cursor-pointer transition">🔬 Audit Approfondi</button>' +
-                '<button class="btn-simu-card px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg cursor-pointer transition">🧮 Simuler</button>' +
-              '</div>' +
-            '</div>';
-
-          const itemIndex = DATA.indexOf(a);
-          card.querySelector('.btn-score-card').onclick = function() { afficherModalScoring(itemIndex); };
-          card.querySelector('.btn-detail-card').onclick = function() { afficherModalScoring(itemIndex); };
-          card.querySelector('.btn-audit-card').onclick = function() { lancerAuditApprofondi(a); };
-          card.querySelector('.btn-simu-card').onclick = function() { simulerDeal(a.prix || 0, a.surface || 0, a.titre || '', a.dpe || '?', a.agence || ''); };
-
-          grid.appendChild(card);
-        } catch (e) {
-          console.warn('Erreur affichage carte:', e);
-        }
-      });
-    }
-
-    try { renderDeals(); } catch (e) { console.error('renderDeals', e); }
-    try { initAuditDealSelector(); } catch (e) { console.error('initAuditDealSelector', e); }
-    try { renderLotsTable(); } catch (e) { console.error('renderLotsTable', e); }
-  </script>
+  } else {
+    currentLots = [
+      { id: '1', nom: 'Lot 1', surface: Math.round(surf*0.5), travaux: Math.round(trav*0.5), revente: Math.round(rev*0.5) },
+      { id: '2', nom: 'Lot 2', surface: Math.round(surf*0.5), travaux: Math.round(trav*0.5), revente: Math.round(rev*0.5) }
+    ];
+  }
+  renderLotsTable();
+  setTab('simu');
+}
+
+function renderLotsTable() {
+  document.getElementById('lots-table-body').innerHTML = currentLots.map((l, i) => `<tr>
+    <td class="py-1.5 pr-2"><input type="text" value="${esc(l.nom)}" oninput="currentLots[${i}].nom=this.value" class="w-full px-2 py-1 bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded text-xs" /></td>
+    <td class="py-1.5 pr-2"><input type="number" value="${l.surface}" oninput="currentLots[${i}].surface=parseFloat(this.value)||0;calculerSimu()" class="w-full px-2 py-1 text-right font-mono bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded text-xs" /></td>
+    <td class="py-1.5 pr-2"><input type="number" step="500" value="${l.travaux}" oninput="currentLots[${i}].travaux=parseFloat(this.value)||0;calculerSimu()" class="w-full px-2 py-1 text-right font-mono bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded text-xs" /></td>
+    <td class="py-1.5 pr-2"><input type="number" step="1000" value="${l.revente}" oninput="currentLots[${i}].revente=parseFloat(this.value)||0;calculerSimu()" class="w-full px-2 py-1 text-right font-mono font-bold bg-stone-50 dark:bg-slate-950 border border-stone-200 dark:border-slate-700 rounded text-xs" /></td>
+    <td class="py-1.5 pr-2 text-right font-mono text-slate-500">${l.surface>0?Math.round(l.revente/l.surface):0} €</td>
+    <td class="py-1.5 text-right"><button onclick="if(currentLots.length>1){currentLots.splice(${i},1);renderLotsTable()}" class="text-slate-400 hover:text-rose-600 cursor-pointer">✕</button></td>
+  </tr>`).join('');
+  calculerSimu();
+}
+
+function ajouterLot() {
+  currentLots.push({ id: Date.now()+'', nom: 'Lot ' + (currentLots.length + 1), surface: 48, travaux: 36000, revente: 91000 });
+  renderLotsTable();
+}
+
+function calculerSimu() {
+  const prix = parseFloat(document.getElementById('sim-prix').value) || 0;
+  const nego = parseFloat(document.getElementById('sim-nego').value) || 0;
+  const prixNet = Math.max(0, prix - nego);
+  const tauxNot = parseFloat(document.getElementById('sim-notaire').value) || 0.00715;
+  const notaire = Math.round(prixNet * tauxNot);
+  const geom = parseFloat(document.getElementById('sim-geometre').value) || 0;
+  const divers = parseFloat(document.getElementById('sim-divers').value) || 0;
+  const mois = parseFloat(document.getElementById('sim-mois').value) || 8;
+  const taux = parseFloat(document.getElementById('sim-taux').value) || 3.8;
+  const apport = parseFloat(document.getElementById('sim-apport').value) || 0;
+  const withTva = document.getElementById('sim-tva-marge').checked;
+
+  const surf = currentLots.reduce((s, l) => s + (l.surface || 0), 0);
+  const trav = currentLots.reduce((s, l) => s + (l.travaux || 0), 0);
+  const ca = currentLots.reduce((s, l) => s + (l.revente || 0), 0);
+  document.getElementById('total-surf').textContent = surf + ' m²';
+  document.getElementById('total-travaux-lots').textContent = fmt(trav) + ' €';
+  document.getElementById('total-revente-lots').textContent = fmt(ca) + ' €';
+
+  const besoin = prixNet + notaire + trav + geom + divers;
+  const emp = Math.max(0, besoin - apport);
+  const port = Math.round(emp * (taux / 100) * (mois / 12) + emp * 0.01);
+  const rev = besoin + port;
+  const tva = (withTva && ca > prixNet) ? Math.round(((ca - prixNet) * 0.2) / 1.2) : 0;
+  const mb = ca - rev - tva;
+  const pct = ca > 0 ? ((mb / ca) * 100).toFixed(1) : '0';
+  const is = mb <= 0 ? 0 : (mb <= 42500 ? Math.round(mb * 0.15) : Math.round(42500 * 0.15 + (mb - 42500) * 0.25));
+  const mn = mb - is;
+  const roi = apport > 0 ? Math.round((mn / apport) * 100) : 0;
+  const tri = apport > 0 && mois > 0 ? Math.round(roi * (12 / mois)) : 0;
+
+  document.getElementById('res-achat').textContent = fmt(prixNet) + ' €';
+  document.getElementById('res-notaire').textContent = fmt(notaire) + ' €';
+  document.getElementById('res-travaux').textContent = fmt(trav) + ' €';
+  document.getElementById('res-geometre').textContent = fmt(geom + divers) + ' €';
+  document.getElementById('res-portage').textContent = fmt(port) + ' €';
+  document.getElementById('res-revient').textContent = fmt(rev) + ' €';
+  document.getElementById('res-revente').textContent = fmt(ca) + ' €';
+  document.getElementById('row-tva').classList.toggle('hidden', !withTva);
+  document.getElementById('res-tva').textContent = '-' + fmt(tva) + ' €';
+  document.getElementById('res-is').textContent = (is > 0 ? '-' : '') + fmt(is) + ' €';
+  document.getElementById('res-marge-brute').textContent = sfmt(mb);
+  document.getElementById('res-marge-pct').textContent = pct + '% CA';
+  document.getElementById('res-marge-nette').textContent = sfmt(mn);
+  document.getElementById('res-roi').textContent = roi + '%';
+  document.getElementById('res-tri').textContent = tri + '% / an';
+  document.getElementById('res-gain-notaire').textContent = '+' + fmt(Math.max(0, Math.round(prixNet * (0.078 - tauxNot)))) + ' €';
+
+  const sens = [
+    ['Prudent (-10% revente / +15% travaux)', -0.10, 0.15],
+    ['Médian (-5% revente / +10% travaux)', -0.05, 0.10],
+    ['Base simulée (nominal)', 0, 0],
+    ['Optimiste (+5% revente)', 0.05, 0]
+  ].map(([lbl, vr, vt]) => {
+    const r2 = Math.round(ca * (1 + vr)), t2 = Math.round(trav * (1 + vt));
+    const c2 = prixNet + notaire + t2 + geom + divers + port;
+    const tv2 = (withTva && r2 > prixNet) ? Math.round(((r2 - prixNet) * 0.2) / 1.2) : 0;
+    const m2 = r2 - c2 - tv2;
+    const p2 = r2 > 0 ? ((m2 / r2) * 100).toFixed(1) : '0';
+    return `<div class="py-2 flex justify-between"><span class="text-slate-600 dark:text-slate-300">${lbl}</span><strong class="font-mono ${m2>=25000?'text-emerald-700 dark:text-emerald-400':(m2>=0?'text-amber-700':'text-rose-700')}">${sfmt(m2)} (${p2}%)</strong></div>`;
+  }).join('');
+  document.getElementById('simu-sensibilite').innerHTML = sens;
+
+  document.getElementById('strat-pitch').textContent =
+    `Objet : Offre d'achat ferme — ${simuContext.titre.slice(0, 60)} (${simuContext.agence})\n\nBonjour,\n\nSuite à notre étude technique et compte tenu du DPE ${simuContext.dpe} ainsi que de l'enveloppe travaux estimée à ${fmt(trav)} €, nous vous transmettons une offre ferme à ${fmt(prixNet)} € FAI.\n\nOpérateur Marchand de Biens sur Millau, notre financement professionnel est validé sans condition suspensive de prêt, pour une signature sous 30 à 45 jours.`;
+}
+
+function copierPitch() {
+  try { navigator.clipboard.writeText(document.getElementById('strat-pitch').textContent); } catch (e) {}
+  const b = document.getElementById('btn-copy-pitch');
+  b.textContent = 'Offre copiée';
+  setTimeout(() => { b.textContent = 'Copier le courrier'; }, 2000);
+}
+
+function afficherModalScoring(idx) {
+  const a = DATA[idx];
+  if (!a) return;
+  document.getElementById('modal-titre').textContent = a.titre || a.url;
+  document.getElementById('modal-sous-titre').textContent = `${a.agence} · ${getSecteur(a)} · ${a.prix?fmt(a.prix)+' €':'–'} · ${a.surface?a.surface+' m²':'–'} · DPE ${a.dpe}`;
+  const mp = a.marge_estimee_pct || 0;
+  const p1 = mp >= 22 ? 35 : mp >= 18 ? 30 : mp >= 14 ? 20 : mp >= 10 ? 10 : 0;
+  const p2 = ((a.titre||'').toLowerCase().includes('immeuble') || (a.titre||'').toLowerCase().includes('monopropri')) ? 25 : ((a.surface||0)>=140 ? 18 : 10);
+  const p3 = (a.dpe==='G'?8:a.dpe==='F'?6:0) + (a.baisse_prix_pct>=10?8:a.baisse_prix_pct>=5?5:0) + ((a.prix_m2&&a.prix_m2<850)?4:0);
+  const p4 = ((a.prix&&a.prix<=150000)?8:6) + 8;
+  document.getElementById('modal-qualite').textContent = `Score V3 : ${Number(a.score_v3||0).toFixed(1)} / 10`;
+  document.getElementById('modal-piliers').innerHTML = [
+    ['01. Marge prévisionnelle (35%)', p1, 35, `Marge estimée ${sfmt(a.marge_estimee_montant)} (${mp}% CA à 1 900 €/m²).`],
+    ['02. Découpe & création de valeur (25%)', p2, 25, `Surface ${a.surface||'–'} m², potentiel multi-lots.`],
+    ['03. Levier de négociation (20%)', Math.min(20, p3), 20, `DPE ${a.dpe}, baisse constatée -${a.baisse_prix_pct||0}%.`],
+    ['04. Sécurité & liquidité (20%)', Math.min(20, p4), 20, `Ticket d'acquisition sur le marché millavois.`]
+  ].map(x => `<div class="py-3"><div class="flex justify-between font-semibold"><span>${x[0]}</span><span class="font-mono">${x[1]} / ${x[2]} pts</span></div><p class="text-slate-500 mt-1">${x[3]}</p></div>`).join('');
+  document.getElementById('modal-btn-simu').onclick = () => { fermerModalScoring(); simulerDeal(idx); };
+  document.getElementById('modal-scoring').classList.remove('hidden');
+}
+
+function fermerModalScoring() { document.getElementById('modal-scoring').classList.add('hidden'); }
+
+function exporterCsv() {
+  const list = getFiltered();
+  const h = ['agence','titre','secteur','prix','surface','prix_m2','dpe','score_v3','marge_estimee_montant','url'];
+  const rows = list.map(a => [a.agence, a.titre, getSecteur(a), a.prix||'', a.surface||'', a.prix_m2||'', a.dpe, a.score_v3, a.marge_estimee_montant, a.url].map(v => `"${String(v).replace(/"/g,'""')}"`).join(';'));
+  const blob = new Blob(['\uFEFF' + [h.join(';'), ...rows].join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'millau-mdb-selection.csv';
+  link.click();
+}
+
+setTab('deals');
+setViewMode('grid');
+initAuditSelector();
+renderLotsTable();
+</script>
 </body>
 </html>"""
 
@@ -1773,7 +1674,7 @@ def main():
         except Exception:
             etat = {}
 
-    log.info("🚀 Démarrage du scraper MDB Millau (état actuel : %d annonces en mémoire)", len(etat))
+    log.info("🚀 Démarrage du scraper MDB Millau v3.0 (état actuel : %d annonces en mémoire)", len(etat))
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
