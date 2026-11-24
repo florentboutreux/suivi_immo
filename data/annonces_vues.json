@@ -1676,7 +1676,7 @@
   "baisse_prix_pct": 0.0,
   "historique_prix": [
    {
-    "date": "12/10/2026",
+    "date": "24/11/2026",
     "prix": 231000
    }
   ],
@@ -1686,14 +1686,22 @@
   "dpe": "INCONNU",
   "score": 4,
   "score_v3": 4.0,
-  "marge_estimee_montant": -20917,
-  "marge_estimee_pct": -6.2,
+  "marge_estimee_montant": -1662,
+  "marge_estimee_pct": -0.5,
   "mots_detectes": "immeuble",
   "nouvelle": false,
   "a_baisse": false,
-  "date_collecte": "2026-10-12 11:21",
+  "date_collecte": "2026-11-24 17:00",
   "localisation": "Millau",
-  "v": 10
+  "secteur": "Périphérie Millau",
+  "type_bien": "immeuble",
+  "v": 11,
+  "photos": [
+   "https://assets.adaptimmo.com/photos-biens/12003/1200351_19.jpg?fit=crop&h=950&q=90&w=1400&s=10328471e805341376b668fa57ca5ef2",
+   "https://assets.adaptimmo.com/photos-biens/12003/1200351_20.jpg?fit=crop&h=950&q=90&w=1400&s=07ab6e9ddb9c12457ee249f2c430e928",
+   "https://assets.adaptimmo.com/photos-biens/12003/1200351_21.jpg?fit=crop&h=950&q=90&w=1400&s=c41db5a35ef8fb045675fc0b405fcb6f",
+   "https://assets.adaptimmo.com/photos-biens/12003/1200351_22.jpg?fit=crop&h=950&q=90&w=1400&s=1be1d92079ac8d46a538b57576e2d644"
+  ]
  },
  "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033754.html": {
   "url": "https://www.sga-immobilier.com/fr/annonce/vente-maison-millau-p-r7-120033754.html",
@@ -4722,7 +4730,7 @@
   "baisse_prix_pct": 0.0,
   "historique_prix": [
    {
-    "date": "30/10/2026",
+    "date": "24/11/2026",
     "prix": 283500
    }
   ],
@@ -4731,15 +4739,17 @@
   "prix_m2": 1090,
   "dpe": "INCONNU",
   "score": 10,
-  "score_v3": 4.0,
-  "marge_estimee_montant": 22341,
-  "marge_estimee_pct": 4.6,
+  "score_v3": 5.0,
+  "marge_estimee_montant": 49758,
+  "marge_estimee_pct": 10.1,
   "mots_detectes": "immeuble de rapport, opportunité, Prix canon 1090 €/m²",
-  "nouvelle": true,
+  "nouvelle": false,
   "a_baisse": false,
-  "date_collecte": "2026-10-30 12:12",
+  "date_collecte": "2026-11-24 17:00",
   "localisation": "Millau",
-  "v": 10,
+  "secteur": "Périphérie Millau",
+  "type_bien": "immeuble",
+  "v": 11,
   "photos": [
    "https://assets.adaptimmo.com/photos-biens/12003/120033797_5.jpg?fit=crop&h=950&q=90&w=1400&s=34a3d2220ebed81c801099db9d54fc34",
    "https://assets.adaptimmo.com/photos-biens/12003/120033797_4.jpg?fit=crop&h=950&q=90&w=1400&s=d39099c39a8b25136190c776781468ee",
