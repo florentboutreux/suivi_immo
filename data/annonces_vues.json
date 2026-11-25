@@ -2684,24 +2684,26 @@
   "baisse_prix_pct": 0.0,
   "historique_prix": [
    {
-    "date": "19/10/2026",
+    "date": "25/11/2026",
     "prix": 229000
    }
   ],
-  "surface": 80.0,
+  "surface": 130.0,
   "terrain": null,
-  "prix_m2": 2862,
+  "prix_m2": 1761,
   "dpe": "INCONNU",
-  "score": 4,
+  "score": 7,
   "score_v3": 4.0,
-  "marge_estimee_montant": -145053,
-  "marge_estimee_pct": -98.0,
-  "mots_detectes": "immeuble",
+  "marge_estimee_montant": -68408,
+  "marge_estimee_pct": -27.7,
+  "mots_detectes": "immeuble, a renover",
   "nouvelle": false,
   "a_baisse": false,
-  "date_collecte": "2026-10-19 12:13",
+  "date_collecte": "2026-11-25 16:51",
   "localisation": "Millau",
-  "v": 10,
+  "secteur": "Périphérie Millau",
+  "type_bien": "immeuble",
+  "v": 11,
   "photos": [
    "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2025/07/IMG_5543_34-1.jpg?compress=true&quality=80&w=1080&dpr=1",
    "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2025/07/IMG_5531_23-1.jpg?compress=true&quality=80&w=1080&dpr=1",
@@ -4027,35 +4029,37 @@
  "https://mesnard-immobilier.com/property/local-de-100-m2-avec-parking-la-cavalerie-12-occitanie": {
   "url": "https://mesnard-immobilier.com/property/local-de-100-m2-avec-parking-la-cavalerie-12-occitanie",
   "ignoree": true,
-  "v": 10
+  "v": 11
  },
  "https://mesnard-immobilier.com/property/containers-de-stockage-a-louer-ideal-pour-garde-meubles-millau-12-occitanie": {
   "url": "https://mesnard-immobilier.com/property/containers-de-stockage-a-louer-ideal-pour-garde-meubles-millau-12-occitanie",
-  "agence": "Mesnard maisons",
+  "agence": "Mesnard apparts",
   "titre": "CONTAINERS DE STOCKAGE A LOUER. IDEAL POUR GARDE MEUBLES. MILLAU (12) OCCITANIE",
-  "prix": 50000,
-  "prix_initial": 50000,
+  "prix": 450000,
+  "prix_initial": 450000,
   "baisse_prix_pct": 0.0,
   "historique_prix": [
    {
-    "date": "13/10/2026",
-    "prix": 50000
+    "date": "25/11/2026",
+    "prix": 450000
    }
   ],
-  "surface": 45.0,
+  "surface": 350.0,
   "terrain": null,
-  "prix_m2": 1111,
+  "prix_m2": 1285,
   "dpe": "INCONNU",
-  "score": 0,
-  "score_v3": 2.4,
-  "marge_estimee_montant": 400,
-  "marge_estimee_pct": 0.5,
-  "mots_detectes": "",
+  "score": 6,
+  "score_v3": 3.0,
+  "marge_estimee_montant": -3900,
+  "marge_estimee_pct": -0.6,
+  "mots_detectes": "opportunité, a rénover",
   "nouvelle": false,
   "a_baisse": false,
-  "date_collecte": "2026-10-13 13:38",
+  "date_collecte": "2026-11-25 16:51",
   "localisation": "Millau",
-  "v": 10,
+  "secteur": "Périphérie Millau",
+  "type_bien": "maison",
+  "v": 11,
   "photos": [
    "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_5589_3.jpg?compress=true&quality=80&w=1080&dpr=1",
    "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_5492_2.jpg?compress=true&quality=80&w=1080&dpr=1",
@@ -4185,37 +4189,8 @@
  },
  "https://mesnard-immobilier.com/property/local-professionnel-plein-centre-ville-sur-artere-principale-avec-deux-parkings-prives-millau-12-ocitanie": {
   "url": "https://mesnard-immobilier.com/property/local-professionnel-plein-centre-ville-sur-artere-principale-avec-deux-parkings-prives-millau-12-ocitanie",
-  "agence": "Mesnard maisons",
-  "titre": "LOCAL PROFESSIONNEL PLEIN CENTRE VILLE SUR ARTERE PRINCIPALE AVEC DEUX PARKINGS PRIVES MILLAU 12 ( Ocitanie).",
-  "prix": 215000,
-  "prix_initial": 215000,
-  "baisse_prix_pct": 0.0,
-  "historique_prix": [
-   {
-    "date": "14/10/2026",
-    "prix": 215000
-   }
-  ],
-  "surface": 130.0,
-  "terrain": null,
-  "prix_m2": 1653,
-  "dpe": "INCONNU",
-  "score": 3,
-  "score_v3": 2.1,
-  "marge_estimee_montant": -67755,
-  "marge_estimee_pct": -28.2,
-  "mots_detectes": "a renover",
-  "nouvelle": true,
-  "a_baisse": false,
-  "date_collecte": "2026-10-14 11:15",
-  "localisation": "Millau",
-  "v": 10,
-  "photos": [
-   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_8422_23.jpg?compress=true&quality=80&w=1080&dpr=1",
-   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_8421_22.jpg?compress=true&quality=80&w=1080&dpr=1",
-   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_8420_21.jpg?compress=true&quality=80&w=1080&dpr=1",
-   "https://mesnard-immobilier.gumlet.io/wp-content/uploads/2020/02/IMG_8419_20.jpg?compress=true&quality=80&w=1080&dpr=1"
-  ]
+  "ignoree": true,
+  "v": 11
  },
  "https://mesnard-immobilier.com/property/grands-garages-le-monna-affaire-tres-rare-dans-ce-village-de-la-dourbie-millau-12-occitanie": {
   "url": "https://mesnard-immobilier.com/property/grands-garages-le-monna-affaire-tres-rare-dans-ce-village-de-la-dourbie-millau-12-occitanie",
@@ -5326,6 +5301,42 @@
    "https://images.iadfrance.fr/property/broadcast/2026/11/22/01a204a79a81321d8598005c7976d112.jpg?format=auto&width=260",
    "https://images.iadfrance.fr/property/broadcast/2026/11/22/01a204a79aa138e25813b08121be9c55.jpg?format=auto&width=260",
    "https://images.iadfrance.fr/property/broadcast/2026/09/28/01a0e747f11806c804123cdd34d96834.jpg?format=auto&width=300"
+  ]
+ },
+ "https://www.iadfrance.fr/annonce/local-commercial-vente-millau-500m2/r2165574": {
+  "url": "https://www.iadfrance.fr/annonce/local-commercial-vente-millau-500m2/r2165574",
+  "agence": "iad",
+  "titre": "Bureaux à vendre 500 m² Millau",
+  "prix": 390000,
+  "prix_initial": 390000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "25/11/2026",
+    "prix": 390000
+   }
+  ],
+  "surface": 500.0,
+  "terrain": null,
+  "prix_m2": 780,
+  "dpe": "INCONNU",
+  "score": 9,
+  "score_v3": 7.9,
+  "marge_estimee_montant": 261720,
+  "marge_estimee_pct": 27.5,
+  "mots_detectes": "immeuble, travaux, Prix canon 780 €/m²",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-25 16:51",
+  "localisation": "Millau",
+  "secteur": "Mandarous / Jaurès",
+  "type_bien": "immeuble",
+  "v": 11,
+  "photos": [
+   "https://images.iadfrance.fr/property/broadcast/2026/11/20/01a1f925dd88ec54f4511d5ddf9b88f1.jpg?format=auto&width=390",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/20/01a1f9474d6633828d48e1da8f648175.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/11/20/01a1f92d0bb540d28bbc822dbbbb685b.jpg?format=auto&width=260",
+   "https://images.iadfrance.fr/property/broadcast/2026/05/11/019e15a2df3f598615fdfbf2c3e05a10.jpg?format=auto&width=300"
   ]
  }
 }
