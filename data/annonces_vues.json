@@ -4139,7 +4139,7 @@
  "https://mesnard-immobilier.com/property/jasse-de-80-m2-a-renover-sur-le-causse-du-larzac-la-cavalerie-50000-euro-12-occitanie": {
   "url": "https://mesnard-immobilier.com/property/jasse-de-80-m2-a-renover-sur-le-causse-du-larzac-la-cavalerie-50000-euro-12-occitanie",
   "ignoree": true,
-  "v": 10
+  "v": 11
  },
  "https://www.iadfrance.fr/annonce/maison-vente-5-pieces-millau-115m2/r2117274": {
   "url": "https://www.iadfrance.fr/annonce/maison-vente-5-pieces-millau-115m2/r2117274",
@@ -4180,12 +4180,12 @@
  "https://mesnard-immobilier.com/property/pavillon-type-5-sur-393-m2-creissels-245000-euro-a-debattre-occitanie-12": {
   "url": "https://mesnard-immobilier.com/property/pavillon-type-5-sur-393-m2-creissels-245000-euro-a-debattre-occitanie-12",
   "ignoree": true,
-  "v": 10
+  "v": 11
  },
  "https://mesnard-immobilier.com/property/terrain-de-6048-m2-constructible-plein-centre-la-cavalerie-12-occitanie": {
   "url": "https://mesnard-immobilier.com/property/terrain-de-6048-m2-constructible-plein-centre-la-cavalerie-12-occitanie",
   "ignoree": true,
-  "v": 10
+  "v": 11
  },
  "https://mesnard-immobilier.com/property/local-professionnel-plein-centre-ville-sur-artere-principale-avec-deux-parkings-prives-millau-12-ocitanie": {
   "url": "https://mesnard-immobilier.com/property/local-professionnel-plein-centre-ville-sur-artere-principale-avec-deux-parkings-prives-millau-12-ocitanie",
@@ -5337,6 +5337,42 @@
    "https://images.iadfrance.fr/property/broadcast/2026/11/20/01a1f9474d6633828d48e1da8f648175.jpg?format=auto&width=260",
    "https://images.iadfrance.fr/property/broadcast/2026/11/20/01a1f92d0bb540d28bbc822dbbbb685b.jpg?format=auto&width=260",
    "https://images.iadfrance.fr/property/broadcast/2026/05/11/019e15a2df3f598615fdfbf2c3e05a10.jpg?format=auto&width=300"
+  ]
+ },
+ "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033800.html": {
+  "url": "https://www.sga-immobilier.com/fr/annonce/vente-appartement-millau-p-r7-120033800.html",
+  "agence": "SGA",
+  "titre": "Appartement 3 pièces, 55m²\nen vente à Millau\n110 000 € *",
+  "prix": 110000,
+  "prix_initial": 110000,
+  "baisse_prix_pct": 0.0,
+  "historique_prix": [
+   {
+    "date": "27/11/2026",
+    "prix": 110000
+   }
+  ],
+  "surface": 55.0,
+  "terrain": null,
+  "prix_m2": 2000,
+  "dpe": "INCONNU",
+  "score": 0,
+  "score_v3": 2.7,
+  "marge_estimee_montant": -44470,
+  "marge_estimee_pct": -42.6,
+  "mots_detectes": "",
+  "nouvelle": true,
+  "a_baisse": false,
+  "date_collecte": "2026-11-27 16:12",
+  "localisation": "Millau",
+  "secteur": "Périphérie Millau",
+  "type_bien": "appartement",
+  "v": 11,
+  "photos": [
+   "https://assets.adaptimmo.com/photos-biens/12003/120033800_1.jpg?fit=crop&h=950&q=90&w=1400&s=0cbd68b1484e46afb6e66e75cb04475a",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033800_2.jpg?fit=crop&h=950&q=90&w=1400&s=a9a336652b7b90889097e446369a4065",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033800_3.jpg?fit=crop&h=950&q=90&w=1400&s=798cd9aa455a6292e98a852b089f5cc5",
+   "https://assets.adaptimmo.com/photos-biens/12003/120033800_4.jpg?fit=crop&h=950&q=90&w=1400&s=4d8dd9e6918b2c12d37dcfcb25309d73"
   ]
  }
 }
